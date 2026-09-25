@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>Everything — All-in-One Local Digital Toolkit & Dashboard</title>
+        <meta
+            name="description"
+            content="Fast, 100% client-side digital utility hub: time, calendar, weather, 3-day todo tracker, media converters, subnet calculators, and cryptographic hashers."
+        />
+        <meta name="author" content="Adam Nordling" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://everything.adamnordling.se/" />
+
+        <!-- Theme Configuration -->
+        <meta name="color-scheme" content="light dark" />
+        <meta name="theme-color" content="#f4f4f5" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#131418" media="(prefers-color-scheme: dark)" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+        <link rel="stylesheet" href="./src/styles/main.css" />
+
+        <!-- Zero-FOUC Theme Initializer -->
+        <script>
+            (function () {
+                const saved = localStorage.getItem('app_theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = saved ? saved === 'dark' : prefersDark;
+                if (!isDark) document.documentElement.classList.add('light-theme');
+            })();
+        </script>
+    </head>
+    <body>
+        <a href="#main-stage" class="skip-link">Skip to dashboard content</a>
+
+        <div class="app-layout">
+            <!-- LEFT NAVIGATION SIDEBAR -->
+            <aside class="app-sidebar" id="app-sidebar" aria-label="Tool selection sidebar">
+                <div class="sidebar-header">
+                    <div class="brand">
+                        <span class="brand-dot"></span>
+                        <span class="brand-title">EVERYTHING</span>
+                    </div>
+                    <button type="button" class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                        <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M22 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                        </svg>
+                        <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="sidebar-search">
+                    <input type="search" id="tool-search" placeholder="Search utilities (Ctrl+K)..." autocomplete="off" />
+                </div>
+
+                <nav class="sidebar-nav" aria-label="Utilities Navigation">
+                    <div class="nav-section-title">OVERVIEW</div>
+                    <button type="button" class="nav-item active" data-view="dashboard">
+                        <span class="nav-icon">📊</span>
+                        <span>Daily Dashboard</span>
+                    </button>
+
+                    <div class="nav-section-title">SECURITY & CRYPTO</div>
+                    <button type="button" class="nav-item" data-view="tool-hasher">
+                        <span class="nav-icon">🔒</span>
+                        <span>SHA / HMAC Hasher</span>
+                    </button>
+                    <button type="button" class="nav-item" data-view="tool-uuid">
+                        <span class="nav-icon">🔑</span>
+                        <span>UUID & Token Generator</span>
+                    </button>
+
+                    <div class="nav-section-title">NETWORK & WEB</div>
+                    <button type="button" class="nav-item" data-view="tool-subnet">
+                        <span class="nav-icon">🌐</span>
+                        <span>CIDR & Subnet Calculator</span>
+                    </button>
+                    <button type="button" class="nav-item" data-view="tool-dns">
+                        <span class="nav-icon">📡</span>
+                        <span>DNS & Latency Inspector</span>
+                    </button>
+
+                    <div class="nav-section-title">MEDIA & FILES</div>
+                    <button type="button" class="nav-item" data-view="tool-media">
+                        <span class="nav-icon">🖼️</span>
+                        <span>Client Image Transcoder</span>
+                    </button>
+
+                    <div class="nav-section-title">CODE & TEXT</div>
+                    <button type="button" class="nav-item" data-view="tool-translator">
+                        <span class="nav-icon">🔄</span>
+                        <span>Code & Syntax Converter</span>
+                    </button>
+                    <button type="button" class="nav-item" data-view="tool-json">
+                        <span class="nav-icon">⚡</span>
+                        <span>JSON & RegEx Studio</span>
+                    </button>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <span class="privacy-badge">100% Client-Side · 0 Trackers</span>
+                </div>
+            </aside>
+
+            <!-- MAIN STAGE / DASHBOARD VIEW -->
+            <main class="app-main" id="main-stage" tabindex="-1">
+                <!-- TOP TELEMETRY BAR -->
+                <header class="top-telemetry-bar">
+                    <div class="telemetry-group">
+                        <div class="telemetry-widget" id="widget-clock">
+                            <span class="telemetry-label">LOCAL TIME</span>
+                            <span class="telemetry-value time-val" id="time-display">00:00:00</span>
+                        </div>
+                        <div class="telemetry-widget" id="widget-week">
+                            <span class="telemetry-label">CALENDAR</span>
+                            <span class="telemetry-value" id="week-display">Week --</span>
+                        </div>
+                    </div>
+
+                    <div class="telemetry-group">
+                        <div class="telemetry-widget" id="widget-weather">
+                            <span class="telemetry-label">WEATHER</span>
+                            <span class="telemetry-value" id="weather-display">Loading forecast...</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- DYNAMIC CONTENT VIEW CONTAINER -->
+                <div class="view-viewport" id="view-viewport">
+                    <!-- 1. DASHBOARD VIEW (ACTIVE DEFAULT) -->
+                    <section class="view-panel active" id="view-dashboard">
+                        <div class="dashboard-grid">
+                            <!-- CALENDAR CONTAINER -->
+                            <div class="card calendar-card">
+                                <div class="card-header">
+                                    <h2 class="card-title" id="calendar-month-year">Calendar</h2>
+                                    <div class="calendar-controls">
+                                        <button type="button" class="icon-btn" id="cal-prev" aria-label="Previous Month">‹</button>
+                                        <button type="button" class="icon-btn" id="cal-today" aria-label="Jump to Current Month">Today</button>
+                                        <button type="button" class="icon-btn" id="cal-next" aria-label="Next Month">›</button>
+                                    </div>
+                                </div>
+                                <div class="calendar-weekdays">
+                                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                                </div>
+                                <div class="calendar-days-grid" id="calendar-days-grid"></div>
+                            </div>
+
+                            <!-- 3-DAY ROLLING TODO / LOG TRACKER -->
+                            <div class="card todo-card">
+                                <div class="card-header">
+                                    <h2 class="card-title">3-Day Activity & To-Do Flow</h2>
+                                    <span class="badge">Drag & Drop · Persistent</span>
+                                </div>
+
+                                <form class="todo-input-form" id="todo-form">
+                                    <input
+                                        type="text"
+                                        id="todo-input"
+                                        placeholder="Add task or log milestone (Press Enter)..."
+                                        required
+                                        autocomplete="off"
+                                    />
+                                    <button type="submit" class="btn-primary">Add Task</button>
+                                </form>
+
+                                <div class="todo-streams-container">
+                                    <!-- TODAY -->
+                                    <div class="todo-column" data-day="today">
+                                        <div class="column-header">
+                                            <h3>Today</h3>
+                                            <span class="count-pill" id="count-today">0</span>
+                                        </div>
+                                        <div class="todo-list" id="list-today"></div>
+                                    </div>
+
+                                    <!-- YESTERDAY -->
+                                    <div class="todo-column" data-day="yesterday">
+                                        <div class="column-header">
+                                            <h3>Yesterday</h3>
+                                            <span class="count-pill" id="count-yesterday">0</span>
+                                        </div>
+                                        <div class="todo-list" id="list-yesterday"></div>
+                                    </div>
+
+                                    <!-- 2 DAYS AGO -->
+                                    <div class="todo-column" data-day="twoDaysAgo">
+                                        <div class="column-header">
+                                            <h3>2 Days Ago</h3>
+                                            <span class="count-pill" id="count-twoDaysAgo">0</span>
+                                        </div>
+                                        <div class="todo-list" id="list-twoDaysAgo"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 2. UTILITY PLACEHOLDER VIEW (Switched dynamically) -->
+                    <section class="view-panel" id="view-tool-stage">
+                        <div class="card tool-stage-card" id="tool-stage-content">
+                            <!-- Tool UI mounts here on selection -->
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+
+        <script type="module" src="./src/main.ts"></script>
+    </body>
+</html>
