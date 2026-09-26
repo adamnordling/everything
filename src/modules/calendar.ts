@@ -53,7 +53,7 @@ export function initCalendar(onSelectDate: (dateStr: string, activeDeadlines: st
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    let viewDate = new Date();
+    const viewDate = new Date();
     let selectedDate = new Date();
 
     function render(): void {

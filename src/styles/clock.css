@@ -45,7 +45,10 @@
     font-weight: 700;
 }
 
-/* STACKED TIMEZONE CONVERTER */
+/* =============================================================================
+   RESTORED CONVERTER (NO WRAPPING, NO LAYOUT SHIFT)
+   ============================================================================= */
+
 .converter-stacked-module {
     margin-top: 12px;
     background: var(--bg-base);
@@ -61,47 +64,123 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
+    width: 100%;
+    flex-wrap: nowrap; /* Never breaks onto multiple lines */
 }
 
 .converter-label {
-    font-size: 0.75rem;
+    font-size: 0.76rem;
     color: var(--text-muted);
     font-family: var(--font-mono);
     font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-.input-mini-time,
+.converter-colon {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* Inputs with spinners removed */
+.input-mini-time {
+    background: var(--bg-card);
+    border: 1px solid var(--border-bold);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    width: 38px;
+    height: 28px;
+    text-align: center;
+    border-radius: 5px;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.input-mini-time:focus {
+    border-color: var(--accent-mint);
+    outline: none;
+}
+
+.input-mini-time::-webkit-outer-spin-button,
+.input-mini-time::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.input-mini-time {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Single format cycle button: fixed width so it NEVER shifts the row */
+.btn-format-cycle {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-bold);
+    color: var(--accent-sky);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    height: 28px;
+    width: 42px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.btn-format-cycle:hover {
+    border-color: var(--accent-mint);
+    color: var(--accent-mint);
+}
+
 .select-mini-tz {
     background: var(--bg-card);
     border: 1px solid var(--border-bold);
     color: var(--text-primary);
     font-family: var(--font-mono);
-    font-size: 0.78rem;
-    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    height: 28px;
+    padding: 0 8px;
     border-radius: 5px;
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+    outline: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
+.select-mini-tz:focus {
+    border-color: var(--accent-mint);
+}
+
+/* Result row directly under it */
 .converter-result-under {
     display: flex;
     align-items: center;
     padding-top: 6px;
     border-top: 1px dashed var(--border-subtle);
-    min-height: 28px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    min-height: 26px;
+    white-space: nowrap;
 }
 
 .converter-result-box {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
+    flex-wrap: nowrap;
 }
 
 .converter-result-label {
     color: var(--text-muted);
-    font-size: 0.72rem;
+    font-size: 0.74rem;
 }
 
 .converter-result-value {
@@ -112,13 +191,7 @@
 
 .converter-result-secondary {
     color: var(--text-secondary);
-    font-size: 0.8rem;
-}
-
-.converter-subtle {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
+    font-size: 0.78rem;
 }
 
 /* YEAR PROGRESS */

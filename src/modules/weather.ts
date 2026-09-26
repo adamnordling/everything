@@ -66,7 +66,7 @@ export async function initWeather(): Promise<void> {
             const sr = new Date(data.daily.sunrise[0]).getTime();
             const ss = new Date(data.daily.sunset[0]).getTime();
             const now = Date.now();
-            let progress = Math.max(0, Math.min(1, (now - sr) / (ss - sr)));
+            const progress = Math.max(0, Math.min(1, (now - sr) / (ss - sr)));
 
             const angle = Math.PI * (1 - progress);
             const cx = 90 + 70 * Math.cos(angle);

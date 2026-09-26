@@ -108,54 +108,53 @@
     <div class="hero-split-row">
 
         <!-- 1. HERO CLOCK STATION -->
-        <div class="card clock-hero-card">
-            <div class="clock-main-row">
-                <div class="clock-digits-group">
-                    <div class="time-digits-display" id="clock-large">00:00:00</div>
-                    <div class="time-meta-chips">
-                        <span id="active-tz-display">Europe/Stockholm</span>
-                        <span>·</span>
-                        <span id="day-of-week-display">Today</span>
-                        <span>·</span>
-                        <span class="pill-badge" id="iso-week-badge">Week --</span>
-                    </div>
-                </div>
-                <span class="pill-badge session-badge-pill" id="session-counter-badge">Session: 00:00:00</span>
-            </div>
-
-            <!-- TIMEZONE RELEASE CONVERTER -->
-            <div class="converter-stacked-module">
-                <div class="converter-inputs-bar">
-                    <span class="converter-label">Convert Time:</span>
-                    <input type="number" id="tz-hour-input" min="0" max="23" class="input-mini-time" style="width:46px; text-align:center;" />
-                    <span>:</span>
-                    <input type="number" id="tz-min-input" min="0" max="59" class="input-mini-time" style="width:46px; text-align:center;" />
-
-                    <button type="button" id="tz-format-toggle" class="btn-action-pill" style="padding:2px 6px; font-size:0.72rem;">24H</button>
-
-                    <select id="tz-ampm-select" class="select-mini-tz" style="display:none; padding:2px 4px;">
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                    </select>
-
-                    <select id="tz-source-select" class="select-mini-tz" style="flex: 1; max-width: 220px;"></select>
-                </div>
-                <div id="tz-converted-output" class="converter-result-under">
-                    Calculating...
-                </div>
-            </div>
-
-            <!-- YEAR PROGRESS BAR -->
-            <div class="year-progress-module">
-                <div class="year-stats-line">
-                    <span id="year-stats-text">DAY ---/--- · Q- · --.-%</span>
-                    <span id="days-remaining-text">--d left</span>
-                </div>
-                <div class="year-progress-bar">
-                    <div class="year-progress-fill" id="year-fill-bar" style="width: 0%;"></div>
-                </div>
+<!-- 1. CLOCK HERO CARD -->
+<div class="card clock-compact-card">
+    <div class="clock-main-row">
+        <div class="clock-digits-group">
+            <div class="time-digits-display" id="clock-large">00:00:00</div>
+            <div class="time-meta-chips">
+                <span id="active-tz-display">Europe/Stockholm</span>
+                <span>·</span>
+                <span id="day-of-week-display">Today</span>
+                <span>·</span>
+                <span class="pill-badge" id="iso-week-badge">Week --</span>
             </div>
         </div>
+        <span class="pill-badge session-badge-pill" id="session-counter-badge">Session: 00:00:00</span>
+    </div>
+
+    <!-- THE TIME CONVERTER (CLEAN & RESTORED) -->
+    <div class="converter-stacked-module">
+        <div class="converter-inputs-bar">
+            <span class="converter-label">Convert Time:</span>
+            <input type="number" id="tz-hour-input" min="0" max="23" class="input-mini-time" placeholder="00" />
+            <span class="converter-colon">:</span>
+            <input type="number" id="tz-min-input" min="0" max="59" class="input-mini-time" placeholder="00" />
+
+            <!-- Single format button that cycles 24H -> AM -> PM (Zero layout shift) -->
+            <button type="button" id="tz-format-toggle" class="btn-format-cycle" title="Click to cycle 24H / AM / PM">24H</button>
+
+            <select id="tz-source-select" class="select-mini-tz"></select>
+        </div>
+
+        <!-- Converted output directly under it -->
+        <div id="tz-converted-output" class="converter-result-under">
+            Calculating...
+        </div>
+    </div>
+
+    <!-- YEAR PROGRESS BAR -->
+    <div class="year-progress-module">
+        <div class="year-stats-line">
+            <span id="year-stats-text">DAY ---/--- · Q- · --.-%</span>
+            <span id="days-remaining-text">--d left</span>
+        </div>
+        <div class="year-progress-bar">
+            <div class="year-progress-fill" id="year-fill-bar" style="width: 0%;"></div>
+        </div>
+    </div>
+</div>
 
 <!-- Inside index.html -> <div class="hero-split-row"> -> 2. WORKSTATION TELEMETRY -->
 <div class="card sys-telemetry-card">

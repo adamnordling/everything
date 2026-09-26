@@ -42,7 +42,7 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
 
     function renderDeadlines(): void {
         if (!dStream || !dEmpty) return;
-        dStream.querySelectorAll('.deadline-row').forEach(el => el.remove());
+        dStream.querySelectorAll('.deadline-row').forEach(el => { el.remove(); });
 
         if (deadlines.length === 0) {
             dEmpty.style.display = 'block';

@@ -61,36 +61,40 @@ export function initSystemIntel(): void {
     // -------------------------------------------------------------------------
     // 1. ONE-CLICK CLIPBOARD COPY WITH TOAST NOTIFICATION
     // -------------------------------------------------------------------------
-    function showToast(message: string): void {
-        document.querySelectorAll('.copy-toast').forEach(el => el.remove());
-        const toast = document.createElement('div');
-        toast.className = 'copy-toast';
-        toast.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            <span>${message}</span>
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(8px)';
-            setTimeout(() => toast.remove(), 250);
-        }, 1800);
-    }
+    // IN src/modules/systemIntel.ts (Section 1: Clipboard Copy):
 
-    document.querySelectorAll('.copyable').forEach(el => {
-        el.addEventListener('click', () => {
-            const rawText = el.textContent?.trim() || '';
-            // Strip out leading or trailing bullet notes if present
-            const cleanText = rawText.split('·')[0]?.trim() || rawText;
-            if (cleanText && !cleanText.startsWith('---') && !cleanText.startsWith('Resolving')) {
-                void navigator.clipboard.writeText(cleanText);
-                showToast(`Copied to clipboard: ${cleanText}`);
-            }
-        });
+function showCopyPopup(target: HTMLElement): void {
+    document.querySelectorAll('.inline-copy-badge').forEach(el => el.remove());
+
+    const rect = target.getBoundingClientRect();
+    const badge = document.createElement('div');
+    badge.className = 'inline-copy-badge';
+    badge.textContent = `✓ Copied to clipboard!`;
+    document.body.appendChild(badge);
+
+    const badgeRect = badge.getBoundingClientRect();
+    const top = rect.top - badgeRect.height - 6;
+    const left = rect.left + (rect.width - badgeRect.width) / 2;
+
+    badge.style.top = `${Math.max(8, top)}px`;
+    badge.style.left = `${Math.max(8, left)}px`;
+
+    setTimeout(() => {
+        badge.classList.add('fade-out');
+        setTimeout(() => badge.remove(), 200);
+    }, 1200);
+}
+
+document.querySelectorAll('.copyable').forEach(el => {
+    el.addEventListener('click', () => {
+        const rawText = el.textContent?.trim() || '';
+        const cleanText = rawText.split('·')[0]?.trim() || rawText;
+        if (cleanText && !cleanText.startsWith('---') && !cleanText.startsWith('Resolving')) {
+            void navigator.clipboard.writeText(cleanText);
+            showCopyPopup(el as HTMLElement);
+        }
     });
+});
 
     // -------------------------------------------------------------------------
     // 2. DNS & TLS HANDSHAKE WATERFALL (Navigation Timing API)
@@ -119,7 +123,7 @@ export function initSystemIntel(): void {
         if (!ipv6Text) return;
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            const timeoutId = setTimeout(() => { controller.abort(); }, 3000);
 
             // Fetch from dual-stack endpoint that returns the client's IPv6 address if available
             const res = await fetch('https://api64.ipify.org?format=json', { signal: controller.signal });
@@ -310,7 +314,7 @@ export function initSystemIntel(): void {
         const t0 = performance.now();
         try {
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 2500);
+            const timeout = setTimeout(() => { controller.abort(); }, 2500);
 
             await fetch(`https://cloudflare.com/cdn-cgi/trace?_t=${Date.now()}`, {
                 method: 'GET',

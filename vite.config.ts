@@ -10,7 +10,7 @@ function inlineCssAndMinifyHtml(): Plugin {
             if (!ctx.bundle) return html;
             let inlinedHtml = html;
 
-            // 1. Inline the critical compiled CSS directly into <style> for zero network render delay
+            // 1. Inline the critical compiled CSS directly into <style> for zero network delay
             for (const [fileName, asset] of Object.entries(ctx.bundle)) {
                 if (fileName.endsWith('.css') && asset.type === 'asset') {
                     const cssContent = typeof asset.source === 'string' ? asset.source : asset.source.toString();
@@ -48,17 +48,6 @@ export default defineConfig({
     build: {
         outDir: 'dist',
         emptyOutDir: true,
-        target: 'es2022',
-        rollupOptions: {
-            output: {
-                // Splits tools into modular chunks (e.g. tool-network.js, tool-crypto.js)
-                manualChunks(id) {
-                    if (id.includes('src/tools/network/')) return 'tool-network';
-                    if (id.includes('src/tools/crypto/')) return 'tool-crypto';
-                    if (id.includes('src/tools/media/')) return 'tool-media';
-                    if (id.includes('src/tools/time/')) return 'tool-time';
-                }
-            }
-        }
+        target: 'es2022'
     }
 });
