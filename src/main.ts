@@ -1,4 +1,5 @@
 import { initClockAndConverter } from './modules/timeConverter';
+import { initSystemIntel } from './modules/systemIntel';
 import { initCalendar, getDayInfo } from './modules/calendar';
 import { initWeather } from './modules/weather';
 import { initTasks } from './modules/tasks';
@@ -13,23 +14,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Initialize Hero Time Station & Converter
     initClockAndConverter();
 
-    // 3. Initialize Task Operations
+    // 3. Initialize Workstation Intel (Protected Boundary)
+    try {
+        initSystemIntel();
+    } catch (err) {
+        console.error('Workstation telemetry error:', err);
+    }
+
+    // 4. Initialize Task Operations
     let reRenderCalendar: (() => void) | null = null;
     const taskHandlers = initTasks(() => {
-        // When deadlines change, refresh calendar dot badges
         if (reRenderCalendar) reRenderCalendar();
     });
 
-    // 4. Initialize Calendar & Wire Click-to-Deadline Interaction
+    // 5. Initialize Calendar & Wire Click-to-Deadline Interaction
     const intelHoliday = document.getElementById('intel-holiday-name');
     const intelNameday = document.getElementById('intel-nameday-text');
     const intelCountdown = document.getElementById('intel-countdown-badge');
 
     reRenderCalendar = initCalendar((selectedDateStr, activeDeadlines) => {
-        // Automatically populate deadline date input on day click
         taskHandlers.setDeadlineDate(selectedDateStr);
 
-        // Update Date Intelligence Card
         const [y, m, d] = selectedDateStr.split('-').map(Number);
         const dayDate = new Date(y ?? 2026, (m ?? 1) - 1, d ?? 1);
         const info = getDayInfo(dayDate);
@@ -54,6 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. Initialize Open-Meteo Weather
+    // 6. Initialize Open-Meteo Weather
     void initWeather();
 });

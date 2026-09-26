@@ -103,112 +103,195 @@
                 <div class="stage-content">
                     <div class="dashboard-grid-layout">
                         <!-- LEFT COLUMN: FLUID CLOCK & EXPANDED WEATHER -->
-                        <div class="dash-left-column">
-                            <!-- 1. COMPACT TIME STATION -->
-                            <div class="card clock-compact-card">
-                                <div class="clock-main-row">
-                                    <div class="clock-digits-group">
-                                        <div class="time-digits-display" id="clock-large">00:00:00</div>
-                                        <div class="time-meta-chips">
-                                            <span id="active-tz-display">Detecting...</span>
-                                            <span>·</span>
-                                            <span id="day-of-week-display">Today</span>
-                                            <span>·</span>
-                                            <span class="pill-badge" id="iso-week-badge">Week --</span>
-                                        </div>
-                                    </div>
-                                    <span class="pill-badge" id="session-counter-badge">Session: 00:00:00</span>
-                                </div>
+                  <div class="dash-left-column">
+    <!-- HERO SPLIT ROW: CLOCK (LEFT) + WORKSTATION TELEMETRY (RIGHT) -->
+    <div class="hero-split-row">
 
-                                <!-- ACCURATE RELEASE TIME CONVERTER -->
-                                <div class="quick-converter-row">
-                                    <div class="converter-inputs">
-                                        <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">Convert:</span>
-                                        <input type="number" id="tz-hour-input" min="0" max="23" class="input-mini-time" style="width:46px; text-align:center;" />
-                                        <span>:</span>
-                                        <input type="number" id="tz-min-input" min="0" max="59" class="input-mini-time" style="width:46px; text-align:center;" />
+        <!-- 1. HERO CLOCK STATION -->
+        <div class="card clock-hero-card">
+            <div class="clock-main-row">
+                <div class="clock-digits-group">
+                    <div class="time-digits-display" id="clock-large">00:00:00</div>
+                    <div class="time-meta-chips">
+                        <span id="active-tz-display">Europe/Stockholm</span>
+                        <span>·</span>
+                        <span id="day-of-week-display">Today</span>
+                        <span>·</span>
+                        <span class="pill-badge" id="iso-week-badge">Week --</span>
+                    </div>
+                </div>
+                <span class="pill-badge session-badge-pill" id="session-counter-badge">Session: 00:00:00</span>
+            </div>
 
-                                        <button type="button" id="tz-format-toggle" class="btn-action-pill" style="padding:2px 6px; font-size:0.72rem;">24H</button>
+            <!-- TIMEZONE RELEASE CONVERTER -->
+            <div class="converter-stacked-module">
+                <div class="converter-inputs-bar">
+                    <span class="converter-label">Convert Time:</span>
+                    <input type="number" id="tz-hour-input" min="0" max="23" class="input-mini-time" style="width:46px; text-align:center;" />
+                    <span>:</span>
+                    <input type="number" id="tz-min-input" min="0" max="59" class="input-mini-time" style="width:46px; text-align:center;" />
 
-                                        <select id="tz-ampm-select" class="select-mini-tz" style="display:none; padding:2px 4px;">
-                                            <option value="AM">AM</option>
-                                            <option value="PM">PM</option>
-                                        </select>
+                    <button type="button" id="tz-format-toggle" class="btn-action-pill" style="padding:2px 6px; font-size:0.72rem;">24H</button>
 
-                                        <select id="tz-source-select" class="select-mini-tz"></select>
-                                    </div>
-                                    <div class="converter-result" id="tz-converted-output">Calculating...</div>
-                                </div>
+                    <select id="tz-ampm-select" class="select-mini-tz" style="display:none; padding:2px 4px;">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
 
-                                <!-- COMPACT YEAR PROGRESS -->
-                                <div class="year-progress-module">
-                                    <div class="year-stats-line">
-                                        <span id="year-stats-text">DAY ---/--- · Q- · --.-%</span>
-                                        <span id="days-remaining-text">--d left</span>
-                                    </div>
-                                    <div class="year-progress-bar">
-                                        <div class="year-progress-fill" id="year-fill-bar" style="width: 0%;"></div>
-                                    </div>
-                                </div>
-                            </div>
+                    <select id="tz-source-select" class="select-mini-tz" style="flex: 1; max-width: 220px;"></select>
+                </div>
+                <div id="tz-converted-output" class="converter-result-under">
+                    Calculating...
+                </div>
+            </div>
 
-                            <!-- 2. EXPANDED WEATHER SUITE -->
-                            <div class="card weather-expanded-card">
-                                <div class="card-header-flex">
-                                    <div class="card-title-group">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line></svg>
-                                        <span>Atmosphere &amp; Solar Arc</span>
-                                    </div>
-                                    <span style="font-size:0.72rem; font-family:var(--font-mono); color:var(--text-muted);">Open-Meteo Live Precision</span>
-                                </div>
+            <!-- YEAR PROGRESS BAR -->
+            <div class="year-progress-module">
+                <div class="year-stats-line">
+                    <span id="year-stats-text">DAY ---/--- · Q- · --.-%</span>
+                    <span id="days-remaining-text">--d left</span>
+                </div>
+                <div class="year-progress-bar">
+                    <div class="year-progress-fill" id="year-fill-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
 
-                                <div class="weather-top-split">
-                                    <div class="weather-reading-block">
-                                        <div>
-                                            <span class="weather-degrees" id="wx-temp">--</span>
-                                            <span style="font-size:1.4rem; color:var(--text-muted);">°C</span>
-                                        </div>
-                                        <div id="wx-condition-pill" style="display:flex; align-items:center; gap:8px;">
-                                            <span id="wx-condition-label" style="font-weight:600; font-size:0.9rem;">Fetching forecast...</span>
-                                        </div>
-                                    </div>
+<!-- Inside index.html -> <div class="hero-split-row"> -> 2. WORKSTATION TELEMETRY -->
+<div class="card sys-telemetry-card">
+    <!-- Top Network & Privacy Bar -->
+    <div class="telemetry-top-bar">
+        <div class="telemetry-network-block">
+            <div class="ping-pulse-indicator">
+                <span class="live-ping-dot good" id="sys-ping-dot"></span>
+                <!-- One-click copy with privacy blur -->
+                <span class="telemetry-ip privacy-blur copyable" id="sys-ip" title="Click to copy IP">---.---.---.---</span>
+                <span class="telemetry-ping" id="sys-ping-val">-- ms</span>
+            </div>
+            <div class="telemetry-isp privacy-blur copyable" id="sys-isp" title="Click to copy ISP & Location">Resolving ISP &amp; ASN...</div>
+        </div>
+        <div class="telemetry-quick-tags">
+            <span class="sys-chip-tag" id="sys-shield-tag">Shield: Checking</span>
+            <span class="sys-chip-tag" id="sys-os">Windows</span>
+        </div>
+    </div>
 
-                                    <!-- Solar Arc Curve -->
-                                    <div class="sun-arc-box">
-                                        <svg class="sun-svg-canvas" viewBox="0 0 180 90">
-                                            <path d="M 20 85 A 70 70 0 0 1 160 85" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="4 4"></path>
-                                            <circle id="solar-sun-dot" cx="20" cy="85" r="7" fill="#f59e0b" style="filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.9));"></circle>
-                                        </svg>
-                                    </div>
-                                </div>
+    <!-- Vertical Key-Value HUD (Clean & Symmetrical) -->
+    <div class="telemetry-vertical-hud">
+        <!-- Left Column: Display & Compute -->
+        <div class="hud-col">
+            <div class="hud-row">
+                <span class="hud-k">PHYSICAL DISPLAY:</span>
+                <span class="hud-v" id="sys-physical-res">--- × ---</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">VIEWPORT:</span>
+                <span class="hud-v" id="sys-viewport">--- × ---</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">REFRESH RATE:</span>
+                <span class="hud-v" id="sys-hz">Measuring...</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">DISPLAYS SETUP:</span>
+                <span class="hud-v" id="sys-monitors">Multi-Screen Ready</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">CPU CONCURRENCY:</span>
+                <span class="hud-v" id="sys-cpu">-- Cores</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">CPU BENCHMARK:</span>
+                <span class="hud-v" id="sys-cpu-bench">Benchmarking...</span>
+            </div>
+        </div>
 
-                                <div class="metrics-quad">
-                                    <div class="metric-box">
-                                        <div class="metric-sub-label">UV INDEX</div>
-                                        <div class="metric-main-val" id="wx-uv">-- (Low)</div>
-                                    </div>
-                                    <div class="metric-box">
-                                        <div class="metric-sub-label">HUMIDITY</div>
-                                        <div class="metric-main-val" id="wx-humidity">--%</div>
-                                    </div>
-                                    <div class="metric-box">
-                                        <div class="metric-sub-label">WIND</div>
-                                        <div class="metric-main-val" id="wx-wind">-- m/s</div>
-                                    </div>
-                                    <div class="metric-box">
-                                        <div class="metric-sub-label">BAROMETER</div>
-                                        <div class="metric-main-val">1014 hPa</div>
-                                    </div>
-                                </div>
+        <!-- Right Column: Network Protocols, Power & Engine -->
+        <div class="hud-col">
+            <div class="hud-row">
+                <span class="hud-k">DNS &amp; TLS WATERFALL:</span>
+                <span class="hud-v" id="sys-tls-dns">Measuring...</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">IPV6 CONNECTIVITY:</span>
+                <span class="hud-v" id="sys-ipv6">Probing IPv6...</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">POWER &amp; EFFICIENCY:</span>
+                <span class="hud-v" id="sys-power-profile">Detecting...</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">ACTIVE JS HEAP:</span>
+                <span class="hud-v" id="sys-memory">-- MB</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">AUDIO SUBSYSTEM:</span>
+                <span class="hud-v" id="sys-audio">48.0 kHz · Stereo</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-k">GRAPHICS ACCELERATOR:</span>
+                <span class="hud-v" id="sys-gpu">Reading GPU...</span>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                <div class="five-day-strip" id="five-day-strip"></div>
+    </div>
 
-                                <div>
-                                    <span style="font-size:0.72rem; font-family:var(--font-mono); color:var(--text-muted);">24-Hour Trajectory</span>
-                                    <div class="hourly-strip" id="hourly-strip" style="margin-top:6px;"></div>
-                                </div>
-                            </div>
-                        </div>
+    <!-- 3. LIVE ATMOSPHERE -->
+    <div class="card weather-expanded-card">
+        <div class="card-header-flex" style="margin-bottom: 4px;">
+            <span style="font-size:0.75rem; font-family:var(--font-mono); font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em;">Live Atmosphere</span>
+            <span style="font-size:0.72rem; font-family:var(--font-mono); color:var(--text-muted);">Open-Meteo</span>
+        </div>
+
+        <div class="weather-top-split">
+            <div class="weather-reading-block">
+                <div>
+                    <span class="weather-degrees" id="wx-temp">--</span>
+                    <span style="font-size:1.4rem; color:var(--text-muted);">°C</span>
+                </div>
+                <div id="wx-condition-pill" style="display:flex; align-items:center; gap:8px;">
+                    <span id="wx-condition-label" style="font-weight:600; font-size:0.9rem;">Fetching forecast...</span>
+                </div>
+            </div>
+
+            <!-- Solar Arc Curve -->
+            <div class="sun-arc-box">
+                <svg class="sun-svg-canvas" viewBox="0 0 180 90">
+                    <path d="M 20 85 A 70 70 0 0 1 160 85" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2" stroke-dasharray="4 4"></path>
+                    <circle id="solar-sun-dot" cx="20" cy="85" r="7" fill="#f59e0b" style="filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.9));"></circle>
+                </svg>
+            </div>
+        </div>
+
+        <div class="metrics-quad">
+            <div class="metric-box">
+                <div class="metric-sub-label">UV INDEX</div>
+                <div class="metric-main-val" id="wx-uv">-- (Low)</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-sub-label">HUMIDITY</div>
+                <div class="metric-main-val" id="wx-humidity">--%</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-sub-label">WIND</div>
+                <div class="metric-main-val" id="wx-wind">-- m/s</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-sub-label">BAROMETER</div>
+                <div class="metric-main-val">1014 hPa</div>
+            </div>
+        </div>
+
+        <div class="five-day-strip" id="five-day-strip"></div>
+
+        <div>
+            <span style="font-size:0.72rem; font-family:var(--font-mono); color:var(--text-muted);">24-Hour Trajectory</span>
+            <div class="hourly-strip" id="hourly-strip" style="margin-top:6px;"></div>
+        </div>
+    </div>
+</div>
 
                         <!-- RIGHT COLUMN: 360PX UNIFIED ALIGNMENT -->
                         <div class="dash-right-column">

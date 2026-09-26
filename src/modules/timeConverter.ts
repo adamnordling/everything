@@ -95,7 +95,7 @@ export function initClockAndConverter(): void {
     sourceSelect.innerHTML = TIMEZONES.map(
         tz => `<option value="${tz.zone}">${tz.label}</option>`
     ).join('');
-    sourceSelect.value = 'America/Los_Angeles'; // Default to PT (common release timezone)
+    sourceSelect.value = 'America/Los_Angeles'; // Default to PT
 
     // Set initial values from the current time in the selected source timezone
     const nowInSource = new Date(new Date().toLocaleString('en-US', { timeZone: sourceSelect.value }));
@@ -128,21 +128,21 @@ export function initClockAndConverter(): void {
         const m = parseInt(minInput.value, 10);
 
         if (isNaN(rawH) || isNaN(m) || m < 0 || m > 59) {
-            outputBadge.textContent = 'Invalid Time';
+            outputBadge.innerHTML = `<span class="converter-subtle">Invalid Time</span>`;
             return;
         }
 
         if (!is24HourMode) {
             const isPM = ampmSelect.value === 'PM';
             if (rawH < 1 || rawH > 12) {
-                outputBadge.textContent = 'Use 1-12';
+                outputBadge.innerHTML = `<span class="converter-subtle">Use 1-12</span>`;
                 return;
             }
             if (isPM && rawH < 12) rawH += 12;
             if (!isPM && rawH === 12) rawH = 0;
         } else {
             if (rawH < 0 || rawH > 23) {
-                outputBadge.textContent = 'Use 0-23';
+                outputBadge.innerHTML = `<span class="converter-subtle">Use 0-23</span>`;
                 return;
             }
         }
@@ -181,11 +181,18 @@ export function initClockAndConverter(): void {
         // Calculate day shift relative to source date
         const sourceDay = now.getDate();
         const localDay = new Date(targetUtcDate.toLocaleString('en-US', { timeZone: localTz })).getDate();
-        let dayNote = 'Today';
-        if (localDay > sourceDay) dayNote = 'Tomorrow';
-        if (localDay < sourceDay) dayNote = 'Yesterday';
+        let dayNote = 'Same Day';
+        if (localDay > sourceDay) dayNote = '+1 Day (Tomorrow)';
+        if (localDay < sourceDay) dayNote = '-1 Day (Yesterday)';
 
-        outputBadge.innerHTML = `Your Time: <strong>${time24}</strong> (${time12}) · <small>${dayNote}</small>`;
+        outputBadge.innerHTML = `
+            <div class="converter-result-box">
+                <span class="converter-result-label">Your Local Time:</span>
+                <span class="converter-result-value">${time24}</span>
+                <span class="converter-result-secondary">(${time12})</span>
+                <span class="pill-badge">${dayNote}</span>
+            </div>
+        `;
     }
 
     // DST-aware inversion: determines exact UTC moment for any time in any zone
