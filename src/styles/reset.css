@@ -1,0 +1,26 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    width: 100%;
+}
+
+button, input, select {
+    font-family: inherit;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-mint);
+    outline-offset: 2px;
+}

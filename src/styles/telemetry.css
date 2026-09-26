@@ -1,0 +1,227 @@
+.sys-telemetry-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    background: var(--bg-surface);
+    height: 100%;
+}
+
+.telemetry-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.telemetry-network-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ping-pulse-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+}
+
+.live-ping-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.live-ping-dot.good {
+    background-color: var(--accent-mint);
+    box-shadow: 0 0 8px var(--accent-mint);
+}
+
+.live-ping-dot.warn {
+    background-color: var(--accent-amber);
+    box-shadow: 0 0 8px var(--accent-amber);
+}
+
+.live-ping-dot.high,
+.live-ping-dot.offline {
+    background-color: var(--accent-rose);
+    box-shadow: 0 0 8px var(--accent-rose);
+}
+
+.telemetry-ip {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.telemetry-ping {
+    font-size: 0.72rem;
+    color: var(--accent-mint);
+    background: var(--bg-elevated);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.telemetry-isp {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+.telemetry-quick-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.sys-chip-tag {
+    background: var(--bg-card);
+    border: 1px solid var(--border-bold);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* VERTICAL 2-COLUMN HUD */
+.telemetry-vertical-hud {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+    .telemetry-vertical-hud {
+        grid-template-columns: 1fr;
+    }
+}
+
+.hud-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.hud-row {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    padding: 4px 8px;
+    gap: 2px;
+}
+
+.hud-k {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.hud-v {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* PRIVACY / STREAMER MODE BLUR */
+/* Add to src/styles/telemetry.css */
+
+/* PRIVACY / STREAMER MODE BLUR */
+.privacy-blur {
+    filter: blur(6px);
+    user-select: none;
+    transition: filter 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.privacy-blur:hover,
+.privacy-blur:focus-visible {
+    filter: blur(0px);
+    user-select: text;
+}
+
+/* ONE-CLICK COPYABLE ITEMS */
+.copyable {
+    cursor: pointer;
+    position: relative;
+    transition: color 0.15s ease, background-color 0.15s ease;
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin: -1px -4px;
+}
+
+.copyable:hover {
+    color: var(--accent-mint) !important;
+    background: rgba(0, 220, 130, 0.1);
+}
+
+.copyable::after {
+    content: '📋 Copy';
+    position: absolute;
+    right: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    color: var(--accent-mint);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.copyable:hover::after {
+    opacity: 0.8;
+}
+
+/* FLOATING COPY TOAST NOTIFICATION */
+.copy-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--accent-mint);
+    color: var(--accent-mint);
+    box-shadow: 0 4px 20px rgba(0, 220, 130, 0.25);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+    animation: toastSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
