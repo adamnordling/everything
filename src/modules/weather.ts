@@ -43,9 +43,22 @@ export async function initWeather(): Promise<void> {
         if (!res.ok) throw new Error();
 
         interface WxResponse {
-            current: { temperature_2m: number; relative_humidity_2m: number; weather_code: number; wind_speed_10m: number; };
-            daily: { time: string[]; weather_code: number[]; temperature_2m_max: number[]; temperature_2m_min: number[]; uv_index_max: number[]; sunrise: string[]; sunset: string[]; };
-            hourly: { time: string[]; temperature_2m: number[]; weather_code: number[]; };
+            current: {
+                temperature_2m: number;
+                relative_humidity_2m: number;
+                weather_code: number;
+                wind_speed_10m: number;
+            };
+            daily: {
+                time: string[];
+                weather_code: number[];
+                temperature_2m_max: number[];
+                temperature_2m_min: number[];
+                uv_index_max: number[];
+                sunrise: string[];
+                sunset: string[];
+            };
+            hourly: { time: string[]; temperature_2m: number[]; weather_code: number[] };
         }
 
         const data = (await res.json()) as WxResponse;

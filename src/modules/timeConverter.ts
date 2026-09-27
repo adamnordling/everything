@@ -90,9 +90,7 @@ export function initClockAndConverter(): void {
     type FormatMode = '24H' | 'AM' | 'PM';
     let currentMode: FormatMode = '24H';
 
-    sourceSelect.innerHTML = TIMEZONES.map(
-        tz => `<option value="${tz.zone}">${tz.label}</option>`
-    ).join('');
+    sourceSelect.innerHTML = TIMEZONES.map(tz => `<option value="${tz.zone}">${tz.label}</option>`).join('');
     sourceSelect.value = 'America/Los_Angeles'; // Default to PT
 
     // Initialize with current time in source zone
@@ -158,7 +156,7 @@ export function initClockAndConverter(): void {
     // 3. TYPING & CLAMPING (Only jumps to minutes when TYPING 2 digits)
     // -------------------------------------------------------------------------
     hourInput.addEventListener('input', (e: Event) => {
-        let val = parseInt(hourInput.value, 10);
+        const val = parseInt(hourInput.value, 10);
         if (!isNaN(val)) {
             if (currentMode === '24H' && val > 23) {
                 hourInput.value = '23';
@@ -178,7 +176,7 @@ export function initClockAndConverter(): void {
     });
 
     minInput.addEventListener('input', () => {
-        let val = parseInt(minInput.value, 10);
+        const val = parseInt(minInput.value, 10);
         if (!isNaN(val) && val > 59) {
             minInput.value = '59';
         }
@@ -314,7 +312,14 @@ export function initClockAndConverter(): void {
         `;
     }
 
-    function convertWallTimeToUTC(year: number, month: number, day: number, hour: number, minute: number, timeZone: string): Date {
+    function convertWallTimeToUTC(
+        year: number,
+        month: number,
+        day: number,
+        hour: number,
+        minute: number,
+        timeZone: string
+    ): Date {
         const guessUtc = new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
         const dtf = new Intl.DateTimeFormat('en-US', {
             timeZone,
@@ -334,7 +339,14 @@ export function initClockAndConverter(): void {
         }
         if (p.hour === 24) p.hour = 0;
 
-        const wallClockAsUtc = Date.UTC(p.year ?? year, (p.month ?? month) - 1, p.day ?? day, p.hour ?? hour, p.minute ?? minute, p.second ?? 0);
+        const wallClockAsUtc = Date.UTC(
+            p.year ?? year,
+            (p.month ?? month) - 1,
+            p.day ?? day,
+            p.hour ?? hour,
+            p.minute ?? minute,
+            p.second ?? 0
+        );
         const offset = guessUtc.getTime() - wallClockAsUtc;
         return new Date(guessUtc.getTime() + offset);
     }

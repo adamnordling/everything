@@ -37,12 +37,18 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
     let deadlines: Deadline[] = [];
     const savedDeadlines = localStorage.getItem('everything_deadlines_v2');
     if (savedDeadlines) {
-        try { deadlines = JSON.parse(savedDeadlines) as Deadline[]; } catch { deadlines = []; }
+        try {
+            deadlines = JSON.parse(savedDeadlines) as Deadline[];
+        } catch {
+            deadlines = [];
+        }
     }
 
     function renderDeadlines(): void {
         if (!dStream || !dEmpty) return;
-        dStream.querySelectorAll('.deadline-row').forEach(el => { el.remove(); });
+        dStream.querySelectorAll('.deadline-row').forEach(el => {
+            el.remove();
+        });
 
         if (deadlines.length === 0) {
             dEmpty.style.display = 'block';
@@ -102,7 +108,11 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
     let dailyTasks: DailyTask[] = [];
     const savedTasks = localStorage.getItem('everything_tasks_v2');
     if (savedTasks) {
-        try { dailyTasks = JSON.parse(savedTasks) as DailyTask[]; } catch { dailyTasks = []; }
+        try {
+            dailyTasks = JSON.parse(savedTasks) as DailyTask[];
+        } catch {
+            dailyTasks = [];
+        }
     } else {
         dailyTasks = [
             { id: '1', title: 'Clean workstation & archive semester repos', isDone: false },
@@ -177,7 +187,11 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
     let habits: RoutineHabit[] = [];
     const savedHabits = localStorage.getItem('everything_habits_v2');
     if (savedHabits) {
-        try { habits = JSON.parse(savedHabits) as RoutineHabit[]; } catch { habits = []; }
+        try {
+            habits = JSON.parse(savedHabits) as RoutineHabit[];
+        } catch {
+            habits = [];
+        }
     } else {
         habits = [
             { id: 'h1', title: 'Wim Hof respiration + core vacuum + fascia routine', history: {} },

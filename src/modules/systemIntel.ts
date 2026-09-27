@@ -63,38 +63,42 @@ export function initSystemIntel(): void {
     // -------------------------------------------------------------------------
     // IN src/modules/systemIntel.ts (Section 1: Clipboard Copy):
 
-function showCopyPopup(target: HTMLElement): void {
-    document.querySelectorAll('.inline-copy-badge').forEach(el => el.remove());
+    function showCopyPopup(target: HTMLElement): void {
+        document.querySelectorAll('.inline-copy-badge').forEach(el => {
+            el.remove();
+        });
 
-    const rect = target.getBoundingClientRect();
-    const badge = document.createElement('div');
-    badge.className = 'inline-copy-badge';
-    badge.textContent = `✓ Copied to clipboard!`;
-    document.body.appendChild(badge);
+        const rect = target.getBoundingClientRect();
+        const badge = document.createElement('div');
+        badge.className = 'inline-copy-badge';
+        badge.textContent = `✓ Copied to clipboard!`;
+        document.body.appendChild(badge);
 
-    const badgeRect = badge.getBoundingClientRect();
-    const top = rect.top - badgeRect.height - 6;
-    const left = rect.left + (rect.width - badgeRect.width) / 2;
+        const badgeRect = badge.getBoundingClientRect();
+        const top = rect.top - badgeRect.height - 6;
+        const left = rect.left + (rect.width - badgeRect.width) / 2;
 
-    badge.style.top = `${Math.max(8, top)}px`;
-    badge.style.left = `${Math.max(8, left)}px`;
+        badge.style.top = `${Math.max(8, top)}px`;
+        badge.style.left = `${Math.max(8, left)}px`;
 
-    setTimeout(() => {
-        badge.classList.add('fade-out');
-        setTimeout(() => badge.remove(), 200);
-    }, 1200);
-}
+        setTimeout(() => {
+            badge.classList.add('fade-out');
+            setTimeout(() => {
+                badge.remove();
+            }, 200);
+        }, 1200);
+    }
 
-document.querySelectorAll('.copyable').forEach(el => {
-    el.addEventListener('click', () => {
-        const rawText = el.textContent?.trim() || '';
-        const cleanText = rawText.split('·')[0]?.trim() || rawText;
-        if (cleanText && !cleanText.startsWith('---') && !cleanText.startsWith('Resolving')) {
-            void navigator.clipboard.writeText(cleanText);
-            showCopyPopup(el as HTMLElement);
-        }
+    document.querySelectorAll('.copyable').forEach(el => {
+        el.addEventListener('click', () => {
+            const rawText = el.textContent?.trim() || '';
+            const cleanText = rawText.split('·')[0]?.trim() || rawText;
+            if (cleanText && !cleanText.startsWith('---') && !cleanText.startsWith('Resolving')) {
+                void navigator.clipboard.writeText(cleanText);
+                showCopyPopup(el as HTMLElement);
+            }
+        });
     });
-});
 
     // -------------------------------------------------------------------------
     // 2. DNS & TLS HANDSHAKE WATERFALL (Navigation Timing API)
@@ -123,7 +127,9 @@ document.querySelectorAll('.copyable').forEach(el => {
         if (!ipv6Text) return;
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => { controller.abort(); }, 3000);
+            const timeoutId = setTimeout(() => {
+                controller.abort();
+            }, 3000);
 
             // Fetch from dual-stack endpoint that returns the client's IPv6 address if available
             const res = await fetch('https://api64.ipify.org?format=json', { signal: controller.signal });
@@ -152,20 +158,22 @@ document.querySelectorAll('.copyable').forEach(el => {
         const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (typeof nav.getBattery === 'function') {
-            nav.getBattery().then(bat => {
-                const isDesktop = bat.charging && bat.chargingTime === 0 && bat.level === 1;
-                if (isDesktop) {
-                    powerProfileText.textContent = isReducedMotion
-                        ? 'High Perf AC (Reduced Motion)'
-                        : 'High Performance (AC Mains)';
-                } else {
-                    const pct = Math.round(bat.level * 100);
-                    const state = bat.charging ? 'Charging' : 'Battery';
-                    powerProfileText.textContent = `${pct}% ${state} · ${isReducedMotion ? 'Eco Mode' : 'Standard'}`;
-                }
-            }).catch(() => {
-                powerProfileText.textContent = isReducedMotion ? 'Efficiency Mode' : 'High Performance (AC Mains)';
-            });
+            nav.getBattery()
+                .then(bat => {
+                    const isDesktop = bat.charging && bat.chargingTime === 0 && bat.level === 1;
+                    if (isDesktop) {
+                        powerProfileText.textContent = isReducedMotion
+                            ? 'High Perf AC (Reduced Motion)'
+                            : 'High Performance (AC Mains)';
+                    } else {
+                        const pct = Math.round(bat.level * 100);
+                        const state = bat.charging ? 'Charging' : 'Battery';
+                        powerProfileText.textContent = `${pct}% ${state} · ${isReducedMotion ? 'Eco Mode' : 'Standard'}`;
+                    }
+                })
+                .catch(() => {
+                    powerProfileText.textContent = isReducedMotion ? 'Efficiency Mode' : 'High Performance (AC Mains)';
+                });
         } else {
             powerProfileText.textContent = isReducedMotion ? 'Efficiency Mode' : 'High Performance (AC Mains)';
         }
@@ -235,7 +243,8 @@ document.querySelectorAll('.copyable').forEach(el => {
         if (viewportText) viewportText.textContent = `${viewW} × ${viewH} CSS px`;
 
         if (multiMonText) {
-            const isMulti = ('isExtended' in window.screen && (window.screen as unknown as { isExtended: boolean }).isExtended);
+            const isMulti =
+                'isExtended' in window.screen && (window.screen as unknown as { isExtended: boolean }).isExtended;
             multiMonText.textContent = isMulti ? 'Dual/Extended Setup' : 'Dual Screens (Shield Masked)';
         }
     };
@@ -268,9 +277,10 @@ document.querySelectorAll('.copyable').forEach(el => {
                 const finalHz = Math.abs(closest - measuredHz) < 5 ? closest : Math.round(measuredHz);
 
                 if (refreshText) {
-                    refreshText.textContent = isBraveShielded && finalHz === 60
-                        ? `60 Hz (Clamped by Brave)`
-                        : `${finalHz} Hz (${measuredHz.toFixed(1)} FPS)`;
+                    refreshText.textContent =
+                        isBraveShielded && finalHz === 60
+                            ? `60 Hz (Clamped by Brave)`
+                            : `${finalHz} Hz (${measuredHz.toFixed(1)} FPS)`;
                 }
             }
         };
@@ -296,7 +306,7 @@ document.querySelectorAll('.copyable').forEach(el => {
                 ops += 1000;
             }
             const duration = (performance.now() - t0) / 1000;
-            const mops = Math.round((ops / duration) / 1_000_000);
+            const mops = Math.round(ops / duration / 1_000_000);
             cpuBenchText.textContent = `${mops.toLocaleString()} Mops/s Index`;
         }, 150);
     }
@@ -314,7 +324,9 @@ document.querySelectorAll('.copyable').forEach(el => {
         const t0 = performance.now();
         try {
             const controller = new AbortController();
-            const timeout = setTimeout(() => { controller.abort(); }, 2500);
+            const timeout = setTimeout(() => {
+                controller.abort();
+            }, 2500);
 
             await fetch(`https://cloudflare.com/cdn-cgi/trace?_t=${Date.now()}`, {
                 method: 'GET',
@@ -326,7 +338,8 @@ document.querySelectorAll('.copyable').forEach(el => {
             const rtt = Math.max(1, Math.round(performance.now() - t0));
             if (pingText) pingText.textContent = `${rtt} ms`;
             if (pingDot) {
-                pingDot.className = rtt < 45 ? 'live-ping-dot good' : rtt < 120 ? 'live-ping-dot warn' : 'live-ping-dot high';
+                pingDot.className =
+                    rtt < 45 ? 'live-ping-dot good' : rtt < 120 ? 'live-ping-dot warn' : 'live-ping-dot high';
             }
         } catch {
             if (pingText) pingText.textContent = '1 ms';
@@ -388,7 +401,9 @@ document.querySelectorAll('.copyable').forEach(el => {
 
     if (audioText) {
         try {
-            const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+            const AudioCtx =
+                window.AudioContext ||
+                (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
             if (AudioCtx) {
                 const ctx = new AudioCtx();
                 const khz = (ctx.sampleRate / 1000).toFixed(1);

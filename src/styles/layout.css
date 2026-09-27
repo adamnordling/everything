@@ -115,12 +115,24 @@
     flex-shrink: 0;
 }
 
-.icon-dashboard { color: var(--accent-mint); }
-.icon-hash { color: var(--accent-sky); }
-.icon-translate { color: var(--accent-indigo); }
-.icon-media { color: var(--accent-amber); }
-.icon-validator { color: var(--accent-mint); }
-.icon-network { color: var(--accent-sky); }
+.icon-dashboard {
+    color: var(--accent-mint);
+}
+.icon-hash {
+    color: var(--accent-sky);
+}
+.icon-translate {
+    color: var(--accent-indigo);
+}
+.icon-media {
+    color: var(--accent-amber);
+}
+.icon-validator {
+    color: var(--accent-mint);
+}
+.icon-network {
+    color: var(--accent-sky);
+}
 
 .sidebar-footer {
     padding: 12px 16px;

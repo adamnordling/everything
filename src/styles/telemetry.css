@@ -165,7 +165,9 @@
 
 .copyable {
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
     border-radius: 4px;
     padding: 1px 4px;
     margin: -1px -4px;
@@ -198,7 +200,9 @@
 .inline-copy-badge.fade-out {
     opacity: 0;
     transform: translateY(-4px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
 }
 
 @keyframes badgePop {
