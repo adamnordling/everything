@@ -207,6 +207,12 @@ export async function initWeather(): Promise<void> {
 
             const data = (await res.json()) as WxResponse;
 
+            // Save sunset to localStorage so Clock Card can read it immediately
+            if (data.daily.sunset[0]) {
+                localStorage.setItem('cached_sunset', data.daily.sunset[0]);
+                window.dispatchEvent(new CustomEvent('sunset-updated'));
+            }
+
             if (tempEl) tempEl.textContent = String(Math.round(data.current.temperature_2m));
             if (humidityEl) humidityEl.textContent = `${data.current.relative_humidity_2m}%`;
             if (windEl) windEl.textContent = `${data.current.wind_speed_10m.toFixed(1)} m/s`;

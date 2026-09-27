@@ -4,6 +4,7 @@ import { initCalendar, getDayInfo } from './modules/calendar';
 import { initWeather } from './modules/weather';
 import { initTasks } from './modules/tasks';
 import { initScratchpad } from './modules/scratchpad';
+import {initBackup} from "./modules/backup";
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Theme Toggle
@@ -79,4 +80,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Initialize Weather
     void initWeather();
     initScratchpad();
+    initBackup()
 });

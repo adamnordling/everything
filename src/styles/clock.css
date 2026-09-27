@@ -58,6 +58,103 @@
 }
 
 /* =============================================================================
+   MIDDLE AMBIENT GRID: EPOCH, DST SENTINEL & SUNSET
+   ============================================================================= */
+
+/* =============================================================================
+   MIDDLE: 3 FULL-WIDTH TELEMETRY ROWS
+   ============================================================================= */
+
+/* =============================================================================
+   MIDDLE: 3 FULL-WIDTH TELEMETRY ROWS (UNIFIED HEIGHT & SPACING)
+   ============================================================================= */
+
+.clock-ambient-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 10px;      /* Added breathing room below the clock digits & date */
+    margin-bottom: 12px;   /* Added breathing room above Convert Time */
+    width: 100%;
+}
+
+.ambient-row,
+.ambient-row-btn {
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 7px 12px;     /* Unified padding */
+    min-height: 35px;      /* Guarantees identical height for button and divs */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    line-height: 1.2;      /* Resets default button line-height difference */
+    font-family: inherit;
+    font-size: inherit;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+    margin: 0;
+}
+
+.ambient-row-btn {
+    cursor: pointer;
+    text-align: left;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.ambient-row-btn:hover {
+    border-color: var(--accent-mint);
+    background: rgba(0, 220, 130, 0.05);
+}
+.ambient-row-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ambient-bullet {
+    font-size: 0.8rem;
+    color: var(--accent-mint);
+    line-height: 1;
+    font-weight: 700;
+}
+
+.ambient-label {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.ambient-row-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ambient-val {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.ambient-action-hint {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--accent-mint);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-bold);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* =============================================================================
    CONVERTER (SINGLE LINE, ZERO LAYOUT SHIFT)
    ============================================================================= */
 
@@ -210,8 +307,13 @@
    YEAR PROGRESS & TIMEZONE BUTTON (BOTTOM-RIGHT)
    ============================================================================= */
 
+/* =============================================================================
+   YEAR PROGRESS & TIMEZONE BUTTON (ANCHORED TO VERY BOTTOM)
+   ============================================================================= */
+
 .year-progress-module {
-    margin-top: 2px;
+    margin-top: auto; /* Pushes progress bar cleanly to the bottom edge */
+    padding-top: 8px;
 }
 
 .year-stats-line {

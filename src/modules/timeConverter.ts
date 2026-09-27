@@ -29,6 +29,12 @@ export function initClockAndConverter(): void {
     const yearFillBar = document.getElementById('year-fill-bar');
     const activeTzDisplay = document.getElementById('active-tz-display');
 
+    // Middle elements: Epoch, DST, Sunset
+    const epochBtn = document.getElementById('clock-epoch-btn');
+    const epochVal = document.getElementById('clock-epoch-val');
+    const dstVal = document.getElementById('clock-dst-val');
+    const sunsetVal = document.getElementById('clock-sunset-val');
+
     // Timezone change controls & modal
     const tzBtn = document.getElementById('active-tz-btn');
     const tzModal = document.getElementById('modal-tz-picker');
@@ -37,10 +43,110 @@ export function initClockAndConverter(): void {
     const tzSaveBtn = document.getElementById('btn-save-tz');
 
     const sessionStart = Date.now();
-    let activeTz =
-        localStorage.getItem('app_tz') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Stockholm';
+    // Always default to your computer's local timezone on refresh
+    let activeTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Stockholm';
 
     if (activeTzDisplay) activeTzDisplay.textContent = activeTz;
+
+    // 1-Click Copy Unix Timestamp
+    epochBtn?.addEventListener('click', () => {
+        const currentSec = String(Math.floor(Date.now() / 1000));
+        void navigator.clipboard.writeText(currentSec);
+
+        // Show floating copy badge above the button
+        document.querySelectorAll('.inline-copy-badge').forEach(el => el.remove());
+        const rect = epochBtn.getBoundingClientRect();
+        const badge = document.createElement('div');
+        badge.className = 'inline-copy-badge';
+        badge.textContent = `✓ Copied Epoch: ${currentSec}`;
+        document.body.appendChild(badge);
+
+        const badgeRect = badge.getBoundingClientRect();
+        badge.style.top = `${Math.max(8, rect.top - badgeRect.height - 6)}px`;
+        badge.style.left = `${Math.max(8, rect.left + (rect.width - badgeRect.width) / 2)}px`;
+
+        setTimeout(() => {
+            badge.classList.add('fade-out');
+            setTimeout(() => badge.remove(), 200);
+        }, 1200);
+    });
+
+    // DST Horizon Calculator for any timezone
+    function calculateDstHorizon(tz: string): string {
+        const now = new Date();
+        const year = now.getFullYear();
+        const jan = new Date(year, 0, 1);
+        const jul = new Date(year, 6, 1);
+
+        const getOffset = (d: Date): number => {
+            const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' }).formatToParts(d);
+            const part = parts.find(p => p.type === 'timeZoneName');
+            if (!part) return 0;
+            const m = /GMT([+-]\d+)(?::(\d+))?/.exec(part.value);
+            if (!m) return 0;
+            const hours = parseInt(m[1], 10);
+            const mins = m[2] ? parseInt(m[2], 10) : 0;
+            return hours * 60 + (hours < 0 ? -mins : mins);
+        };
+
+        const janOff = getOffset(jan);
+        const julOff = getOffset(jul);
+        if (janOff === julOff) return 'Standard (No DST)';
+
+        const nowOff = getOffset(now);
+        const isDst = nowOff === Math.max(janOff, julOff);
+
+        // Search next 210 days to locate transition moment
+        let probe = new Date(now.getTime() + 86400000);
+        let foundDate: Date | null = null;
+        for (let i = 1; i <= 210; i++) {
+            if (getOffset(probe) !== nowOff) {
+                foundDate = probe;
+                break;
+            }
+            probe = new Date(probe.getTime() + 86400000);
+        }
+
+        if (!foundDate) return isDst ? 'DST Active' : 'Standard Time';
+        const daysUntil = Math.ceil((foundDate.getTime() - now.getTime()) / 86400000);
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dateStr = `${monthNames[foundDate.getMonth()]} ${foundDate.getDate()}`;
+
+return isDst
+            ? `DST Active · Ends in ${daysUntil} days (${dateStr})`
+            : `Standard Time · Starts in ${daysUntil} days (${dateStr})`;
+    }
+
+    // Sunset Countdown Calculator
+    function updateSunsetDisplay(): void {
+        if (!sunsetVal) return;
+        const cachedSunsetStr = localStorage.getItem('cached_sunset');
+        if (!cachedSunsetStr) {
+            sunsetVal.textContent = 'Sunset: ~18:45';
+            return;
+        }
+
+        const sunsetDate = new Date(cachedSunsetStr);
+        const now = new Date();
+        const diffMs = sunsetDate.getTime() - now.getTime();
+
+        const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: activeTz
+        });
+        const sunsetTimeStr = timeFormatter.format(sunsetDate);
+
+        if (diffMs > 0) {
+            const h = Math.floor(diffMs / 3600000);
+            const m = Math.floor((diffMs % 3600000) / 60000);
+            sunsetVal.textContent = `Sunset in ${h}h ${m}m (${sunsetTimeStr})`;
+        } else {
+            sunsetVal.textContent = `Sunset was at ${sunsetTimeStr}`;
+        }
+    }
+
+    window.addEventListener('sunset-updated', updateSunsetDisplay);
 
     // Populate Timezone modal dropdown
     if (tzSelect) {
@@ -48,20 +154,36 @@ export function initClockAndConverter(): void {
         tzSelect.value = activeTz;
     }
 
+    function closeTzModal(): void {
+        if (tzModal) tzModal.style.display = 'none';
+    }
+
     tzBtn?.addEventListener('click', () => {
-        if (tzModal) tzModal.style.display = 'flex';
+        if (tzModal) {
+            if (tzSelect) tzSelect.value = activeTz;
+            tzModal.style.display = 'flex';
+        }
     });
 
-    tzCloseBtn?.addEventListener('click', () => {
-        if (tzModal) tzModal.style.display = 'none';
+    tzCloseBtn?.addEventListener('click', closeTzModal);
+
+    // Click outside modal dialog to close
+    window.addEventListener('click', (e: MouseEvent) => {
+        if (e.target === tzModal) closeTzModal();
+    });
+
+    // Escape key closes timezone modal
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && tzModal && tzModal.style.display === 'flex') {
+            closeTzModal();
+        }
     });
 
     tzSaveBtn?.addEventListener('click', () => {
         if (tzSelect) {
-            activeTz = tzSelect.value;
-            localStorage.setItem('app_tz', activeTz);
+            activeTz = tzSelect.value; // In-memory only: resets on refresh
             if (activeTzDisplay) activeTzDisplay.textContent = activeTz;
-            if (tzModal) tzModal.style.display = 'none';
+            closeTzModal();
             tick();
             calculateConversion();
         }
@@ -95,9 +217,20 @@ export function initClockAndConverter(): void {
         );
         const weekNum = getISOWeek(now);
 
-        if (dateSubEl) {
+if (dateSubEl) {
             dateSubEl.textContent = `${fDay}, ${fDate} · Week ${weekNum}`;
         }
+
+        // Live Unix Epoch Ticker
+        if (epochVal) {
+            epochVal.textContent = String(Math.floor(Date.now() / 1000));
+        }
+
+        // Update DST & Sunset
+        if (dstVal) {
+            dstVal.textContent = calculateDstHorizon(activeTz);
+        }
+        updateSunsetDisplay();
 
         // 3. Active Session Stopwatch
         const elapsed = Math.floor((Date.now() - sessionStart) / 1000);

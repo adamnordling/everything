@@ -135,15 +135,44 @@
 }
 
 .sidebar-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border-subtle);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+        padding: 10px 14px;
+        border-top: 1px solid var(--border-subtle);
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .footer-client-group {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .backup-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.68rem;
+    }
+
+    .footer-text-btn {
+        background: transparent;
+        border: none;
+        color: var(--accent-mint);
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+        transition: opacity 0.15s ease;
+    }
+
+    .footer-text-btn:hover {
+        text-decoration: underline;
+    }
 
 /* MAIN STAGE */
 .app-main {
