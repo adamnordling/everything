@@ -4,7 +4,7 @@ import { initCalendar, getDayInfo } from './modules/calendar';
 import { initWeather } from './modules/weather';
 import { initTasks } from './modules/tasks';
 import { initScratchpad } from './modules/scratchpad';
-import {initBackup} from "./modules/backup";
+import { initBackup } from './modules/backup';
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Theme Toggle
@@ -37,8 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
     reRenderCalendar = initCalendar((selectedDateStr, activeDeadlines) => {
         taskHandlers.setDeadlineDate(selectedDateStr);
 
-        const [y, m, d] = selectedDateStr.split('-').map(Number);
-        const dayDate = new Date(y ?? 2026, (m ?? 1) - 1, d ?? 1);
+        const dateParts = selectedDateStr.split('-');
+        const yearNum = Number(dateParts[0]);
+        const monthNum = Number(dateParts[1]);
+        const dayNum = Number(dateParts[2]);
+        const dayDate = new Date(yearNum, monthNum - 1, dayNum);
         const info = getDayInfo(dayDate);
 
         // 1. Special Day / Deadline Title (Empty if none exists)
@@ -78,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 6. Initialize Weather
-    void initWeather();
+    initWeather();
     initScratchpad();
-    initBackup()
+    initBackup();
 });

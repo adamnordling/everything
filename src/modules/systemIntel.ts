@@ -301,10 +301,12 @@ export function initSystemIntel(): void {
         setTimeout(() => {
             const t0 = performance.now();
             let ops = 0;
+            let sink = 0;
             while (performance.now() - t0 < 35) {
-                Math.sin(ops) * Math.cos(ops);
+                sink += Math.sin(ops) * Math.cos(ops);
                 ops += 1000;
             }
+            if (sink === 0) ops++;
             const duration = (performance.now() - t0) / 1000;
             const mops = Math.round(ops / duration / 1_000_000);
             cpuBenchText.textContent = `${mops.toLocaleString()} Mops/s Index`;
@@ -401,16 +403,11 @@ export function initSystemIntel(): void {
 
     if (audioText) {
         try {
-            const AudioCtx =
-                window.AudioContext ||
-                (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-            if (AudioCtx) {
-                const ctx = new AudioCtx();
-                const khz = (ctx.sampleRate / 1000).toFixed(1);
-                const channels = ctx.destination.maxChannelCount || 2;
-                audioText.textContent = `${khz} kHz · Stereo ${channels}.0`;
-                void ctx.close();
-            }
+            const ctx = new AudioContext();
+            const khz = (ctx.sampleRate / 1000).toFixed(1);
+            const channels = ctx.destination.maxChannelCount;
+            audioText.textContent = `${khz} kHz · Stereo ${channels}.0`;
+            void ctx.close();
         } catch {
             audioText.textContent = '48.0 kHz · Stereo 2.0';
         }

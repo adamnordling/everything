@@ -14,11 +14,18 @@ export default tseslint.config(
                 tsconfigRootDir: import.meta.dirname
             }
         },
-        rules: {
+rules: {
             '@typescript-eslint/no-explicit-any': 'error',
             '@typescript-eslint/explicit-function-return-type': 'warn',
             '@typescript-eslint/no-non-null-assertion': 'warn',
-            'no-console': ['warn', { allow: ['warn', 'error'] }]
+            'no-console': ['warn', { allow: ['warn', 'error'] }],
+            '@typescript-eslint/restrict-template-expressions': [
+                'error',
+                {
+                    allowNumber: true,
+                    allowBoolean: true
+                }
+            ]
         }
     }
 );

@@ -47,18 +47,18 @@ export function initBackup(): void {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = (e: ProgressEvent<FileReader>): void => {
             try {
                 const content = e.target?.result as string;
-                const parsed = JSON.parse(content) as Record<string, unknown>;
+                const parsed: unknown = JSON.parse(content);
 
                 if (typeof parsed !== 'object' || parsed === null) {
                     alert('Invalid backup file format.');
                     return;
                 }
 
-                // Restore each key into localStorage
-                Object.entries(parsed).forEach(([key, val]) => {
+                const record = parsed as Record<string, unknown>;
+                Object.entries(record).forEach(([key, val]) => {
                     if (BACKUP_KEYS.includes(key) && typeof val === 'string') {
                         localStorage.setItem(key, val);
                     }

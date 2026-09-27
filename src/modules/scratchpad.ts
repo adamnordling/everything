@@ -42,20 +42,22 @@ export function initScratchpad(): void {
     });
 
     // Paste from Clipboard action
-    pasteBtn?.addEventListener('click', async () => {
-        try {
-            const clipText = await navigator.clipboard.readText();
-            if (clipText) {
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                textarea.value = textarea.value.substring(0, start) + clipText + textarea.value.substring(end);
-                localStorage.setItem('everything_scratchpad', textarea.value);
-                updateCounter();
+    pasteBtn?.addEventListener('click', () => {
+        void (async (): Promise<void> => {
+            try {
+                const clipText = await navigator.clipboard.readText();
+                if (clipText) {
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    textarea.value = textarea.value.substring(0, start) + clipText + textarea.value.substring(end);
+                    localStorage.setItem('everything_scratchpad', textarea.value);
+                    updateCounter();
+                    textarea.focus();
+                }
+            } catch {
                 textarea.focus();
             }
-        } catch {
-            textarea.focus();
-        }
+        })();
     });
 
     // Clear buffer action

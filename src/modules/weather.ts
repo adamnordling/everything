@@ -26,7 +26,7 @@ interface LeafletGlobal {
 }
 
 declare const L: LeafletGlobal | undefined;
-export async function initWeather(): Promise<void> {
+export function initWeather(): void {
     const tempEl = document.getElementById('wx-temp');
     const condLabel = document.getElementById('wx-condition-label');
     const condPill = document.getElementById('wx-condition-pill');
@@ -113,7 +113,9 @@ export async function initWeather(): Promise<void> {
                                 : place;
                     })
                     .catch(() => {
-                        nameInput.value = `${clickedLat > 0 ? clickedLat + '°N' : Math.abs(clickedLat) + '°S'}, ${clickedLon > 0 ? clickedLon + '°E' : Math.abs(clickedLon) + '°W'}`;
+                        const latFormatted = clickedLat > 0 ? `${clickedLat}°N` : `${Math.abs(clickedLat)}°S`;
+                        const lonFormatted = clickedLon > 0 ? `${clickedLon}°E` : `${Math.abs(clickedLon)}°W`;
+                        nameInput.value = `${latFormatted}, ${lonFormatted}`;
                     });
             }
         });

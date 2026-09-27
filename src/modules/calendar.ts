@@ -396,7 +396,10 @@ const SWEDISH_NAMNSDAGAR: Record<string, string> = {
 // -----------------------------------------------------------------------------
 // 2. MASSIVE SWEDISH TEMADAGAR & TRADITIONS DATABASE
 // -----------------------------------------------------------------------------
-const SWEDISH_THEME_DAYS: Record<string, { name: string; isFlagDay: boolean }> = {
+// -----------------------------------------------------------------------------
+// 2. MASSIVE SWEDISH TEMADAGAR & TRADITIONS DATABASE
+// -----------------------------------------------------------------------------
+const SWEDISH_THEME_DAYS: Record<string, { name: string; isFlagDay: boolean } | undefined> = {
     '01-01': { name: 'Nyårsdagen · Internationella pizzadagen', isFlagDay: true },
     '01-02': { name: 'Världsdagen för introverta', isFlagDay: false },
     '01-03': { name: 'J.R.R. Tolkien-dagen', isFlagDay: false },
@@ -726,16 +729,16 @@ export function getDayInfo(d: Date): SwedishDayIntel {
         }
     }
 
-    const specialEntry = data.specialDays.get(key) || SWEDISH_THEME_DAYS[key];
-    const isFlagDay = specialEntry?.isFlagDay ?? false;
-    const namedays = SWEDISH_NAMNSDAGAR[key] || 'No name day';
+    const specialEntry = data.specialDays.get(key) ?? SWEDISH_THEME_DAYS[key];
+    const isFlagDay = specialEntry !== undefined && specialEntry.isFlagDay;
+    const namedays = SWEDISH_NAMNSDAGAR[key] ?? 'No name day';
 
     let headline: string | null = null;
-    if (holidayFromMap) {
+    if (holidayFromMap !== null) {
         headline = isFlagDay ? `${holidayFromMap} 🇸🇪` : holidayFromMap;
     } else if (isKlamdag) {
         headline = klamdagNote;
-    } else if (specialEntry) {
+    } else if (specialEntry !== undefined) {
         headline = isFlagDay ? `${specialEntry.name} 🇸🇪` : specialEntry.name;
     }
 
@@ -785,17 +788,18 @@ export function initCalendar(onSelectDate: (dateStr: string, activeDeadlines: st
         const m = viewDate.getMonth();
         headerTitle.textContent = `${months[m]} ${y}`;
 
-        let deadlineMap: Record<string, string[]> = {};
+        const deadlineMap: Record<string, string[] | undefined> = {};
         const saved = localStorage.getItem('everything_deadlines_v2');
         if (saved) {
             try {
                 const list = JSON.parse(saved) as Array<{ title: string; dueDate: string }>;
                 list.forEach(item => {
-                    deadlineMap[item.dueDate] = deadlineMap[item.dueDate] || [];
-                    deadlineMap[item.dueDate]?.push(item.title);
+                    const currentList = deadlineMap[item.dueDate] ?? [];
+                    currentList.push(item.title);
+                    deadlineMap[item.dueDate] = currentList;
                 });
             } catch {
-                deadlineMap = {};
+                // Ignore parse errors
             }
         }
 

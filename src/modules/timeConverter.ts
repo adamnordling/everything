@@ -54,7 +54,9 @@ export function initClockAndConverter(): void {
         void navigator.clipboard.writeText(currentSec);
 
         // Show floating copy badge above the button
-        document.querySelectorAll('.inline-copy-badge').forEach(el => el.remove());
+        document.querySelectorAll('.inline-copy-badge').forEach(el => {
+            el.remove();
+        });
         const rect = epochBtn.getBoundingClientRect();
         const badge = document.createElement('div');
         badge.className = 'inline-copy-badge';
@@ -67,7 +69,9 @@ export function initClockAndConverter(): void {
 
         setTimeout(() => {
             badge.classList.add('fade-out');
-            setTimeout(() => badge.remove(), 200);
+            setTimeout(() => {
+                badge.remove();
+            }, 200);
         }, 1200);
     });
 
@@ -79,7 +83,9 @@ export function initClockAndConverter(): void {
         const jul = new Date(year, 6, 1);
 
         const getOffset = (d: Date): number => {
-            const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' }).formatToParts(d);
+            const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' }).formatToParts(
+                d
+            );
             const part = parts.find(p => p.type === 'timeZoneName');
             if (!part) return 0;
             const m = /GMT([+-]\d+)(?::(\d+))?/.exec(part.value);
@@ -112,7 +118,7 @@ export function initClockAndConverter(): void {
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const dateStr = `${monthNames[foundDate.getMonth()]} ${foundDate.getDate()}`;
 
-return isDst
+        return isDst
             ? `DST Active · Ends in ${daysUntil} days (${dateStr})`
             : `Standard Time · Starts in ${daysUntil} days (${dateStr})`;
     }
@@ -217,7 +223,7 @@ return isDst
         );
         const weekNum = getISOWeek(now);
 
-if (dateSubEl) {
+        if (dateSubEl) {
             dateSubEl.textContent = `${fDay}, ${fDate} · Week ${weekNum}`;
         }
 
@@ -503,7 +509,7 @@ if (dateSubEl) {
         });
 
         const parts = dtf.formatToParts(guessUtc);
-        const p: Record<string, number> = {};
+        const p: Record<string, number | undefined> = {};
         for (const part of parts) {
             if (part.type !== 'literal') p[part.type] = parseInt(part.value, 10);
         }

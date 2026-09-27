@@ -171,3 +171,25 @@
     background-color: var(--bg-elevated) !important;
     color: var(--accent-mint) !important;
 }
+
+/* =============================================================================
+   SUN ARC THEME-AWARE STYLES (VISIBLE IN BOTH DARK & LIGHT MODES)
+   ============================================================================= */
+
+.sun-arc-curve {
+    stroke: var(--border-bold);
+    transition: stroke 0.2s ease;
+}
+
+.sun-horizon-line {
+    stroke: var(--border-subtle);
+    stroke-linecap: round;
+}
+
+html.light-theme .sun-arc-curve {
+    stroke: #94a3b8; /* Clear, sharp slate dashed arc on light backgrounds */
+}
+
+html.light-theme .sun-horizon-line {
+    stroke: #cbd5e1;
+}

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
- <head>
+    <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -188,18 +188,47 @@
                     </button>
                 </div>
 
-            <div class="sidebar-footer">
+                <div class="sidebar-footer">
                     <div class="footer-client-group">
                         <span>100% Client-Side</span>
                         <div class="backup-actions">
-                            <button type="button" class="footer-text-btn" id="btn-export-data" title="Export all dashboard data to JSON">Export</button>
+                            <button
+                                type="button"
+                                class="footer-text-btn"
+                                id="btn-export-data"
+                                title="Export all dashboard data to JSON"
+                            >
+                                Export
+                            </button>
                             <span>·</span>
-                            <button type="button" class="footer-text-btn" id="btn-import-data" title="Import data from JSON backup">Import</button>
-                            <input type="file" id="backup-file-input" accept=".json" style="display:none;" />
+                            <button
+                                type="button"
+                                class="footer-text-btn"
+                                id="btn-import-data"
+                                title="Import data from JSON backup"
+                            >
+                                Import
+                            </button>
+                            <input type="file" id="backup-file-input" accept=".json" style="display: none" />
                         </div>
                     </div>
                     <button type="button" class="icon-action-btn" id="theme-btn" aria-label="Toggle theme">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line></svg>
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                        </svg>
                     </button>
                 </div>
             </aside>
@@ -214,83 +243,118 @@
                             <!-- TOP HERO ROW: CLOCK (LEFT) + TELEMETRY (RIGHT) -->
                             <div class="hero-split-row">
                                 <!-- 1. CLOCK HERO CARD -->
-<!-- 1. CLOCK HERO CARD -->
-            <div class="card clock-hero-card">
-                <!-- Top Row: Clock & Date on Left, Session on Top-Right -->
-                <div class="clock-top-bar">
-                    <div class="clock-primary-stack">
-                        <div class="time-digits-display" id="clock-large">00:00:00</div>
-                        <div class="clock-date-line" id="clock-date-sub">Loading date...</div>
-                    </div>
-                    <span class="pill-badge session-badge-pill" id="session-counter-badge">Session: 00:00:00</span>
-                </div>
+                                <!-- 1. CLOCK HERO CARD -->
+                                <div class="card clock-hero-card">
+                                    <!-- Top Row: Clock & Date on Left, Session on Top-Right -->
+                                    <div class="clock-top-bar">
+                                        <div class="clock-primary-stack">
+                                            <div class="time-digits-display" id="clock-large">00:00:00</div>
+                                            <div class="clock-date-line" id="clock-date-sub">Loading date...</div>
+                                        </div>
+                                        <span class="pill-badge session-badge-pill" id="session-counter-badge"
+                                            >Session: 00:00:00</span
+                                        >
+                                    </div>
 
-                <!-- MIDDLE ROW: 3 AMBIENT ITEMS (Unix Epoch, DST Sentinel, Sunset) -->
-<!-- MIDDLE: 3 FULL-WIDTH TELEMETRY ROWS (NO TRUNCATION) -->
-                <div class="clock-ambient-stack">
-                    <button type="button" class="ambient-row-btn copyable" id="clock-epoch-btn" title="Click to copy Unix Timestamp">
-                        <div class="ambient-row-left">
-                            <span class="ambient-bullet">#</span>
-                            <span class="ambient-label">UNIX EPOCH</span>
-                        </div>
-                        <div class="ambient-row-right">
-                            <span class="ambient-val font-mono" id="clock-epoch-val">---------</span>
-                            <span class="ambient-action-hint">Copy</span>
-                        </div>
-                    </button>
+                                    <!-- MIDDLE ROW: 3 AMBIENT ITEMS (Unix Epoch, DST Sentinel, Sunset) -->
+                                    <!-- MIDDLE: 3 FULL-WIDTH TELEMETRY ROWS (NO TRUNCATION) -->
+                                    <div class="clock-ambient-stack">
+                                        <button
+                                            type="button"
+                                            class="ambient-row-btn copyable"
+                                            id="clock-epoch-btn"
+                                            title="Click to copy Unix Timestamp"
+                                        >
+                                            <div class="ambient-row-left">
+                                                <span class="ambient-bullet">#</span>
+                                                <span class="ambient-label">UNIX EPOCH</span>
+                                            </div>
+                                            <div class="ambient-row-right">
+                                                <span class="ambient-val font-mono" id="clock-epoch-val"
+                                                    >---------</span
+                                                >
+                                                <span class="ambient-action-hint">Copy</span>
+                                            </div>
+                                        </button>
 
-                    <div class="ambient-row" id="clock-dst-card">
-                        <div class="ambient-row-left">
-                            <span class="ambient-bullet" style="color:var(--accent-sky);">◐</span>
-                            <span class="ambient-label">DAYLIGHT SAVING</span>
-                        </div>
-                        <div class="ambient-row-right">
-                            <span class="ambient-val" id="clock-dst-val">Calculating...</span>
-                        </div>
-                    </div>
+                                        <div class="ambient-row" id="clock-dst-card">
+                                            <div class="ambient-row-left">
+                                                <span class="ambient-bullet" style="color: var(--accent-sky)">◐</span>
+                                                <span class="ambient-label">DAYLIGHT SAVING</span>
+                                            </div>
+                                            <div class="ambient-row-right">
+                                                <span class="ambient-val" id="clock-dst-val">Calculating...</span>
+                                            </div>
+                                        </div>
 
-                    <div class="ambient-row" id="clock-sunset-card">
-                        <div class="ambient-row-left">
-                            <span class="ambient-bullet" style="color:var(--accent-amber);">☀</span>
-                            <span class="ambient-label">SOLAR HORIZON</span>
-                        </div>
-                        <div class="ambient-row-right">
-                            <span class="ambient-val" id="clock-sunset-val">Calculating...</span>
-                        </div>
-                    </div>
-                </div>
+                                        <div class="ambient-row" id="clock-sunset-card">
+                                            <div class="ambient-row-left">
+                                                <span class="ambient-bullet" style="color: var(--accent-amber)">☀</span>
+                                                <span class="ambient-label">SOLAR HORIZON</span>
+                                            </div>
+                                            <div class="ambient-row-right">
+                                                <span class="ambient-val" id="clock-sunset-val">Calculating...</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                <!-- CONVERTER ROW (Placed above day bar) -->
-                <div class="converter-stacked-module">
-                    <div class="converter-inputs-bar">
-                        <span class="converter-label">Convert Time:</span>
-                        <input type="number" id="tz-hour-input" min="0" max="23" class="input-mini-time" placeholder="00" />
-                        <span class="converter-colon">:</span>
-                        <input type="number" id="tz-min-input" min="0" max="59" class="input-mini-time" placeholder="00" />
+                                    <!-- CONVERTER ROW (Placed above day bar) -->
+                                    <div class="converter-stacked-module">
+                                        <div class="converter-inputs-bar">
+                                            <span class="converter-label">Convert Time:</span>
+                                            <input
+                                                type="number"
+                                                id="tz-hour-input"
+                                                min="0"
+                                                max="23"
+                                                class="input-mini-time"
+                                                placeholder="00"
+                                            />
+                                            <span class="converter-colon">:</span>
+                                            <input
+                                                type="number"
+                                                id="tz-min-input"
+                                                min="0"
+                                                max="59"
+                                                class="input-mini-time"
+                                                placeholder="00"
+                                            />
 
-                        <button type="button" id="tz-format-toggle" class="btn-format-cycle" title="Click to cycle 24H / AM / PM">24H</button>
+                                            <button
+                                                type="button"
+                                                id="tz-format-toggle"
+                                                class="btn-format-cycle"
+                                                title="Click to cycle 24H / AM / PM"
+                                            >
+                                                24H
+                                            </button>
 
-                        <select id="tz-source-select" class="select-mini-tz"></select>
-                    </div>
+                                            <select id="tz-source-select" class="select-mini-tz"></select>
+                                        </div>
 
-                    <div id="tz-converted-output" class="converter-result-under">
-                        Calculating...
-                    </div>
-                </div>
+                                        <div id="tz-converted-output" class="converter-result-under">
+                                            Calculating...
+                                        </div>
+                                    </div>
 
-                <!-- BOTTOM: DAY PROGRESS & TIMEZONE BUTTON (Very Bottom) -->
-                <div class="year-progress-module">
-                    <div class="year-stats-line">
-                        <span id="year-stats-text">DAY ---/--- · Q- · --.-%</span>
-                        <button type="button" class="btn-tz-badge" id="active-tz-btn" title="Click to change timezone">
-                            <span id="active-tz-display">Europe/Stockholm</span> ▾
-                        </button>
-                    </div>
-                    <div class="year-progress-bar">
-                        <div class="year-progress-fill" id="year-fill-bar" style="width: 0%;"></div>
-                    </div>
-                </div>
-            </div>
+                                    <!-- BOTTOM: DAY PROGRESS & TIMEZONE BUTTON (Very Bottom) -->
+                                    <div class="year-progress-module">
+                                        <div class="year-stats-line">
+                                            <span id="year-stats-text">DAY ---/--- · Q- · --.-%</span>
+                                            <button
+                                                type="button"
+                                                class="btn-tz-badge"
+                                                id="active-tz-btn"
+                                                title="Click to change timezone"
+                                            >
+                                                <span id="active-tz-display">Europe/Stockholm</span> ▾
+                                            </button>
+                                        </div>
+                                        <div class="year-progress-bar">
+                                            <div class="year-progress-fill" id="year-fill-bar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <!-- 2. WORKSTATION TELEMETRY -->
                                 <div class="card sys-telemetry-card">
@@ -445,13 +509,23 @@
                                         <!-- Solar Arc Curve -->
                                         <div class="sun-arc-box">
                                             <svg class="sun-svg-canvas" viewBox="0 0 180 90">
+                                                <!-- Dynamic theme-aware arc curve -->
                                                 <path
+                                                    class="sun-arc-curve"
                                                     d="M 20 85 A 70 70 0 0 1 160 85"
                                                     fill="none"
-                                                    stroke="rgba(255,255,255,0.12)"
                                                     stroke-width="2"
                                                     stroke-dasharray="4 4"
                                                 ></path>
+                                                <!-- Horizon Baseline -->
+                                                <line
+                                                    class="sun-horizon-line"
+                                                    x1="12"
+                                                    y1="85"
+                                                    x2="168"
+                                                    y2="85"
+                                                    stroke-width="1.5"
+                                                ></line>
                                                 <circle
                                                     id="solar-sun-dot"
                                                     cx="20"
