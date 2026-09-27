@@ -2,6 +2,11 @@
     padding: 16px;
     width: 100%;
     max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Stretches to fill the entire top row */
+    min-height: 390px; /* Matches the Clock & Telemetry height */
 }
 
 .calendar-weekdays {
@@ -17,7 +22,9 @@
 .calendar-days-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
+    gap: 4px;
+    flex: 1;
+    align-content: space-between;
 }
 
 .cal-cell {

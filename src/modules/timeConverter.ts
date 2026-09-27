@@ -23,17 +23,49 @@ export const TIMEZONES: TimezoneOption[] = [
 
 export function initClockAndConverter(): void {
     const clockDisplay = document.getElementById('clock-large');
-    const dayOfWeekDisplay = document.getElementById('day-of-week-display');
-    const isoWeekBadge = document.getElementById('iso-week-badge');
+    const dateSubEl = document.getElementById('clock-date-sub');
     const sessionBadge = document.getElementById('session-counter-badge');
     const yearStatsText = document.getElementById('year-stats-text');
     const yearFillBar = document.getElementById('year-fill-bar');
-    const daysRemainingText = document.getElementById('days-remaining-text');
     const activeTzDisplay = document.getElementById('active-tz-display');
 
+    // Timezone change controls & modal
+    const tzBtn = document.getElementById('active-tz-btn');
+    const tzModal = document.getElementById('modal-tz-picker');
+    const tzCloseBtn = document.getElementById('modal-tz-close');
+    const tzSelect = document.getElementById('tz-picker-select') as HTMLSelectElement | null;
+    const tzSaveBtn = document.getElementById('btn-save-tz');
+
     const sessionStart = Date.now();
-    const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (activeTzDisplay) activeTzDisplay.textContent = localTz;
+    let activeTz =
+        localStorage.getItem('app_tz') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Stockholm';
+
+    if (activeTzDisplay) activeTzDisplay.textContent = activeTz;
+
+    // Populate Timezone modal dropdown
+    if (tzSelect) {
+        tzSelect.innerHTML = TIMEZONES.map(t => `<option value="${t.zone}">${t.label}</option>`).join('');
+        tzSelect.value = activeTz;
+    }
+
+    tzBtn?.addEventListener('click', () => {
+        if (tzModal) tzModal.style.display = 'flex';
+    });
+
+    tzCloseBtn?.addEventListener('click', () => {
+        if (tzModal) tzModal.style.display = 'none';
+    });
+
+    tzSaveBtn?.addEventListener('click', () => {
+        if (tzSelect) {
+            activeTz = tzSelect.value;
+            localStorage.setItem('app_tz', activeTz);
+            if (activeTzDisplay) activeTzDisplay.textContent = activeTz;
+            if (tzModal) tzModal.style.display = 'none';
+            tick();
+            calculateConversion();
+        }
+    });
 
     function getISOWeek(d: Date): number {
         const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -47,20 +79,34 @@ export function initClockAndConverter(): void {
         const now = new Date();
         const year = now.getFullYear();
 
-        if (clockDisplay) clockDisplay.textContent = now.toTimeString().split(' ')[0];
+        // 1. Digital Clock in active timezone
+        const fTime = new Intl.DateTimeFormat('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: activeTz
+        });
+        if (clockDisplay) clockDisplay.textContent = fTime.format(now);
 
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        if (dayOfWeekDisplay) dayOfWeekDisplay.textContent = days[now.getDay()];
-        if (isoWeekBadge) isoWeekBadge.textContent = `Week ${getISOWeek(now)}`;
+        // 2. Date subline: e.g. "Sunday, 27 September · Week 39"
+        const fDay = new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: activeTz }).format(now);
+        const fDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', timeZone: activeTz }).format(
+            now
+        );
+        const weekNum = getISOWeek(now);
 
-        // Session Timer
+        if (dateSubEl) {
+            dateSubEl.textContent = `${fDay}, ${fDate} · Week ${weekNum}`;
+        }
+
+        // 3. Active Session Stopwatch
         const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
         const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
         const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
         const s = String(elapsed % 60).padStart(2, '0');
         if (sessionBadge) sessionBadge.textContent = `Session: ${h}:${m}:${s}`;
 
-        // Year Progress
+        // 4. Year Progress
         const startOfYear = new Date(year, 0, 1);
         const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000) + 1;
         const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -69,7 +115,6 @@ export function initClockAndConverter(): void {
         const pct = ((dayOfYear / totalDays) * 100).toFixed(1);
 
         if (yearStatsText) yearStatsText.textContent = `DAY ${dayOfYear}/${totalDays} · Q${qtr} · ${pct}%`;
-        if (daysRemainingText) daysRemainingText.textContent = `${totalDays - dayOfYear}d left`;
         if (yearFillBar) yearFillBar.style.width = `${pct}%`;
     }
 
@@ -93,13 +138,13 @@ export function initClockAndConverter(): void {
     sourceSelect.innerHTML = TIMEZONES.map(tz => `<option value="${tz.zone}">${tz.label}</option>`).join('');
     sourceSelect.value = 'America/Los_Angeles'; // Default to PT
 
-    // Initialize with current time in source zone
+    // Sync input to selected source time on start
     const nowInSource = new Date(new Date().toLocaleString('en-US', { timeZone: sourceSelect.value }));
     hourInput.value = String(nowInSource.getHours()).padStart(2, '0');
     minInput.value = String(nowInSource.getMinutes()).padStart(2, '0');
 
     // -------------------------------------------------------------------------
-    // 1. HOUR INPUT: KEYBOARD ARROWS (Never steals focus, wraps smoothly)
+    // KEYBOARD ARROWS: Hour input (Smooth wrapping, never jumps focus to minutes)
     // -------------------------------------------------------------------------
     hourInput.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'ArrowUp') {
@@ -131,9 +176,7 @@ export function initClockAndConverter(): void {
         }
     });
 
-    // -------------------------------------------------------------------------
-    // 2. MINUTE INPUT: KEYBOARD ARROWS
-    // -------------------------------------------------------------------------
+    // KEYBOARD ARROWS: Minute input
     minInput.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'ArrowUp') {
             e.preventDefault();
@@ -152,9 +195,7 @@ export function initClockAndConverter(): void {
         }
     });
 
-    // -------------------------------------------------------------------------
-    // 3. TYPING & CLAMPING (Only jumps to minutes when TYPING 2 digits)
-    // -------------------------------------------------------------------------
+    // TYPING AUTO-ADVANCE & CLAMPING (Only jumps to minutes when typing text)
     hourInput.addEventListener('input', (e: Event) => {
         const val = parseInt(hourInput.value, 10);
         if (!isNaN(val)) {
@@ -165,7 +206,6 @@ export function initClockAndConverter(): void {
             }
         }
 
-        // Only move focus if actual text/number was typed (NOT arrows or backspace)
         const inputEvent = e as InputEvent;
         if (inputEvent.inputType === 'insertText' && hourInput.value.length >= 2) {
             minInput.focus();
@@ -183,7 +223,7 @@ export function initClockAndConverter(): void {
         calculateConversion();
     });
 
-    // Formatting on blur (pads single digits: '5' -> '05')
+    // Formatting on blur (pads single digits to 2 digits: '5' -> '05')
     hourInput.addEventListener('blur', () => {
         let val = parseInt(hourInput.value, 10);
         if (isNaN(val)) val = currentMode === '24H' ? 0 : 12;
@@ -209,27 +249,24 @@ export function initClockAndConverter(): void {
     sourceSelect.addEventListener('change', calculateConversion);
 
     // -------------------------------------------------------------------------
-    // 4. STRICT 3-WAY CYCLE: 24H -> AM -> PM -> 24H (AM never skipped)
+    // STRICT 3-WAY FORMAT CYCLE: 24H -> AM -> PM -> 24H (AM never skipped)
     // -------------------------------------------------------------------------
     formatBtn.addEventListener('click', () => {
         let h = parseInt(hourInput.value, 10);
         if (isNaN(h)) h = 12;
 
         if (currentMode === '24H') {
-            // 24H -> AM
             currentMode = 'AM';
-            h = h % 12 || 12; // 00 -> 12, 13 -> 01, etc.
+            h = h % 12 || 12;
             hourInput.min = '1';
             hourInput.max = '12';
         } else if (currentMode === 'AM') {
-            // AM -> PM (Keeps the same 1-12 hour)
             currentMode = 'PM';
             hourInput.min = '1';
             hourInput.max = '12';
         } else {
-            // PM -> 24H
             currentMode = '24H';
-            if (h < 12) h += 12; // 01 PM -> 13, 12 PM -> 12
+            if (h < 12) h += 12;
             hourInput.min = '0';
             hourInput.max = '23';
         }
@@ -240,7 +277,7 @@ export function initClockAndConverter(): void {
     });
 
     // -------------------------------------------------------------------------
-    // 5. CALCULATION ENGINE
+    // CONVERSION CALCULATION
     // -------------------------------------------------------------------------
     function calculateConversion(): void {
         if (!hourInput || !minInput || !sourceSelect || !outputBadge) return;
@@ -264,7 +301,7 @@ export function initClockAndConverter(): void {
                 return;
             }
             if (currentMode === 'PM' && rawH < 12) rawH += 12;
-            if (currentMode === 'AM' && rawH === 12) rawH = 0; // 12 AM = 00:00
+            if (currentMode === 'AM' && rawH === 12) rawH = 0;
         }
 
         const sourceZone = sourceSelect.value;
@@ -283,21 +320,21 @@ export function initClockAndConverter(): void {
             hour: '2-digit',
             minute: '2-digit',
             hourCycle: 'h23',
-            timeZone: localTz
+            timeZone: activeTz
         });
 
         const localFormatter12 = new Intl.DateTimeFormat('en-US', {
             hour: 'numeric',
             minute: '2-digit',
             hour12: true,
-            timeZone: localTz
+            timeZone: activeTz
         });
 
         const time24 = localFormatter24.format(targetUtcDate);
         const time12 = localFormatter12.format(targetUtcDate);
 
         const sourceDay = now.getDate();
-        const localDay = new Date(targetUtcDate.toLocaleString('en-US', { timeZone: localTz })).getDate();
+        const localDay = new Date(targetUtcDate.toLocaleString('en-US', { timeZone: activeTz })).getDate();
         let dayNote = 'Same Day';
         if (localDay > sourceDay) dayNote = '+1 Day (Tomorrow)';
         if (localDay < sourceDay) dayNote = '-1 Day (Yesterday)';

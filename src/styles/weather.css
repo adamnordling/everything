@@ -115,3 +115,59 @@
     gap: 4px;
     font-family: var(--font-mono);
 }
+
+/* =============================================================================
+   COORDINATES BUTTON & LEAFLET MAP CONTAINER
+   ============================================================================= */
+
+.btn-location-picker {
+    background: var(--bg-card);
+    border: 1px solid var(--border-bold);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+}
+
+.btn-location-picker:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-mint);
+    background: var(--bg-elevated);
+}
+
+.real-map-container {
+    width: 100%;
+    height: 300px;
+    border-radius: 6px;
+    border: 1px solid var(--border-bold);
+    background: #0b0e14;
+    overflow: hidden;
+}
+
+/* Converts free OpenStreetMap tiles into a dark mode map without watermarks */
+.real-map-container .leaflet-tile {
+    filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+/* Ensure Leaflet controls match dark aesthetic */
+.leaflet-container {
+    background: #0b0e14 !important;
+}
+
+.leaflet-bar a {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-bold) !important;
+    color: var(--text-primary) !important;
+}
+
+.leaflet-bar a:hover {
+    background-color: var(--bg-elevated) !important;
+    color: var(--accent-mint) !important;
+}

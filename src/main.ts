@@ -3,6 +3,7 @@ import { initSystemIntel } from './modules/systemIntel';
 import { initCalendar, getDayInfo } from './modules/calendar';
 import { initWeather } from './modules/weather';
 import { initTasks } from './modules/tasks';
+import { initScratchpad } from './modules/scratchpad';
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Theme Toggle
@@ -27,9 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (reRenderCalendar) reRenderCalendar();
     });
 
-    // 5. Initialize Calendar & Wire Click-to-Deadline Interaction
-    // IN src/main.ts (Step 5: Calendar Wire Interaction)
-
+    // 5. Initialize Calendar & Date Intel Card
     const intelHoliday = document.getElementById('intel-holiday-name');
     const intelNameday = document.getElementById('intel-nameday-text');
     const intelCountdown = document.getElementById('intel-countdown-badge');
@@ -41,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dayDate = new Date(y ?? 2026, (m ?? 1) - 1, d ?? 1);
         const info = getDayInfo(dayDate);
 
-        // 1. Holiday / Deadline Row (Stays EMPTY if there is no special day/deadline)
+        // 1. Special Day / Deadline Title (Empty if none exists)
         if (intelHoliday) {
             if (activeDeadlines.length > 0) {
                 intelHoliday.textContent = info.holidayName
@@ -50,22 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (info.holidayName) {
                 intelHoliday.textContent = info.holidayName;
             } else {
-                // Write nothing when there is no special event!
-                intelHoliday.textContent = '';
+                intelHoliday.textContent = ''; // NOTHING WRITTEN IF NO EVENT!
             }
         }
 
-        // 2. Name Day (English label, no duplicates)
+        // 2. Name Day (No leading dot if holiday is empty, no duplicates)
         if (intelNameday) {
             if (info.holidayName || activeDeadlines.length > 0) {
                 intelNameday.textContent = `· Name Day: ${info.namedays}`;
             } else {
-                // No leading bullet if the holiday headline is empty
                 intelNameday.textContent = `Name Day: ${info.namedays}`;
             }
         }
 
-        // 3. Countdown Badge (English)
+        // 3. Relative Countdown Badge in English
         if (intelCountdown) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -79,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 6. Initialize Open-Meteo Weather
+    // 6. Initialize Weather
     void initWeather();
+    initScratchpad();
 });

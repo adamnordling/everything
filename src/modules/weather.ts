@@ -1,5 +1,5 @@
 // =============================================================================
-// WEATHER, ATMOSPHERE & SOLAR ARC PRECISION ENGINE
+// WEATHER SUITE WITH CUSTOM COORDINATES (ZERO LOCATION POPUPS)
 // =============================================================================
 
 const SVG_WX = {
@@ -9,6 +9,23 @@ const SVG_WX = {
     rain: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M16 13v8"></path><path d="M8 13v8"></path><path d="M12 15v8"></path><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path></svg>`
 };
 
+// Leaflet Types Interface for Strict TypeScript Check
+interface LeafletMapInstance {
+    setView(center: [number, number], zoom: number): LeafletMapInstance;
+    invalidateSize(): void;
+    on(event: string, fn: (e: { latlng: { lat: number; lng: number } }) => void): void;
+}
+interface LeafletMarkerInstance {
+    setLatLng(latlng: [number, number]): LeafletMarkerInstance;
+    addTo(map: LeafletMapInstance): LeafletMarkerInstance;
+}
+interface LeafletGlobal {
+    map(el: string | HTMLElement, options?: Record<string, unknown>): LeafletMapInstance;
+    tileLayer(url: string, options?: Record<string, unknown>): { addTo(map: LeafletMapInstance): void };
+    marker(latlng: [number, number], options?: Record<string, unknown>): LeafletMarkerInstance;
+}
+
+declare const L: LeafletGlobal | undefined;
 export async function initWeather(): Promise<void> {
     const tempEl = document.getElementById('wx-temp');
     const condLabel = document.getElementById('wx-condition-label');
@@ -19,122 +36,253 @@ export async function initWeather(): Promise<void> {
     const sunDot = document.getElementById('solar-sun-dot');
     const fiveDayStrip = document.getElementById('five-day-strip');
     const hourlyStrip = document.getElementById('hourly-strip');
+    const locPill = document.getElementById('wx-location-pill');
 
-    // Default to Stockholm, Sweden coordinates
-    let lat = 59.3293;
-    let lon = 18.0686;
+    // Modals & Controls
+    const openLocBtn = document.getElementById('wx-open-loc-btn');
+    const modalLoc = document.getElementById('modal-weather-loc');
+    const closeLocBtn = document.getElementById('modal-loc-close');
+    const saveCoordsBtn = document.getElementById('btn-save-coords');
+    const latInput = document.getElementById('coord-lat-input') as HTMLInputElement | null;
+    const lonInput = document.getElementById('coord-lon-input') as HTMLInputElement | null;
+    const nameInput = document.getElementById('coord-name-input') as HTMLInputElement | null;
 
-    if ('geolocation' in navigator) {
+    // Load saved coordinates or default to Stockholm, Sweden
+    let lat = parseFloat(localStorage.getItem('wx_lat') || '59.3293');
+    let lon = parseFloat(localStorage.getItem('wx_lon') || '18.0686');
+    let locName = localStorage.getItem('wx_city') || 'Stockholm, SE';
+
+    if (locPill) locPill.textContent = locName;
+
+    // Open/Close Modal
+    openLocBtn?.addEventListener('click', () => {
+        if (modalLoc) modalLoc.style.display = 'flex';
+        if (latInput) latInput.value = String(lat);
+        if (lonInput) lonInput.value = String(lon);
+        if (nameInput) nameInput.value = locName;
+    });
+
+    closeLocBtn?.addEventListener('click', () => {
+        if (modalLoc) modalLoc.style.display = 'none';
+    });
+
+    let leafletMap: LeafletMapInstance | null = null;
+    let leafletMarker: LeafletMarkerInstance | null = null;
+
+    function initLeafletMap(): void {
+        const mapContainer = document.getElementById('real-weather-map');
+        if (!mapContainer || leafletMap || typeof L === 'undefined') return;
+
+        leafletMap = L.map('real-weather-map', {
+            center: [lat, lon],
+            zoom: 5,
+            minZoom: 2,
+            maxZoom: 18,
+            attributionControl: false
+        });
+
+        // High-contrast Dark Matter cartography tiles
+        // 100% Free OpenStreetMap Tiles (Zero API Keys, Zero Watermarks)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            subdomains: ['a', 'b', 'c']
+        }).addTo(leafletMap);
+
+        leafletMarker = L.marker([lat, lon]).addTo(leafletMap);
+
+        // Click anywhere on the real globe to place marker and compute coordinates
+        leafletMap.on('click', e => {
+            const clickedLat = Number(e.latlng.lat.toFixed(4));
+            const clickedLon = Number(e.latlng.lng.toFixed(4));
+
+            if (latInput) latInput.value = String(clickedLat);
+            if (lonInput) lonInput.value = String(clickedLon);
+            if (leafletMarker) leafletMarker.setLatLng([clickedLat, clickedLon]);
+
+            if (nameInput) {
+                nameInput.value = 'Locating...';
+                fetch(
+                    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${clickedLat}&longitude=${clickedLon}&localityLanguage=en`
+                )
+                    .then(res => res.json())
+                    .then((data: { city?: string; locality?: string; countryName?: string }) => {
+                        const place = data.city || data.locality || data.countryName || `${clickedLat}, ${clickedLon}`;
+                        nameInput.value =
+                            data.countryName && !place.includes(data.countryName)
+                                ? `${place}, ${data.countryName}`
+                                : place;
+                    })
+                    .catch(() => {
+                        nameInput.value = `${clickedLat > 0 ? clickedLat + '°N' : Math.abs(clickedLat) + '°S'}, ${clickedLon > 0 ? clickedLon + '°E' : Math.abs(clickedLon) + '°W'}`;
+                    });
+            }
+        });
+    }
+
+    // Open Modal and render map
+    openLocBtn?.addEventListener('click', () => {
+        if (modalLoc) modalLoc.style.display = 'flex';
+        if (latInput) latInput.value = String(lat);
+        if (lonInput) lonInput.value = String(lon);
+        if (nameInput) nameInput.value = locName;
+
+        setTimeout(() => {
+            initLeafletMap();
+            if (leafletMap) {
+                leafletMap.invalidateSize();
+                leafletMap.setView([lat, lon], 5);
+            }
+            if (leafletMarker) {
+                leafletMarker.setLatLng([lat, lon]);
+            }
+        }, 100);
+    });
+
+    // Close Modal helper
+    function closeWeatherModal(): void {
+        if (modalLoc) modalLoc.style.display = 'none';
+    }
+
+    closeLocBtn?.addEventListener('click', closeWeatherModal);
+
+    // Click outside modal dialog to close
+    window.addEventListener('click', (e: MouseEvent) => {
+        if (e.target === modalLoc) closeWeatherModal();
+    });
+
+    // Press Escape key to close
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && modalLoc && modalLoc.style.display === 'flex') {
+            closeWeatherModal();
+        }
+    });
+
+    // Custom Save
+    saveCoordsBtn?.addEventListener('click', () => {
+        if (!latInput || !lonInput) return;
+        const newLat = parseFloat(latInput.value);
+        const newLon = parseFloat(lonInput.value);
+        const newCity = nameInput?.value.trim() || `${newLat.toFixed(2)}, ${newLon.toFixed(2)}`;
+
+        if (!isNaN(newLat) && !isNaN(newLon)) {
+            localStorage.setItem('wx_lat', String(newLat));
+            localStorage.setItem('wx_lon', String(newLon));
+            localStorage.setItem('wx_city', newCity);
+
+            lat = newLat;
+            lon = newLon;
+            locName = newCity;
+
+            if (locPill) locPill.textContent = locName;
+            if (modalLoc) modalLoc.style.display = 'none';
+            void fetchForecast();
+        }
+    });
+
+    async function fetchForecast(): Promise<void> {
         try {
-            const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 });
-            });
-            lat = pos.coords.latitude;
-            lon = pos.coords.longitude;
+            const res = await fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,sunrise,sunset&timezone=auto`
+            );
+            if (!res.ok) throw new Error();
+
+            interface WxResponse {
+                current: {
+                    temperature_2m: number;
+                    relative_humidity_2m: number;
+                    weather_code: number;
+                    wind_speed_10m: number;
+                };
+                daily: {
+                    time: string[];
+                    weather_code: number[];
+                    temperature_2m_max: number[];
+                    temperature_2m_min: number[];
+                    uv_index_max: number[];
+                    sunrise: string[];
+                    sunset: string[];
+                };
+                hourly: { time: string[]; temperature_2m: number[]; weather_code: number[] };
+            }
+
+            const data = (await res.json()) as WxResponse;
+
+            if (tempEl) tempEl.textContent = String(Math.round(data.current.temperature_2m));
+            if (humidityEl) humidityEl.textContent = `${data.current.relative_humidity_2m}%`;
+            if (windEl) windEl.textContent = `${data.current.wind_speed_10m.toFixed(1)} m/s`;
+
+            const uv = data.daily.uv_index_max[0] ?? 1;
+            if (uvEl) uvEl.textContent = `${uv.toFixed(1)} (${uv <= 2 ? 'Low' : uv <= 5 ? 'Moderate' : 'High'})`;
+
+            const condition = getConditionInfo(data.current.weather_code);
+            if (condLabel) condLabel.textContent = condition.name;
+            if (condPill)
+                condPill.innerHTML = `${condition.svg} <span style="font-weight:600;">${condition.name}</span>`;
+
+            // Solar Arc Math
+            if (sunDot && data.daily.sunrise[0] && data.daily.sunset[0]) {
+                const sr = new Date(data.daily.sunrise[0]).getTime();
+                const ss = new Date(data.daily.sunset[0]).getTime();
+                const now = Date.now();
+                const progress = Math.max(0, Math.min(1, (now - sr) / (ss - sr)));
+
+                const angle = Math.PI * (1 - progress);
+                const cx = 90 + 70 * Math.cos(angle);
+                const cy = 85 - 70 * Math.sin(angle);
+                sunDot.setAttribute('cx', cx.toFixed(1));
+                sunDot.setAttribute('cy', cy.toFixed(1));
+            }
+
+            // 5-Day Strip
+            if (fiveDayStrip) {
+                fiveDayStrip.innerHTML = '';
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                for (let i = 0; i < 5; i++) {
+                    const dateStr = data.daily.time[i];
+                    if (!dateStr) continue;
+                    const d = new Date(dateStr);
+                    const info = getConditionInfo(data.daily.weather_code[i] ?? 0);
+                    const max = Math.round(data.daily.temperature_2m_max[i] ?? 0);
+                    const min = Math.round(data.daily.temperature_2m_min[i] ?? 0);
+
+                    const col = document.createElement('div');
+                    col.className = 'day-mini-card';
+                    col.innerHTML = `
+                        <span style="font-size:0.7rem; font-family:var(--font-mono); font-weight:700;">${i === 0 ? 'Today' : dayNames[d.getDay()]}</span>
+                        <div>${info.svg}</div>
+                        <span style="font-size:0.75rem; font-family:var(--font-mono); font-weight:700;">${max}° <small style="color:var(--text-muted);">${min}°</small></span>
+                    `;
+                    fiveDayStrip.appendChild(col);
+                }
+            }
+
+            // 24-Hour Strip
+            if (hourlyStrip) {
+                hourlyStrip.innerHTML = '';
+                const nowH = new Date().getHours();
+                for (let i = nowH; i < nowH + 24; i++) {
+                    const timeStr = data.hourly.time[i];
+                    if (!timeStr) continue;
+                    const hDate = new Date(timeStr);
+                    const info = getConditionInfo(data.hourly.weather_code[i] ?? 0);
+                    const temp = Math.round(data.hourly.temperature_2m[i] ?? 0);
+
+                    const chip = document.createElement('div');
+                    chip.className = 'hour-chip';
+                    chip.innerHTML = `
+                        <span style="font-size:0.65rem; color:var(--text-muted);">${String(hDate.getHours()).padStart(2, '0')}:00</span>
+                        <div>${info.svg}</div>
+                        <span style="font-size:0.72rem; font-weight:700;">${temp}°</span>
+                    `;
+                    hourlyStrip.appendChild(chip);
+                }
+            }
         } catch {
-            // Keep default coordinates
+            if (condLabel) condLabel.textContent = 'Weather Offline';
         }
     }
 
-    try {
-        const res = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,sunrise,sunset&timezone=auto`
-        );
-        if (!res.ok) throw new Error();
-
-        interface WxResponse {
-            current: {
-                temperature_2m: number;
-                relative_humidity_2m: number;
-                weather_code: number;
-                wind_speed_10m: number;
-            };
-            daily: {
-                time: string[];
-                weather_code: number[];
-                temperature_2m_max: number[];
-                temperature_2m_min: number[];
-                uv_index_max: number[];
-                sunrise: string[];
-                sunset: string[];
-            };
-            hourly: { time: string[]; temperature_2m: number[]; weather_code: number[] };
-        }
-
-        const data = (await res.json()) as WxResponse;
-
-        if (tempEl) tempEl.textContent = String(Math.round(data.current.temperature_2m));
-        if (humidityEl) humidityEl.textContent = `${data.current.relative_humidity_2m}%`;
-        if (windEl) windEl.textContent = `${data.current.wind_speed_10m.toFixed(1)} m/s`;
-
-        const uv = data.daily.uv_index_max[0] ?? 1;
-        if (uvEl) uvEl.textContent = `${uv.toFixed(1)} (${uv <= 2 ? 'Low' : uv <= 5 ? 'Moderate' : 'High'})`;
-
-        const condition = getConditionInfo(data.current.weather_code);
-        if (condLabel) condLabel.textContent = condition.name;
-        if (condPill) condPill.innerHTML = `${condition.svg} <span style="font-weight:600;">${condition.name}</span>`;
-
-        // Solar Arc Math
-        if (sunDot && data.daily.sunrise[0] && data.daily.sunset[0]) {
-            const sr = new Date(data.daily.sunrise[0]).getTime();
-            const ss = new Date(data.daily.sunset[0]).getTime();
-            const now = Date.now();
-            const progress = Math.max(0, Math.min(1, (now - sr) / (ss - sr)));
-
-            const angle = Math.PI * (1 - progress);
-            const cx = 90 + 70 * Math.cos(angle);
-            const cy = 85 - 70 * Math.sin(angle);
-            sunDot.setAttribute('cx', cx.toFixed(1));
-            sunDot.setAttribute('cy', cy.toFixed(1));
-        }
-
-        // 5-Day Strip
-        if (fiveDayStrip) {
-            fiveDayStrip.innerHTML = '';
-            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            for (let i = 0; i < 5; i++) {
-                const dateStr = data.daily.time[i];
-                if (!dateStr) continue;
-                const d = new Date(dateStr);
-                const info = getConditionInfo(data.daily.weather_code[i] ?? 0);
-                const max = Math.round(data.daily.temperature_2m_max[i] ?? 0);
-                const min = Math.round(data.daily.temperature_2m_min[i] ?? 0);
-
-                const col = document.createElement('div');
-                col.className = 'day-mini-card';
-                col.innerHTML = `
-                    <span style="font-size:0.7rem; font-family:var(--font-mono); font-weight:700;">${i === 0 ? 'Today' : dayNames[d.getDay()]}</span>
-                    <div>${info.svg}</div>
-                    <span style="font-size:0.75rem; font-family:var(--font-mono); font-weight:700;">${max}° <small style="color:var(--text-muted);">${min}°</small></span>
-                `;
-                fiveDayStrip.appendChild(col);
-            }
-        }
-
-        // 24h Hourly Strip
-        if (hourlyStrip) {
-            hourlyStrip.innerHTML = '';
-            const nowH = new Date().getHours();
-            for (let i = nowH; i < nowH + 24; i++) {
-                const timeStr = data.hourly.time[i];
-                if (!timeStr) continue;
-                const hDate = new Date(timeStr);
-                const info = getConditionInfo(data.hourly.weather_code[i] ?? 0);
-                const temp = Math.round(data.hourly.temperature_2m[i] ?? 0);
-
-                const chip = document.createElement('div');
-                chip.className = 'hour-chip';
-                chip.innerHTML = `
-                    <span style="font-size:0.65rem; color:var(--text-muted);">${String(hDate.getHours()).padStart(2, '0')}:00</span>
-                    <div>${info.svg}</div>
-                    <span style="font-size:0.72rem; font-weight:700;">${temp}°</span>
-                `;
-                hourlyStrip.appendChild(chip);
-            }
-        }
-    } catch {
-        if (condLabel) condLabel.textContent = 'Weather Offline';
-    }
+    void fetchForecast();
 }
 
 function getConditionInfo(code: number): { name: string; svg: string } {

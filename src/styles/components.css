@@ -97,3 +97,53 @@
     color: var(--text-muted);
     font-size: 0.8rem;
 }
+
+/* =============================================================================
+   WORKSTATION SCRATCHPAD & CLIPBOARD BUFFER
+   ============================================================================= */
+
+.scratchpad-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 340px;
+    gap: 8px;
+}
+
+.scratchpad-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.scratchpad-counter {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-right: 4px;
+}
+
+.scratchpad-area {
+    flex: 1;
+    width: 100%;
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.scratchpad-area:focus {
+    border-color: var(--accent-mint);
+}
+
+.scratchpad-area::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}

@@ -1,7 +1,19 @@
 .deadline-input-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 10px;
+    width: 100%;
+}
+
+#deadline-input-title {
+    width: 100%;
+    flex: 1 1 100%;
+}
+
+#deadline-input-date {
+    flex: 1;
+    min-width: 0;
 }
 
 .deadlines-stream,

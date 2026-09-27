@@ -545,7 +545,7 @@ const SWEDISH_THEME_DAYS: Record<string, { name: string; isFlagDay: boolean }> =
 };
 
 // -----------------------------------------------------------------------------
-// 3. ASTRONOMICAL EASTER & MOVABLE SWEDISH OCCASIONS
+// 3. ASTRONOMICAL EASTER & MOVABLE OCCASIONS
 // -----------------------------------------------------------------------------
 function getEasterSunday(year: number): Date {
     const a = year % 19;
@@ -591,7 +591,7 @@ function computeDynamicHolidaysForYear(year: number): DynamicHolidays {
     const easter = getEasterSunday(year);
     const addDays = (base: Date, days: number): Date => new Date(base.getTime() + days * 86400000);
 
-    // Movable Easter & Spring Cycle
+    // Easter cycle
     const fettisdagen = addDays(easter, -47);
     specialDays.set(formatDateKey(fettisdagen), { name: 'Fettisdagen (Semlans dag)', isFlagDay: false });
 
@@ -705,7 +705,7 @@ export function getDayInfo(d: Date): SwedishDayIntel {
     const holidayFromMap = data.redDays.get(key) ?? null;
     const isRedDay = Boolean(holidayFromMap) || isSunday;
 
-    // Bridge Day (Klämdag) Calculation
+    // Bridge Day (Klämdag) Detection
     let isKlamdag = false;
     let klamdagNote = '';
     const dayOfWeek = d.getDay();
@@ -749,7 +749,7 @@ export function getDayInfo(d: Date): SwedishDayIntel {
 }
 
 // -----------------------------------------------------------------------------
-// 5. CALENDAR COMPONENT INITIALIZER (ENGLISH UI)
+// 5. CALENDAR COMPONENT INITIALIZER (ENGLISH UI + IMMEDIATE INITIAL RENDER)
 // -----------------------------------------------------------------------------
 export function initCalendar(onSelectDate: (dateStr: string, activeDeadlines: string[]) => void): () => void {
     const grid = document.getElementById('cal-days-grid');
@@ -821,7 +821,6 @@ export function initCalendar(onSelectDate: (dateStr: string, activeDeadlines: st
             const dateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             const intel = getDayInfo(thisDate);
 
-            // Red day: bold red. Klämdag: soft muted red.
             if (intel.isRedDay) {
                 cell.classList.add('red-day');
             } else if (intel.isKlamdag) {
@@ -870,6 +869,26 @@ export function initCalendar(onSelectDate: (dateStr: string, activeDeadlines: st
         render();
     });
 
+    // 1. Initial Render
     render();
+
+    // 2. Immediately trigger callback for TODAY on boot (removes default "Working Day")
+    const todayY = selectedDate.getFullYear();
+    const todayM = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const todayD = String(selectedDate.getDate()).padStart(2, '0');
+    const todayStr = `${todayY}-${todayM}-${todayD}`;
+
+    let initialDeadlines: string[] = [];
+    const savedInitial = localStorage.getItem('everything_deadlines_v2');
+    if (savedInitial) {
+        try {
+            const list = JSON.parse(savedInitial) as Array<{ title: string; dueDate: string }>;
+            initialDeadlines = list.filter(d => d.dueDate === todayStr).map(d => d.title);
+        } catch {
+            initialDeadlines = [];
+        }
+    }
+    onSelectDate(todayStr, initialDeadlines);
+
     return render;
 }
