@@ -26,6 +26,13 @@ const SVG = {
     delete: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`
 };
 
+function generateId(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateStr: string) => void } {
     // 1. DEADLINES
     const dForm = document.getElementById('deadline-form') as HTMLFormElement | null;
@@ -103,7 +110,7 @@ const contentDiv = document.createElement('div');
         e.preventDefault();
         if (!dTitle?.value || !dDate?.value) return;
         deadlines.push({
-            id: crypto.randomUUID(),
+            id: generateId(),
             title: dTitle.value.trim(),
             dueDate: dDate.value
         });
@@ -183,7 +190,7 @@ const contentDiv = document.createElement('div');
         e.preventDefault();
         if (!tInput?.value) return;
         dailyTasks.push({
-            id: crypto.randomUUID(),
+            id: generateId(),
             title: tInput.value.trim(),
             isDone: false
         });
@@ -315,7 +322,7 @@ const contentDiv = document.createElement('div');
         e.preventDefault();
         if (!habitInput?.value) return;
         habits.push({
-            id: crypto.randomUUID(),
+            id: generateId(),
             title: habitInput.value.trim(),
             history: {}
         });
