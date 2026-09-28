@@ -57,11 +57,22 @@ export function initBackup(): void {
                     return;
                 }
 
-                const record = parsed as Record<string, unknown>;
+const record = parsed as Record<string, unknown>;
+                const arrayKeys = ['everything_deadlines_v2', 'everything_tasks_v2', 'everything_habits_v2'];
+
                 Object.entries(record).forEach(([key, val]) => {
-                    if (BACKUP_KEYS.includes(key) && typeof val === 'string') {
-                        localStorage.setItem(key, val);
+                    if (!BACKUP_KEYS.includes(key) || typeof val !== 'string') return;
+
+                    if (arrayKeys.includes(key)) {
+                        try {
+                            const parsedArray: unknown = JSON.parse(val);
+                            if (!Array.isArray(parsedArray)) return;
+                        } catch {
+                            return;
+                        }
                     }
+
+                    localStorage.setItem(key, val);
                 });
 
                 // Reload the window to re-render all modules with restored state
