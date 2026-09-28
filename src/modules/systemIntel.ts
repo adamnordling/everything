@@ -347,8 +347,12 @@ export function initSystemIntel(): void {
             if (pingText) pingText.textContent = '1 ms';
         }
     };
-    void pingPulse();
-    setInterval(() => void pingPulse(), 3000);
+void pingPulse();
+    setInterval(() => {
+        if (document.visibilityState === 'visible') {
+            void pingPulse();
+        }
+    }, 30000);
 
     // -------------------------------------------------------------------------
     // 10. IP & ISP INFO
