@@ -6,6 +6,7 @@ interface HighEntropyValues {
     platform?: string;
     platformVersion?: string;
     architecture?: string;
+    bitness?: string;
 }
 
 interface UserAgentData {
@@ -297,7 +298,7 @@ export function initSystemIntel(): void {
         cpuText.textContent = cores ? `${cores} Logical Cores ${isBraveShielded ? '(Shield Spoofed)' : ''}` : '8 Cores';
     }
 
-if (cpuBenchText) {
+    if (cpuBenchText) {
         const runBench = (): void => {
             const t0 = performance.now();
             let ops = 0;
@@ -353,7 +354,7 @@ if (cpuBenchText) {
             if (pingText) pingText.textContent = '1 ms';
         }
     };
-void pingPulse();
+    void pingPulse();
     setInterval(() => {
         if (document.visibilityState === 'visible') {
             void pingPulse();
@@ -378,21 +379,63 @@ void pingPulse();
             if (data.success) {
                 if (ipText) ipText.textContent = data.ip;
                 if (ispText) {
-                    const org = data.connection?.isp || data.connection?.org || 'Tele2 Sverige';
-                    const asn = data.connection?.asn ? `AS${data.connection.asn}` : 'AS1257';
-                    ispText.textContent = `${org} (${asn}) · ${data.city || 'Sweden'}`;
+                    const org = data.connection?.isp || data.connection?.org || 'Unknown ISP';
+                    const asn = data.connection?.asn ? `AS${data.connection.asn}` : 'Unknown ASN';
+                    const location = data.city || data.country_code || 'Unknown Region';
+                    ispText.textContent = `${org} (${asn}) · ${location}`;
                 }
+            } else {
+                throw new Error('API lookup unfulfilled');
             }
-} catch {
+        } catch {
             if (ipText) ipText.textContent = 'Network Offline';
-            if (ispText) ispText.textContent = 'Unable to resolve ISP';
+            if (ispText) ispText.textContent = 'Unable to resolve ISP / Location';
         }
     };
     void fetchNetworkInfo();
 
-    if (osText) {
-        osText.textContent = 'Windows 10/11 (x64)';
-    }
+    const detectRealOS = async (): Promise<void> => {
+        if (!osText) return;
+
+        // Modern Chromium User-Agent Client Hints API
+        if (nav.userAgentData && typeof nav.userAgentData.getHighEntropyValues === 'function') {
+            try {
+                const entropy = await nav.userAgentData.getHighEntropyValues([
+                    'platform',
+                    'platformVersion',
+                    'architecture',
+                    'bitness'
+                ]);
+                const platform = entropy.platform || nav.userAgentData.platform;
+                const bitness = entropy.bitness ? ` (x${entropy.bitness})` : '';
+
+                if (platform === 'Windows') {
+                    // Windows 11 platformVersion starts at 13.0.0
+                    const majorVersion = parseInt((entropy.platformVersion || '').split('.')[0], 10);
+                    const winVersion = majorVersion >= 13 ? 'Windows 11' : 'Windows 10';
+                    osText.textContent = `${winVersion}${bitness}`;
+                    return;
+                }
+
+                osText.textContent = `${platform}${bitness}`;
+                return;
+            } catch {
+                // Fallback to UA string parsing below
+            }
+        }
+
+        // Fallback for Firefox, Safari, or older engines
+        // Fallback for Firefox, Safari, or older engines
+        const ua = navigator.userAgent;
+        if (/Windows NT 10.0/i.test(ua)) osText.textContent = 'Windows 10/11';
+        else if (/Mac OS X/i.test(ua)) osText.textContent = 'macOS';
+        else if (/Android/i.test(ua)) osText.textContent = 'Android';
+        else if (/Linux/i.test(ua)) osText.textContent = 'Linux';
+        else if (/iPhone|iPad/i.test(ua)) osText.textContent = 'iOS';
+        else osText.textContent = 'Desktop Workstation';
+    };
+
+    void detectRealOS();
 
     // -------------------------------------------------------------------------
     // 11. HEAP MEMORY & AUDIO

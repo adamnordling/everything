@@ -185,7 +185,7 @@ export function initClockAndConverter(): void {
         }
     });
 
-function updateDstDisplay(): void {
+    function updateDstDisplay(): void {
         if (dstVal) {
             dstVal.textContent = calculateDstHorizon(activeTz);
         }
@@ -242,7 +242,7 @@ function updateDstDisplay(): void {
         }
 
         // Update DST & Sunset
-// Update Sunset
+        // Update Sunset
         updateSunsetDisplay();
 
         // 3. Active Session Stopwatch

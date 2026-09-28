@@ -14,13 +14,13 @@ function inlineCssAndMinifyHtml(): Plugin {
             for (const [fileName, asset] of Object.entries(ctx.bundle)) {
                 if (fileName.endsWith('.css') && asset.type === 'asset') {
                     const cssContent = typeof asset.source === 'string' ? asset.source : asset.source.toString();
-                    inlinedHtml = inlinedHtml.replace(
+inlinedHtml = inlinedHtml.replace(
                         new RegExp(`<link[^>]*href="[^"]*${fileName}"[^>]*>`, 'i'),
-                        `<style>${cssContent}</style>`
+                        () => `<style>${cssContent}</style>`
                     );
                     inlinedHtml = inlinedHtml.replace(
                         /<link rel="stylesheet"[^>]*crossorigin[^>]*>/i,
-                        `<style>${cssContent}</style>`
+                        () => `<style>${cssContent}</style>`
                     );
                 }
             }

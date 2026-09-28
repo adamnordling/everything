@@ -57,7 +57,7 @@ export function initBackup(): void {
                     return;
                 }
 
-const record = parsed as Record<string, unknown>;
+                const record = parsed as Record<string, unknown>;
                 const arrayKeys = ['everything_deadlines_v2', 'everything_tasks_v2', 'everything_habits_v2'];
 
                 Object.entries(record).forEach(([key, val]) => {

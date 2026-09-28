@@ -25,7 +25,7 @@ export function initScratchpad(): void {
     }
 
     // Auto-save on every keystroke
-let saveTimeout: number | undefined;
+    let saveTimeout: number | undefined;
 
     // Auto-save debounced and guarded against quota limits
     textarea.addEventListener('input', () => {

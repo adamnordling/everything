@@ -72,37 +72,37 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
             const daysLeft = Math.ceil((new Date(item.dueDate).getTime() - Date.now()) / 86400000);
             const badgeText = daysLeft < 0 ? 'Overdue' : daysLeft === 0 ? 'Due Today' : `${daysLeft}d left`;
 
-const contentDiv = document.createElement('div');
-        const titleSpan = document.createElement('span');
-        titleSpan.style.fontWeight = '600';
-        titleSpan.textContent = item.title;
+            const contentDiv = document.createElement('div');
+            const titleSpan = document.createElement('span');
+            titleSpan.style.fontWeight = '600';
+            titleSpan.textContent = item.title;
 
-        const metaSpan = document.createElement('span');
-        metaSpan.style.fontFamily = 'var(--font-mono)';
-        metaSpan.style.fontSize = '0.75rem';
-        metaSpan.style.color = 'var(--text-muted)';
-        metaSpan.style.marginLeft = '8px';
-        metaSpan.textContent = `(${item.dueDate} · ${badgeText})`;
+            const metaSpan = document.createElement('span');
+            metaSpan.style.fontFamily = 'var(--font-mono)';
+            metaSpan.style.fontSize = '0.75rem';
+            metaSpan.style.color = 'var(--text-muted)';
+            metaSpan.style.marginLeft = '8px';
+            metaSpan.textContent = `(${item.dueDate} · ${badgeText})`;
 
-        contentDiv.appendChild(titleSpan);
-        contentDiv.appendChild(metaSpan);
+            contentDiv.appendChild(titleSpan);
+            contentDiv.appendChild(metaSpan);
 
-        const delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'icon-action-btn btn-delete';
-        delBtn.setAttribute('aria-label', 'Delete deadline');
-        delBtn.innerHTML = SVG.delete;
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'icon-action-btn btn-delete';
+            delBtn.setAttribute('aria-label', 'Delete deadline');
+            delBtn.innerHTML = SVG.delete;
 
-        delBtn.addEventListener('click', () => {
-            deadlines = deadlines.filter(d => d.id !== item.id);
-            localStorage.setItem('everything_deadlines_v2', JSON.stringify(deadlines));
-            renderDeadlines();
-            if (onDataChanged) onDataChanged();
-        });
+            delBtn.addEventListener('click', () => {
+                deadlines = deadlines.filter(d => d.id !== item.id);
+                localStorage.setItem('everything_deadlines_v2', JSON.stringify(deadlines));
+                renderDeadlines();
+                if (onDataChanged) onDataChanged();
+            });
 
-        row.appendChild(contentDiv);
-        row.appendChild(delBtn);
-        dStream.appendChild(row);
+            row.appendChild(contentDiv);
+            row.appendChild(delBtn);
+            dStream.appendChild(row);
         });
     }
 
