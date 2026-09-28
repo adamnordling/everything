@@ -65,22 +65,37 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
             const daysLeft = Math.ceil((new Date(item.dueDate).getTime() - Date.now()) / 86400000);
             const badgeText = daysLeft < 0 ? 'Overdue' : daysLeft === 0 ? 'Due Today' : `${daysLeft}d left`;
 
-            row.innerHTML = `
-                <div>
-                    <span style="font-weight:600;">${item.title}</span>
-                    <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); margin-left:8px;">(${item.dueDate} · ${badgeText})</span>
-                </div>
-                <button type="button" class="icon-action-btn btn-delete" aria-label="Delete deadline">${SVG.delete}</button>
-            `;
+const contentDiv = document.createElement('div');
+        const titleSpan = document.createElement('span');
+        titleSpan.style.fontWeight = '600';
+        titleSpan.textContent = item.title;
 
-            row.querySelector('.btn-delete')?.addEventListener('click', () => {
-                deadlines = deadlines.filter(d => d.id !== item.id);
-                localStorage.setItem('everything_deadlines_v2', JSON.stringify(deadlines));
-                renderDeadlines();
-                if (onDataChanged) onDataChanged();
-            });
+        const metaSpan = document.createElement('span');
+        metaSpan.style.fontFamily = 'var(--font-mono)';
+        metaSpan.style.fontSize = '0.75rem';
+        metaSpan.style.color = 'var(--text-muted)';
+        metaSpan.style.marginLeft = '8px';
+        metaSpan.textContent = `(${item.dueDate} · ${badgeText})`;
 
-            dStream.appendChild(row);
+        contentDiv.appendChild(titleSpan);
+        contentDiv.appendChild(metaSpan);
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'icon-action-btn btn-delete';
+        delBtn.setAttribute('aria-label', 'Delete deadline');
+        delBtn.innerHTML = SVG.delete;
+
+        delBtn.addEventListener('click', () => {
+            deadlines = deadlines.filter(d => d.id !== item.id);
+            localStorage.setItem('everything_deadlines_v2', JSON.stringify(deadlines));
+            renderDeadlines();
+            if (onDataChanged) onDataChanged();
+        });
+
+        row.appendChild(contentDiv);
+        row.appendChild(delBtn);
+        dStream.appendChild(row);
         });
     }
 
