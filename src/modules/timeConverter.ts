@@ -185,15 +185,24 @@ export function initClockAndConverter(): void {
         }
     });
 
+function updateDstDisplay(): void {
+        if (dstVal) {
+            dstVal.textContent = calculateDstHorizon(activeTz);
+        }
+    }
+
     tzSaveBtn?.addEventListener('click', () => {
         if (tzSelect) {
             activeTz = tzSelect.value; // In-memory only: resets on refresh
             if (activeTzDisplay) activeTzDisplay.textContent = activeTz;
             closeTzModal();
+            updateDstDisplay();
             tick();
             calculateConversion();
         }
     });
+
+    updateDstDisplay();
 
     function getISOWeek(d: Date): number {
         const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -233,9 +242,7 @@ export function initClockAndConverter(): void {
         }
 
         // Update DST & Sunset
-        if (dstVal) {
-            dstVal.textContent = calculateDstHorizon(activeTz);
-        }
+// Update Sunset
         updateSunsetDisplay();
 
         // 3. Active Session Stopwatch
