@@ -25,9 +25,21 @@ export function initScratchpad(): void {
     }
 
     // Auto-save on every keystroke
+let saveTimeout: number | undefined;
+
+    // Auto-save debounced and guarded against quota limits
     textarea.addEventListener('input', () => {
-        localStorage.setItem('everything_scratchpad', textarea.value);
         updateCounter();
+        window.clearTimeout(saveTimeout);
+        saveTimeout = window.setTimeout(() => {
+            try {
+                localStorage.setItem('everything_scratchpad', textarea.value);
+            } catch {
+                if (counter) {
+                    counter.textContent = 'Storage quota exceeded!';
+                }
+            }
+        }, 250);
     });
 
     // Copy All action with instant visual feedback
