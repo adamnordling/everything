@@ -297,12 +297,12 @@ export function initSystemIntel(): void {
         cpuText.textContent = cores ? `${cores} Logical Cores ${isBraveShielded ? '(Shield Spoofed)' : ''}` : '8 Cores';
     }
 
-    if (cpuBenchText) {
-        setTimeout(() => {
+if (cpuBenchText) {
+        const runBench = (): void => {
             const t0 = performance.now();
             let ops = 0;
             let sink = 0;
-            while (performance.now() - t0 < 35) {
+            while (performance.now() - t0 < 25) {
                 sink += Math.sin(ops) * Math.cos(ops);
                 ops += 1000;
             }
@@ -310,7 +310,13 @@ export function initSystemIntel(): void {
             const duration = (performance.now() - t0) / 1000;
             const mops = Math.round(ops / duration / 1_000_000);
             cpuBenchText.textContent = `${mops.toLocaleString()} Mops/s Index`;
-        }, 150);
+        };
+
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(runBench);
+        } else {
+            setTimeout(runBench, 800);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -377,9 +383,9 @@ void pingPulse();
                     ispText.textContent = `${org} (${asn}) · ${data.city || 'Sweden'}`;
                 }
             }
-        } catch {
-            if (ipText) ipText.textContent = '188.151.142.81';
-            if (ispText) ispText.textContent = 'Tele2 Sverige AB (AS1257)';
+} catch {
+            if (ipText) ipText.textContent = 'Network Offline';
+            if (ispText) ispText.textContent = 'Unable to resolve ISP';
         }
     };
     void fetchNetworkInfo();
