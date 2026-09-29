@@ -23,8 +23,8 @@ export interface YtStudioState {
 const STORAGE_KEY = 'everything_yt_settings';
 
 const DEFAULT_STATE: YtStudioState = {
-    url: 'https://www.youtube.com/watch?v=WPni755-Krg',
-    videoId: 'WPni755-Krg',
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    videoId: 'dQw4w9WgXcQ',
     playlistId: null,
     isPlaylistMode: false,
     mediaType: 'audio',
@@ -33,8 +33,8 @@ const DEFAULT_STATE: YtStudioState = {
     videoQuality: 'best',
     timeTrimEnabled: false,
     startTime: '00:00:00',
-    endTime: '06:00:00',
-    volumePercent: 5,
+    endTime: '01:00:00',
+    volumePercent: 100, // standard default 100%
     ignorePlaylistErrors: true,
     playlistStart: 1,
     playlistEnd: 50
@@ -119,7 +119,6 @@ export function initYoutube(): void {
     const copyCommandBtn = document.getElementById('yt-copy-cmd-btn');
     const platformTabs = document.querySelectorAll('.cmd-tab-btn');
 
-
     let currentPlatform: 'ytdlp' | 'powershell' | 'bash' = 'ytdlp';
 
     // -------------------------------------------------------------------------
@@ -195,7 +194,7 @@ export function initYoutube(): void {
     // -------------------------------------------------------------------------
     // 2. IMMEDIATE METADATA FETCHER (RESOLVES PLAYLISTS & FIRST VIDEO)
     // -------------------------------------------------------------------------
-  // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // 2. INSTANT DIRECT METADATA FETCHER (<100ms, NO SLOW PROXIES)
     // -------------------------------------------------------------------------
     async function fetchMetadata(videoId: string): Promise<void> {
@@ -218,7 +217,9 @@ export function initYoutube(): void {
         try {
             // Direct query to YouTube's official oEmbed - CORS enabled natively by Google, ultra fast
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s hard timeout
+            const timeoutId = setTimeout(() => {
+                controller.abort();
+            }, 2000); // 2s hard timeout
 
             const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(targetUrl)}&format=json`, {
                 signal: controller.signal
@@ -287,7 +288,7 @@ export function initYoutube(): void {
 
         const flags: string[] = [];
 
-// Automatically save to the user's Downloads folder
+        // Automatically save to the user's Downloads folder
         flags.push('-P "~/Downloads"');
 
         if (isPl) {
@@ -310,7 +311,7 @@ export function initYoutube(): void {
             flags.push(`--download-sections "*${state.startTime}-${state.endTime}"`);
         }
 
-// Precision Time Trimming (Fixes 403 Forbidden on fragment slices)
+        // Precision Time Trimming (Fixes 403 Forbidden on fragment slices)
         if (state.timeTrimEnabled) {
             flags.push(`--download-sections "*${state.startTime}-${state.endTime}"`);
             flags.push('--force-keyframes-at-cuts');
@@ -359,8 +360,6 @@ export function initYoutube(): void {
     }
 
     // -------------------------------------------------------------------------
-
-
 
     // -------------------------------------------------------------------------
     // 6. SYNCHRONIZE STATE & UI
@@ -671,21 +670,28 @@ export function initYoutube(): void {
                 t.classList.remove('active');
             });
             tab.classList.add('active');
-            currentPlatform = (tab.getAttribute('data-platform') as 'ytdlp' | 'powershell' | 'bash') || 'ytdlp';
+            const targetPlatform = tab.getAttribute('data-platform');
+            if (targetPlatform === 'powershell' || targetPlatform === 'bash') {
+                currentPlatform = targetPlatform;
+            } else {
+                currentPlatform = 'ytdlp';
+            }
             renderCommand();
         });
     });
 
-// In src/modules/youtube.ts:
+    // In src/modules/youtube.ts:
 
     // -------------------------------------------------------------------------
     // 1-CLICK ENVIRONMENT SETUP MATRIX COMMANDS
     // -------------------------------------------------------------------------
-    const OS_COMMANDS: Record<string, string> = {
+    type OsKey = 'windows-winget' | 'windows-scoop' | 'macos' | 'linux' | 'python';
+
+    const OS_COMMANDS: Record<OsKey, string> = {
         'windows-winget': 'winget install yt-dlp ffmpeg deno',
         'windows-scoop': 'scoop install yt-dlp ffmpeg deno',
         macos: 'brew install yt-dlp ffmpeg deno',
-        linux: 'sudo apt update && sudo apt install -y ffmpeg && pip install -U yt-dlp',
+        linux: 'sudo apt update && sudo apt install -y ffmpeg yt-dlp deno',
         python: 'pip install -U yt-dlp'
     };
 
@@ -694,29 +700,31 @@ export function initYoutube(): void {
     const setupCopyBtn = document.getElementById('setup-copy-btn');
     const setupUpdateBtn = document.getElementById('setup-update-btn');
 
-    let currentOsKey = 'windows-winget';
+    let currentOsKey: OsKey = 'windows-winget';
 
     osTabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            osTabs.forEach(t => t.classList.remove('active'));
+            osTabs.forEach(t => {
+                t.classList.remove('active');
+            });
             tab.classList.add('active');
-            currentOsKey = tab.getAttribute('data-os') || 'windows-winget';
+            const targetOs = tab.getAttribute('data-os');
+            if (targetOs && targetOs in OS_COMMANDS) {
+                currentOsKey = targetOs as OsKey;
+            }
             if (setupCodeDisplay) {
-                setupCodeDisplay.textContent = OS_COMMANDS[currentOsKey] || OS_COMMANDS['windows-winget'];
+                setupCodeDisplay.textContent = OS_COMMANDS[currentOsKey];
             }
         });
     });
 
-    // 1-Click Copy for OS Setup Command
     setupCopyBtn?.addEventListener('click', () => {
-        const cmdToCopy = OS_COMMANDS[currentOsKey] || OS_COMMANDS['windows-winget'];
+        const cmdToCopy = OS_COMMANDS[currentOsKey];
         void navigator.clipboard.writeText(cmdToCopy);
         const originalText = setupCopyBtn.textContent;
         setupCopyBtn.textContent = '✓ Copied!';
-        setupCopyBtn.style.color = 'var(--accent-mint)';
         setTimeout(() => {
             setupCopyBtn.textContent = originalText;
-            setupCopyBtn.style.color = '';
         }, 1400);
     });
 

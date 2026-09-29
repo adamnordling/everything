@@ -174,9 +174,6 @@
     text-decoration: underline;
 }
 
-
-
-
 /* MAIN STAGE */
 .app-main {
     flex: 1;
@@ -367,7 +364,6 @@
     min-width: 0;
     width: 100%;
 }
-
 
 /* In src/styles/layout.css, add these rules: */
 
