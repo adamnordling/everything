@@ -5,6 +5,9 @@ import { initWeather } from './modules/weather';
 import { initTasks } from './modules/tasks';
 import { initScratchpad } from './modules/scratchpad';
 import { initBackup } from './modules/backup';
+import { initYoutube } from './modules/youtube';
+
+const VIEW_STORAGE_KEY = 'app_active_view';
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Theme Toggle
@@ -13,23 +16,62 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('app_theme', isLight ? 'light' : 'dark');
     });
 
-    // 2. Initialize Hero Time Station & Converter
+    // 2. View Switching Router with Full Refresh Persistence
+    const navButtons = document.querySelectorAll<HTMLButtonElement>('.sidebar-nav .nav-item');
+    const viewDashboard = document.getElementById('view-dashboard');
+    const viewYoutube = document.getElementById('view-tool-youtube');
+
+    function switchView(targetView: string): void {
+        localStorage.setItem(VIEW_STORAGE_KEY, targetView);
+        window.location.hash = targetView;
+
+        navButtons.forEach(btn => {
+            if (btn.getAttribute('data-view') === targetView) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        if (targetView === 'tool-youtube') {
+            if (viewDashboard) viewDashboard.style.display = 'none';
+            if (viewYoutube) viewYoutube.style.display = 'flex';
+        } else {
+            // Default to Dashboard
+            if (viewDashboard) viewDashboard.style.display = 'block';
+            if (viewYoutube) viewYoutube.style.display = 'none';
+        }
+    }
+
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetView = btn.getAttribute('data-view') || 'dashboard';
+            switchView(targetView);
+        });
+    });
+
+    // Restore view from localStorage or URL hash immediately
+    const hash = window.location.hash ? window.location.hash.replace('#', '') : '';
+    const initialView = hash || localStorage.getItem(VIEW_STORAGE_KEY) || 'dashboard';
+    switchView(initialView);
+
+    // 3. Initialize Hero Time Station & Converter
     initClockAndConverter();
 
-    // 3. Initialize Workstation Intel (Protected Boundary)
+    // 4. Initialize Workstation Intel
     try {
         initSystemIntel();
     } catch (err) {
         console.error('Workstation telemetry error:', err);
     }
 
-    // 4. Initialize Task Operations
+    // 5. Initialize Tasks
     let reRenderCalendar: (() => void) | null = null;
     const taskHandlers = initTasks(() => {
         if (reRenderCalendar) reRenderCalendar();
     });
 
-    // 5. Initialize Calendar & Date Intel Card
+    // 6. Initialize Calendar & Date Intel Card
     const intelHoliday = document.getElementById('intel-holiday-name');
     const intelNameday = document.getElementById('intel-nameday-text');
     const intelCountdown = document.getElementById('intel-countdown-badge');
@@ -44,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const dayDate = new Date(yearNum, monthNum - 1, dayNum);
         const info = getDayInfo(dayDate);
 
-        // 1. Special Day / Deadline Title (Empty if none exists)
         if (intelHoliday) {
             if (activeDeadlines.length > 0) {
                 intelHoliday.textContent = info.holidayName
@@ -53,11 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (info.holidayName) {
                 intelHoliday.textContent = info.holidayName;
             } else {
-                intelHoliday.textContent = ''; // NOTHING WRITTEN IF NO EVENT!
+                intelHoliday.textContent = '';
             }
         }
 
-        // 2. Name Day (No leading dot if holiday is empty, no duplicates)
         if (intelNameday) {
             if (info.holidayName || activeDeadlines.length > 0) {
                 intelNameday.textContent = `· Name Day: ${info.namedays}`;
@@ -66,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // 3. Relative Countdown Badge in English
         if (intelCountdown) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -80,8 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 6. Initialize Weather
+    // 7. Initialize Tools & Utilities
     initWeather();
     initScratchpad();
     initBackup();
+    initYoutube();
 });
