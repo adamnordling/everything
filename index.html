@@ -41,8 +41,17 @@
         <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
 
         <link rel="stylesheet" href="./src/styles/main.css" />
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""
+        />
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""
+        ></script>
 
         <!-- Anti-FOUC Theme Script -->
         <script>
@@ -134,7 +143,7 @@
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                             </svg>
                         </span>
-                        <span>SHA &amp; Hash Calculator</span>
+                        <span>SHA &amp; Hash Calculator</span><span class="pill-badge" style="font-size:0.6rem; opacity:0.6">Soon</span>
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-translate">
@@ -151,7 +160,7 @@
                                 <path d="M7 15h3M8.5 9v6M14 10l3 5 3-5"></path>
                             </svg>
                         </span>
-                        <span>Multi-Translator</span>
+                        <span>Multi-Translator</span><span class="pill-badge" style="font-size:0.6rem; opacity:0.6">Soon</span>
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-media">
@@ -169,7 +178,7 @@
                                 <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
                         </span>
-                        <span>Media File Converter</span>
+                        <span>Media File Converter</span><span class="pill-badge" style="font-size:0.6rem; opacity:0.6">Soon</span>
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-network">
@@ -187,7 +196,7 @@
                                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
                             </svg>
                         </span>
-                        <span>Subnet &amp; CIDR Engine</span>
+                        <span>Subnet &amp; CIDR Engine</span><span class="pill-badge" style="font-size:0.6rem; opacity:0.6">Soon</span>
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-validator">
@@ -203,7 +212,7 @@
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                         </span>
-                        <span>Validators &amp; Encoders</span>
+                        <span>Validators &amp; Encoders</span><span class="pill-badge" style="font-size:0.6rem; opacity:0.6">Soon</span>
                     </button>
                 </div>
 
@@ -583,7 +592,7 @@
                                             </div>
                                             <div class="metric-box">
                                                 <div class="metric-sub-label">BAROMETER</div>
-                                                <div class="metric-main-val">1014 hPa</div>
+                                                <div class="metric-main-val" id="wx-barometer">-- hPa</div>
                                             </div>
                                         </div>
 
@@ -959,15 +968,16 @@
                                             </div>
                                         </div>
 
-                                        <div class="url-input-group">
-                                            <input
-                                                type="text"
-                                                id="yt-url-input"
-                                                class="url-input-field"
-                                                placeholder="Paste YouTube video or playlist URL (auto-detects instantly)"
-                                                value="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                                            />
-                                        </div>
+<!-- URL Input -->
+<div class="url-input-group">
+    <input
+        type="text"
+        id="yt-url-input"
+        class="url-input-field"
+        placeholder="Paste YouTube video or playlist URL (auto-detects instantly)"
+        value=""
+    />
+</div>
 
                                         <div class="mode-switch-card" style="margin-top: 10px">
                                             <span>Detected Mode:</span>
@@ -1289,30 +1299,31 @@
                                 <!-- RIGHT COLUMN: DOWNLOAD ACTION HUB & COMMAND -->
                                 <div class="studio-terminal-column">
                                     <!-- 1. VIDEO PREVIEW TILE -->
-                                    <div class="card" id="yt-preview-card">
-                                        <div class="video-preview-tile">
-                                            <img
-                                                id="yt-preview-thumb"
-                                                class="video-preview-thumb"
-                                                src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
-                                                alt="Video Thumbnail"
-                                            />
-                                            <div class="video-preview-details">
-                                                <span
-                                                    class="pill-badge"
-                                                    id="yt-preview-badge"
-                                                    style="width: fit-content; font-size: 0.65rem"
-                                                    >Stream Ready</span
-                                                >
-                                                <div class="video-preview-title" id="yt-preview-title">
-                                                    Loading Stream Info...
-                                                </div>
-                                                <div class="video-preview-author" id="yt-preview-author">
-                                                    Channel: Ready
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                           <!-- Video Preview Tile -->
+<div class="card" id="yt-preview-card">
+    <div class="video-preview-tile">
+        <img
+            id="yt-preview-thumb"
+            class="video-preview-thumb"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%23000000'/%3E%3C/svg%3E"
+            alt=""
+        />
+        <div class="video-preview-details">
+            <span
+                class="pill-badge"
+                id="yt-preview-badge"
+                style="width: fit-content; font-size: 0.65rem"
+                >No Stream</span
+            >
+            <div class="video-preview-title" id="yt-preview-title">
+                No stream selected
+            </div>
+            <div class="video-preview-author" id="yt-preview-author">
+                Channel: —
+            </div>
+        </div>
+    </div>
+</div>
 
                                     <!-- 2. GENERATED DOWNLOAD COMMAND -->
                                     <div class="command-console-card">

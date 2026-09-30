@@ -12,9 +12,9 @@ export interface YtStudioState {
     videoFormat: 'mp4' | 'mkv' | 'webm';
     videoQuality: 'best' | '2160' | '1440' | '1080' | '720';
     timeTrimEnabled: boolean;
-    startTime: string; // HH:MM:SS
-    endTime: string; // HH:MM:SS
-    volumePercent: number; // e.g. 5 for 5%
+    startTime: string;
+    endTime: string;
+    volumePercent: number;
     ignorePlaylistErrors: boolean;
     playlistStart: number;
     playlistEnd: number;
@@ -22,9 +22,12 @@ export interface YtStudioState {
 
 const STORAGE_KEY = 'everything_yt_settings';
 
+const BLACK_THUMBNAIL =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%23000000'/%3E%3C/svg%3E";
+
 const DEFAULT_STATE: YtStudioState = {
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    videoId: 'dQw4w9WgXcQ',
+    url: '',
+    videoId: '',
     playlistId: null,
     isPlaylistMode: false,
     mediaType: 'audio',
@@ -34,19 +37,25 @@ const DEFAULT_STATE: YtStudioState = {
     timeTrimEnabled: false,
     startTime: '00:00:00',
     endTime: '01:00:00',
-    volumePercent: 100, // standard default 100%
+    volumePercent: 100,
     ignorePlaylistErrors: true,
     playlistStart: 1,
     playlistEnd: 50
 };
 
 export function initYoutube(): void {
-    // 1. Load persisted state or fallback
+// Load persisted state or fallback
     let state: YtStudioState = { ...DEFAULT_STATE };
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         try {
             state = { ...DEFAULT_STATE, ...(JSON.parse(saved) as Partial<YtStudioState>) };
+
+            if (state.videoId === 'dQw4w9WgXcQ' || state.url.includes('dQw4w9WgXcQ')) {
+                state.url = '';
+                state.videoId = '';
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            }
         } catch {
             state = { ...DEFAULT_STATE };
         }
@@ -65,24 +74,20 @@ export function initYoutube(): void {
     const fetchBtn = document.getElementById('yt-fetch-btn');
     const pasteBtn = document.getElementById('yt-paste-btn');
 
-    // Video Preview
     const previewThumb = document.getElementById('yt-preview-thumb') as HTMLImageElement | null;
     const previewTitle = document.getElementById('yt-preview-title');
     const previewAuthor = document.getElementById('yt-preview-author');
     const previewBadge = document.getElementById('yt-preview-badge');
 
-    // Presets
     const btnPresetBinaural = document.getElementById('yt-preset-binaural');
     const btnPresetCutter = document.getElementById('yt-preset-cutter');
     const btnPreset4k = document.getElementById('yt-preset-4k');
     const btnPresetPlaylist = document.getElementById('yt-preset-playlist');
 
-    // Mode Radios
     const radioSingle = document.getElementById('yt-mode-single') as HTMLInputElement | null;
     const radioPlaylist = document.getElementById('yt-mode-playlist') as HTMLInputElement | null;
     const playlistOptionsCard = document.getElementById('yt-playlist-options');
 
-    // Format & Type
     const selectMediaType = document.getElementById('yt-media-type') as HTMLSelectElement | null;
     const selectAudioFormat = document.getElementById('yt-audio-format') as HTMLSelectElement | null;
     const selectVideoFormat = document.getElementById('yt-video-format') as HTMLSelectElement | null;
@@ -90,7 +95,6 @@ export function initYoutube(): void {
     const audioOptionsGroup = document.getElementById('yt-audio-options-group');
     const videoOptionsGroup = document.getElementById('yt-video-options-group');
 
-    // Time Slicer
     const trimCheckbox = document.getElementById('yt-trim-toggle') as HTMLInputElement | null;
     const trimInputsContainer = document.getElementById('yt-trim-inputs');
     const startInput = document.getElementById('yt-trim-start') as HTMLInputElement | null;
@@ -100,7 +104,6 @@ export function initYoutube(): void {
     const btnTrim1h = document.getElementById('yt-trim-1h-btn');
     const btnTrimReset = document.getElementById('yt-trim-reset-btn');
 
-    // Volume Attenuation
     const volumeSlider = document.getElementById('yt-volume-slider') as HTMLInputElement | null;
     const volumeNumber = document.getElementById('yt-volume-number') as HTMLInputElement | null;
     const volumeDbDisplay = document.getElementById('yt-volume-db');
@@ -109,21 +112,16 @@ export function initYoutube(): void {
     const btnVol50 = document.getElementById('yt-vol-50-btn');
     const btnVol100 = document.getElementById('yt-vol-100-btn');
 
-    // Playlist Controls
     const ignoreErrorsCheck = document.getElementById('yt-pl-ignore-errors') as HTMLInputElement | null;
     const plStartInput = document.getElementById('yt-pl-start') as HTMLInputElement | null;
     const plEndInput = document.getElementById('yt-pl-end') as HTMLInputElement | null;
 
-    // Command & Actions
     const commandTextarea = document.getElementById('yt-command-output') as HTMLTextAreaElement | null;
     const copyCommandBtn = document.getElementById('yt-copy-cmd-btn');
     const platformTabs = document.querySelectorAll('.cmd-tab-btn');
 
-    let currentPlatform: 'ytdlp' | 'powershell' | 'bash' = 'ytdlp';
+    let currentPlatform: 'ytdlp' | 'bash' = 'ytdlp';
 
-    // -------------------------------------------------------------------------
-    // 1. URL & PLAYLIST AUTO-DETECTOR
-    // -------------------------------------------------------------------------
     function parseYouTubeUrl(urlStr: string): { videoId: string; playlistId: string | null } {
         const cleanUrl = urlStr.trim();
         let videoId = '';
@@ -131,8 +129,6 @@ export function initYoutube(): void {
 
         try {
             const urlObj = new URL(cleanUrl);
-
-            // Playlist parameter check
             const listParam = urlObj.searchParams.get('list');
             if (listParam) playlistId = listParam;
 
@@ -188,26 +184,26 @@ export function initYoutube(): void {
         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
-    // -------------------------------------------------------------------------
-    // 2. IMMEDIATE METADATA FETCHER (AUTOMATIC WITH FALLBACK)
-    // -------------------------------------------------------------------------
-    // -------------------------------------------------------------------------
-    // 2. IMMEDIATE METADATA FETCHER (RESOLVES PLAYLISTS & FIRST VIDEO)
-    // -------------------------------------------------------------------------
-    // -------------------------------------------------------------------------
-    // 2. INSTANT DIRECT METADATA FETCHER (<100ms, NO SLOW PROXIES)
-    // -------------------------------------------------------------------------
+if (previewThumb) {
+        previewThumb.addEventListener('error', () => {
+            previewThumb.src = BLACK_THUMBNAIL;
+        });
+    }
+
     async function fetchMetadata(videoId: string): Promise<void> {
-        if (!videoId && !state.playlistId) return;
+        if (!videoId && !state.playlistId) {
+            if (previewTitle) previewTitle.textContent = 'No stream selected';
+            if (previewAuthor) previewAuthor.textContent = 'Channel: —';
+            if (previewThumb) previewThumb.src = BLACK_THUMBNAIL;
+            if (previewBadge) previewBadge.textContent = 'No Stream';
+            return;
+        }
 
         if (previewTitle) previewTitle.textContent = 'Fetching stream information...';
         if (previewAuthor) previewAuthor.textContent = 'Connecting to Google CDN...';
 
-        // 1. If we have a video ID (either standalone or 1st video in a playlist), load thumbnail immediately
-        if (videoId) {
-            if (previewThumb) {
-                previewThumb.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-            }
+        if (videoId && previewThumb) {
+            previewThumb.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
         }
 
         const targetUrl = videoId
@@ -215,11 +211,10 @@ export function initYoutube(): void {
             : `https://www.youtube.com/playlist?list=${state.playlistId}`;
 
         try {
-            // Direct query to YouTube's official oEmbed - CORS enabled natively by Google, ultra fast
             const controller = new AbortController();
             const timeoutId = setTimeout(() => {
                 controller.abort();
-            }, 2000); // 2s hard timeout
+            }, 2000);
 
             const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(targetUrl)}&format=json`, {
                 signal: controller.signal
@@ -242,9 +237,6 @@ export function initYoutube(): void {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // 3. TIME DURATION & DECIBEL CALCULATORS
-    // -------------------------------------------------------------------------
     function updateDurationCalculation(): void {
         const startSec = parseTimeStringToSeconds(state.startTime);
         const endSec = parseTimeStringToSeconds(state.endTime);
@@ -278,17 +270,17 @@ export function initYoutube(): void {
         volumeDbDisplay.textContent = `${pct}% · ${db.toFixed(1)} dB`;
     }
 
-    // -------------------------------------------------------------------------
-    // 4. COMMAND ARCHITECT
-    // -------------------------------------------------------------------------
+    function sanitizeShellArg(val: string): string {
+        return val.replace(/["`$\\]/g, '').trim();
+    }
+
     function getGeneratedCommand(): string {
         const isAudio = state.mediaType === 'audio';
         const isPl = state.isPlaylistMode;
-        const targetUrl = state.url.trim();
+        const targetUrl = sanitizeShellArg(state.url);
 
         const flags: string[] = [];
 
-        // Automatically save to the user's Downloads folder
         flags.push('-P "~/Downloads"');
 
         if (isPl) {
@@ -306,16 +298,12 @@ export function initYoutube(): void {
             flags.push('--no-playlist');
         }
 
-        // Fast fragment slice (no slow keyframe re-encoding)
+        // Precision Time Trimming (Single declaration with anti-403 headers)
         if (state.timeTrimEnabled) {
-            flags.push(`--download-sections "*${state.startTime}-${state.endTime}"`);
-        }
-
-        // Precision Time Trimming (Fixes 403 Forbidden on fragment slices)
-        if (state.timeTrimEnabled) {
-            flags.push(`--download-sections "*${state.startTime}-${state.endTime}"`);
+            const safeStart = sanitizeShellArg(state.startTime);
+            const safeEnd = sanitizeShellArg(state.endTime);
+            flags.push(`--download-sections "*${safeStart}-${safeEnd}"`);
             flags.push('--force-keyframes-at-cuts');
-            // Passes authentication headers to prevent Google CDN 403 Forbidden
             flags.push('--downloader-args "ffmpeg_i:-headers Referer:https://www.youtube.com/"');
         }
 
@@ -344,11 +332,13 @@ export function initYoutube(): void {
             }
         }
 
-        flags.push(`"${targetUrl}"`);
+        if (targetUrl) {
+            flags.push(`"${targetUrl}"`);
+        } else {
+            flags.push('"<PASTE_YOUTUBE_URL_HERE>"');
+        }
 
-        if (currentPlatform === 'powershell') {
-            return `& yt-dlp ${flags.join(' ')}`;
-        } else if (currentPlatform === 'bash') {
+        if (currentPlatform === 'bash') {
             return `yt-dlp \\\n  ${flags.join(' \\\n  ')}`;
         }
         return `yt-dlp ${flags.join(' ')}`;
@@ -359,11 +349,6 @@ export function initYoutube(): void {
         commandTextarea.value = getGeneratedCommand();
     }
 
-    // -------------------------------------------------------------------------
-
-    // -------------------------------------------------------------------------
-    // 6. SYNCHRONIZE STATE & UI
-    // -------------------------------------------------------------------------
     function syncUrlChange(): void {
         if (!urlInput) return;
         state.url = urlInput.value.trim();
@@ -371,7 +356,6 @@ export function initYoutube(): void {
         state.videoId = parsed.videoId;
         state.playlistId = parsed.playlistId;
 
-        // AUTOMATIC PLAYLIST VS SINGLE DETECTION:
         if (parsed.playlistId) {
             state.isPlaylistMode = true;
             if (radioPlaylist) radioPlaylist.checked = true;
@@ -389,7 +373,7 @@ export function initYoutube(): void {
         renderCommand();
     }
 
-    // Populate initial inputs from persisted state
+    // Populate initial inputs
     if (urlInput) urlInput.value = state.url;
     if (radioSingle) radioSingle.checked = !state.isPlaylistMode;
     if (radioPlaylist) radioPlaylist.checked = state.isPlaylistMode;
@@ -415,9 +399,6 @@ export function initYoutube(): void {
     if (plStartInput) plStartInput.value = String(state.playlistStart);
     if (plEndInput) plEndInput.value = String(state.playlistEnd);
 
-    // -------------------------------------------------------------------------
-    // 7. EVENT LISTENERS
-    // -------------------------------------------------------------------------
     let urlDebounce: number | undefined;
     urlInput?.addEventListener('input', () => {
         window.clearTimeout(urlDebounce);
@@ -440,7 +421,6 @@ export function initYoutube(): void {
         })();
     });
 
-    // Presets
     btnPresetBinaural?.addEventListener('click', () => {
         state.mediaType = 'audio';
         state.audioFormat = 'wav';
@@ -507,7 +487,6 @@ export function initYoutube(): void {
         renderCommand();
     });
 
-    // Mode Radios
     radioSingle?.addEventListener('change', () => {
         if (radioSingle.checked) {
             state.isPlaylistMode = false;
@@ -526,7 +505,6 @@ export function initYoutube(): void {
         }
     });
 
-    // Formats
     selectMediaType?.addEventListener('change', () => {
         state.mediaType = selectMediaType.value as 'audio' | 'video';
         if (state.mediaType === 'audio') {
@@ -558,7 +536,6 @@ export function initYoutube(): void {
         renderCommand();
     });
 
-    // Time Trim Controls
     trimCheckbox?.addEventListener('change', () => {
         state.timeTrimEnabled = trimCheckbox.checked;
         if (trimInputsContainer) {
@@ -613,7 +590,6 @@ export function initYoutube(): void {
         renderCommand();
     });
 
-    // Volume Controls
     const setVolume = (val: number): void => {
         state.volumePercent = Math.max(0, Math.min(200, val));
         if (volumeSlider) volumeSlider.value = String(state.volumePercent);
@@ -644,7 +620,6 @@ export function initYoutube(): void {
         setVolume(100);
     });
 
-    // Playlist Controls
     ignoreErrorsCheck?.addEventListener('change', () => {
         state.ignorePlaylistErrors = ignoreErrorsCheck.checked;
         persist();
@@ -663,7 +638,6 @@ export function initYoutube(): void {
         renderCommand();
     });
 
-    // Terminal Tabs
     platformTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             platformTabs.forEach(t => {
@@ -671,20 +645,11 @@ export function initYoutube(): void {
             });
             tab.classList.add('active');
             const targetPlatform = tab.getAttribute('data-platform');
-            if (targetPlatform === 'powershell' || targetPlatform === 'bash') {
-                currentPlatform = targetPlatform;
-            } else {
-                currentPlatform = 'ytdlp';
-            }
+            currentPlatform = targetPlatform === 'bash' ? 'bash' : 'ytdlp';
             renderCommand();
         });
     });
 
-    // In src/modules/youtube.ts:
-
-    // -------------------------------------------------------------------------
-    // 1-CLICK ENVIRONMENT SETUP MATRIX COMMANDS
-    // -------------------------------------------------------------------------
     type OsKey = 'windows-winget' | 'windows-scoop' | 'macos' | 'linux' | 'python';
 
     const OS_COMMANDS: Record<OsKey, string> = {
@@ -728,7 +693,6 @@ export function initYoutube(): void {
         }, 1400);
     });
 
-    // 1-Click Copy for Update Command
     setupUpdateBtn?.addEventListener('click', () => {
         void navigator.clipboard.writeText('yt-dlp -U');
         const originalText = setupUpdateBtn.textContent;
@@ -738,7 +702,6 @@ export function initYoutube(): void {
         }, 1400);
     });
 
-    // Main Download Command Copy Button
     copyCommandBtn?.addEventListener('click', () => {
         if (!commandTextarea) return;
         void navigator.clipboard.writeText(commandTextarea.value);
@@ -749,7 +712,6 @@ export function initYoutube(): void {
         }, 1400);
     });
 
-    // Initialize View
     updateVolumeDbDisplay(state.volumePercent);
     updateDurationCalculation();
     syncUrlChange();

@@ -124,11 +124,11 @@ export function initClockAndConverter(): void {
     }
 
     // Sunset Countdown Calculator
-    function updateSunsetDisplay(): void {
+function updateSunsetDisplay(): void {
         if (!sunsetVal) return;
         const cachedSunsetStr = localStorage.getItem('cached_sunset');
         if (!cachedSunsetStr) {
-            sunsetVal.textContent = 'Sunset: ~18:45';
+            sunsetVal.textContent = 'Awaiting solar data...';
             return;
         }
 

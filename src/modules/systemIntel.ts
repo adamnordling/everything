@@ -295,7 +295,7 @@ export function initSystemIntel(): void {
     // -------------------------------------------------------------------------
     if (cpuText) {
         const cores = nav.hardwareConcurrency;
-        cpuText.textContent = cores ? `${cores} Logical Cores ${isBraveShielded ? '(Shield Spoofed)' : ''}` : '8 Cores';
+        cpuText.textContent = cores ? `${cores} Logical Cores ${isBraveShielded ? '(Shield Spoofed)' : ''}` : '-- Cores';
     }
 
     if (cpuBenchText) {
@@ -350,9 +350,10 @@ export function initSystemIntel(): void {
                 pingDot.className =
                     rtt < 45 ? 'live-ping-dot good' : rtt < 120 ? 'live-ping-dot warn' : 'live-ping-dot high';
             }
-        } catch {
-            if (pingText) pingText.textContent = '1 ms';
-        }
+    } catch {
+        if (pingText) pingText.textContent = 'Timeout';
+        if (pingDot) pingDot.className = 'live-ping-dot offline';
+    }
     };
     void pingPulse();
     setInterval(() => {
@@ -442,14 +443,15 @@ export function initSystemIntel(): void {
     // -------------------------------------------------------------------------
     const updateMemory = (): void => {
         if (!memText) return;
-        const perf = window.performance as unknown as { memory?: ChromePerformanceMemory };
-        if (perf.memory) {
-            const usedMB = Math.round(perf.memory.usedJSHeapSize / (1024 * 1024));
-            const limitGB = (perf.memory.jsHeapSizeLimit / (1024 * 1024 * 1024)).toFixed(1);
-            memText.textContent = `${usedMB} MB / ${limitGB} GB Limit`;
-        } else {
-            memText.textContent = '8+ GB RAM Active';
-        }
+    const perf = window.performance as unknown as { memory?: ChromePerformanceMemory };
+    if (perf.memory) {
+        const usedMB = Math.round(perf.memory.usedJSHeapSize / (1024 * 1024));
+        const limitGB = (perf.memory.jsHeapSizeLimit / (1024 * 1024 * 1024)).toFixed(1);
+        memText.textContent = `${usedMB} MB / ${limitGB} GB Limit`;
+    } else {
+        const devMem = nav.deviceMemory;
+        memText.textContent = devMem ? `~${devMem} GB Device RAM` : 'Standard Heap';
+    }
     };
     updateMemory();
     setInterval(updateMemory, 5000);

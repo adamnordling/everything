@@ -7,6 +7,7 @@ const BACKUP_KEYS = [
     'everything_tasks_v2',
     'everything_habits_v2',
     'everything_scratchpad',
+    'everything_yt_settings',
     'wx_lat',
     'wx_lon',
     'wx_city',
@@ -18,7 +19,6 @@ export function initBackup(): void {
     const importBtn = document.getElementById('btn-import-data');
     const fileInput = document.getElementById('backup-file-input') as HTMLInputElement | null;
 
-    // 1. EXPORT ALL DATA TO JSON FILE
     exportBtn?.addEventListener('click', () => {
         const payload: Record<string, string | null> = {};
         BACKUP_KEYS.forEach(key => {
@@ -36,12 +36,10 @@ export function initBackup(): void {
         downloadAnchor.remove();
     });
 
-    // 2. TRIGGER FILE PICKER FOR IMPORT
     importBtn?.addEventListener('click', () => {
         fileInput?.click();
     });
 
-    // 3. READ, VALIDATE & RESTORE JSON DATA
     fileInput?.addEventListener('change', () => {
         const file = fileInput.files?.[0];
         if (!file) return;
@@ -75,7 +73,6 @@ export function initBackup(): void {
                     localStorage.setItem(key, val);
                 });
 
-                // Reload the window to re-render all modules with restored state
                 window.location.reload();
             } catch {
                 alert('Failed to parse backup file. Please select a valid JSON backup.');

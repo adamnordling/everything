@@ -9,7 +9,6 @@ const SVG_WX = {
     rain: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M16 13v8"></path><path d="M8 13v8"></path><path d="M12 15v8"></path><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path></svg>`
 };
 
-// Leaflet Types Interface for Strict TypeScript Check
 interface LeafletMapInstance {
     setView(center: [number, number], zoom: number): LeafletMapInstance;
     invalidateSize(): void;
@@ -26,6 +25,7 @@ interface LeafletGlobal {
 }
 
 declare const L: LeafletGlobal | undefined;
+
 export function initWeather(): void {
     const tempEl = document.getElementById('wx-temp');
     const condLabel = document.getElementById('wx-condition-label');
@@ -33,12 +33,12 @@ export function initWeather(): void {
     const uvEl = document.getElementById('wx-uv');
     const humidityEl = document.getElementById('wx-humidity');
     const windEl = document.getElementById('wx-wind');
+    const barometerEl = document.getElementById('wx-barometer');
     const sunDot = document.getElementById('solar-sun-dot');
     const fiveDayStrip = document.getElementById('five-day-strip');
     const hourlyStrip = document.getElementById('hourly-strip');
     const locPill = document.getElementById('wx-location-pill');
 
-    // Modals & Controls
     const openLocBtn = document.getElementById('wx-open-loc-btn');
     const modalLoc = document.getElementById('modal-weather-loc');
     const closeLocBtn = document.getElementById('modal-loc-close');
@@ -47,24 +47,11 @@ export function initWeather(): void {
     const lonInput = document.getElementById('coord-lon-input') as HTMLInputElement | null;
     const nameInput = document.getElementById('coord-name-input') as HTMLInputElement | null;
 
-    // Load saved coordinates or default to Stockholm, Sweden
     let lat = parseFloat(localStorage.getItem('wx_lat') || '59.3293');
     let lon = parseFloat(localStorage.getItem('wx_lon') || '18.0686');
     let locName = localStorage.getItem('wx_city') || 'Stockholm, SE';
 
     if (locPill) locPill.textContent = locName;
-
-    // Open/Close Modal
-    openLocBtn?.addEventListener('click', () => {
-        if (modalLoc) modalLoc.style.display = 'flex';
-        if (latInput) latInput.value = String(lat);
-        if (lonInput) lonInput.value = String(lon);
-        if (nameInput) nameInput.value = locName;
-    });
-
-    closeLocBtn?.addEventListener('click', () => {
-        if (modalLoc) modalLoc.style.display = 'none';
-    });
 
     let leafletMap: LeafletMapInstance | null = null;
     let leafletMarker: LeafletMarkerInstance | null = null;
@@ -81,8 +68,6 @@ export function initWeather(): void {
             attributionControl: false
         });
 
-        // High-contrast Dark Matter cartography tiles
-        // 100% Free OpenStreetMap Tiles (Zero API Keys, Zero Watermarks)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             subdomains: ['a', 'b', 'c']
@@ -90,7 +75,6 @@ export function initWeather(): void {
 
         leafletMarker = L.marker([lat, lon]).addTo(leafletMap);
 
-        // Click anywhere on the real globe to place marker and compute coordinates
         leafletMap.on('click', e => {
             const clickedLat = Number(e.latlng.lat.toFixed(4));
             const clickedLon = Number(e.latlng.lng.toFixed(4));
@@ -121,7 +105,6 @@ export function initWeather(): void {
         });
     }
 
-    // Open Modal and render map
     openLocBtn?.addEventListener('click', () => {
         if (modalLoc) modalLoc.style.display = 'flex';
         if (latInput) latInput.value = String(lat);
@@ -140,26 +123,22 @@ export function initWeather(): void {
         }, 100);
     });
 
-    // Close Modal helper
     function closeWeatherModal(): void {
         if (modalLoc) modalLoc.style.display = 'none';
     }
 
     closeLocBtn?.addEventListener('click', closeWeatherModal);
 
-    // Click outside modal dialog to close
     window.addEventListener('click', (e: MouseEvent) => {
         if (e.target === modalLoc) closeWeatherModal();
     });
 
-    // Press Escape key to close
     window.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Escape' && modalLoc && modalLoc.style.display === 'flex') {
             closeWeatherModal();
         }
     });
 
-    // Custom Save
     saveCoordsBtn?.addEventListener('click', () => {
         if (!latInput || !lonInput) return;
         const newLat = parseFloat(latInput.value);
@@ -184,7 +163,7 @@ export function initWeather(): void {
     async function fetchForecast(): Promise<void> {
         try {
             const res = await fetch(
-                `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,sunrise,sunset&timezone=auto`
+                `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max,sunrise,sunset&timezone=auto`
             );
             if (!res.ok) throw new Error();
 
@@ -194,6 +173,7 @@ export function initWeather(): void {
                     relative_humidity_2m: number;
                     weather_code: number;
                     wind_speed_10m: number;
+                    surface_pressure?: number;
                 };
                 daily: {
                     time: string[];
@@ -209,7 +189,6 @@ export function initWeather(): void {
 
             const data = (await res.json()) as WxResponse;
 
-            // Save sunset to localStorage so Clock Card can read it immediately
             if (data.daily.sunset[0]) {
                 localStorage.setItem('cached_sunset', data.daily.sunset[0]);
                 window.dispatchEvent(new CustomEvent('sunset-updated'));
@@ -218,6 +197,9 @@ export function initWeather(): void {
             if (tempEl) tempEl.textContent = String(Math.round(data.current.temperature_2m));
             if (humidityEl) humidityEl.textContent = `${data.current.relative_humidity_2m}%`;
             if (windEl) windEl.textContent = `${data.current.wind_speed_10m.toFixed(1)} m/s`;
+            if (barometerEl && data.current.surface_pressure !== undefined) {
+                barometerEl.textContent = `${Math.round(data.current.surface_pressure)} hPa`;
+            }
 
             const uv = data.daily.uv_index_max[0] ?? 1;
             if (uvEl) uvEl.textContent = `${uv.toFixed(1)} (${uv <= 2 ? 'Low' : uv <= 5 ? 'Moderate' : 'High'})`;
@@ -227,7 +209,6 @@ export function initWeather(): void {
             if (condPill)
                 condPill.innerHTML = `${condition.svg} <span style="font-weight:600;">${condition.name}</span>`;
 
-            // Solar Arc Math
             if (sunDot && data.daily.sunrise[0] && data.daily.sunset[0]) {
                 const sr = new Date(data.daily.sunrise[0]).getTime();
                 const ss = new Date(data.daily.sunset[0]).getTime();
@@ -241,7 +222,6 @@ export function initWeather(): void {
                 sunDot.setAttribute('cy', cy.toFixed(1));
             }
 
-            // 5-Day Strip
             if (fiveDayStrip) {
                 fiveDayStrip.innerHTML = '';
                 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -264,7 +244,6 @@ export function initWeather(): void {
                 }
             }
 
-            // 24-Hour Strip
             if (hourlyStrip) {
                 hourlyStrip.innerHTML = '';
                 const nowH = new Date().getHours();

@@ -122,7 +122,7 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
 
     renderDeadlines();
 
-    // 2. DAILY TASKS
+    // 2. DAILY TASKS (Clean initial state)
     const tForm = document.getElementById('daily-task-form') as HTMLFormElement | null;
     const tInput = document.getElementById('daily-task-input') as HTMLInputElement | null;
     const tStream = document.getElementById('daily-task-stream');
@@ -135,17 +135,19 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
         } catch {
             dailyTasks = [];
         }
-    } else {
-        dailyTasks = [
-            { id: '1', title: 'Clean workstation & archive semester repos', isDone: false },
-            { id: '2', title: 'Compile CV LaTeX build pipeline', isDone: false },
-            { id: '3', title: 'Sync arXiv & DiVA portal publications', isDone: true }
-        ];
     }
 
     function renderTasks(): void {
         if (!tStream) return;
         tStream.innerHTML = '';
+
+        if (dailyTasks.length === 0) {
+            const emptyNotice = document.createElement('div');
+            emptyNotice.className = 'empty-state-notice';
+            emptyNotice.textContent = 'No daily tasks logged. Add your first task above.';
+            tStream.appendChild(emptyNotice);
+            return;
+        }
 
         dailyTasks.forEach(task => {
             const row = document.createElement('div');
@@ -201,7 +203,7 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
 
     renderTasks();
 
-    // 3. MORNING ROUTINES (WITH ADD CAPABILITY)
+    // 3. MORNING ROUTINES (Clean initial state)
     const habitForm = document.getElementById('habit-add-form') as HTMLFormElement | null;
     const habitInput = document.getElementById('habit-add-input') as HTMLInputElement | null;
     const hStream = document.getElementById('habits-stream');
@@ -214,22 +216,23 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
         } catch {
             habits = [];
         }
-    } else {
-        habits = [
-            { id: 'h1', title: 'Wim Hof respiration + core vacuum + fascia routine', history: {} },
-            { id: 'h2', title: '10 diaphragmatic vacuums', history: {} },
-            { id: 'h3', title: 'Awaken at solar dawn + workstation boot', history: {} }
-        ];
     }
 
     function renderHabits(): void {
         if (!hStream) return;
         hStream.innerHTML = '';
 
+        if (habits.length === 0) {
+            const emptyNotice = document.createElement('div');
+            emptyNotice.className = 'empty-state-notice';
+            emptyNotice.textContent = 'No routines configured yet. Create one above.';
+            hStream.appendChild(emptyNotice);
+            return;
+        }
+
         const now = new Date();
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-        // Compute keys for past 3 days (e.g. Thu 24, Wed 23, Tue 22)
         const pastDays = [1, 2, 3].map(offset => {
             const d = new Date(now.getTime() - offset * 86400000);
             const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
