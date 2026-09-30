@@ -6,7 +6,7 @@
   Cross-Origin-Embedder-Policy: credentialless
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Permissions-Policy: accelerometer=(), camera=(), geolocation=(self), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), serial=(), midi=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.open-meteo.com blob:; worker-src 'self' blob:; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests;
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://img.youtube.com https://i.ytimg.com; connect-src 'self' https://api.open-meteo.com https://api.bigdatacloud.net https://ipwho.is https://api64.ipify.org https://cloudflare.com https://www.youtube.com blob:; worker-src 'self' blob:; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
   Cache-Control: public, max-age=0, must-revalidate
 
 /assets/*
@@ -14,7 +14,7 @@
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
-/manifest.webmanifest
+/site.webmanifest
   ! Cache-Control
   Cache-Control: public, max-age=0, must-revalidate
   Content-Type: application/manifest+json; charset=utf-8
