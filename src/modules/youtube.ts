@@ -44,7 +44,7 @@ const DEFAULT_STATE: YtStudioState = {
 };
 
 export function initYoutube(): void {
-// Load persisted state or fallback
+    // Load persisted state or fallback
     let state: YtStudioState = { ...DEFAULT_STATE };
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -184,7 +184,7 @@ export function initYoutube(): void {
         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
-if (previewThumb) {
+    if (previewThumb) {
         previewThumb.addEventListener('error', () => {
             previewThumb.src = BLACK_THUMBNAIL;
         });

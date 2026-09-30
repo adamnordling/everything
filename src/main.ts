@@ -21,31 +21,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewDashboard = document.getElementById('view-dashboard');
     const viewYoutube = document.getElementById('view-tool-youtube');
 
-// In src/main.ts inside switchView():
-function switchView(targetView: string): void {
-    // Only allow navigating to views that exist right now
-    const supportedViews = ['dashboard', 'tool-youtube'];
-    const activeView = supportedViews.includes(targetView) ? targetView : 'dashboard';
+    // In src/main.ts inside switchView():
+    function switchView(targetView: string): void {
+        // Only allow navigating to views that exist right now
+        const supportedViews = ['dashboard', 'tool-youtube'];
+        const activeView = supportedViews.includes(targetView) ? targetView : 'dashboard';
 
-    localStorage.setItem(VIEW_STORAGE_KEY, activeView);
-    window.location.hash = activeView;
+        localStorage.setItem(VIEW_STORAGE_KEY, activeView);
+        window.location.hash = activeView;
 
-    navButtons.forEach(btn => {
-        if (btn.getAttribute('data-view') === activeView) {
-            btn.classList.add('active');
+        navButtons.forEach(btn => {
+            if (btn.getAttribute('data-view') === activeView) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        if (activeView === 'tool-youtube') {
+            if (viewDashboard) viewDashboard.style.display = 'none';
+            if (viewYoutube) viewYoutube.style.display = 'flex';
         } else {
-            btn.classList.remove('active');
+            if (viewDashboard) viewDashboard.style.display = 'block';
+            if (viewYoutube) viewYoutube.style.display = 'none';
         }
-    });
-
-    if (activeView === 'tool-youtube') {
-        if (viewDashboard) viewDashboard.style.display = 'none';
-        if (viewYoutube) viewYoutube.style.display = 'flex';
-    } else {
-        if (viewDashboard) viewDashboard.style.display = 'block';
-        if (viewYoutube) viewYoutube.style.display = 'none';
     }
-}
 
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
