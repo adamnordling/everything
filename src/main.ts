@@ -21,9 +21,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewDashboard = document.getElementById('view-dashboard');
     const viewYoutube = document.getElementById('view-tool-youtube');
 
-    // In src/main.ts inside switchView():
+    // In src/main.ts:
+    const mobileMenuBtn = document.getElementById('btn-mobile-menu');
+    const mobileThemeBtn = document.getElementById('mobile-theme-btn');
+    // Finds either by ID or by .app-sidebar class:
+    const sidebar = document.getElementById('app-sidebar') || document.querySelector<HTMLElement>('.app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const drawerCloseBtn = document.getElementById('btn-drawer-close');
+
+    function closeMobileDrawer(): void {
+        sidebar?.classList.remove('drawer-open');
+        backdrop?.classList.remove('active');
+    }
+
+    function openMobileDrawer(): void {
+        sidebar?.classList.add('drawer-open');
+        backdrop?.classList.add('active');
+    }
+
+    mobileMenuBtn?.addEventListener('click', e => {
+        e.stopPropagation();
+        openMobileDrawer();
+    });
+
+    drawerCloseBtn?.addEventListener('click', closeMobileDrawer);
+    backdrop?.addEventListener('click', closeMobileDrawer);
+
+    // Sync theme toggle on mobile top bar
+    mobileThemeBtn?.addEventListener('click', () => {
+        const isLight = document.documentElement.classList.toggle('light-theme');
+        localStorage.setItem('app_theme', isLight ? 'light' : 'dark');
+    });
+
+    // Close drawer on Escape key
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && sidebar?.classList.contains('drawer-open')) {
+            closeMobileDrawer();
+        }
+    });
+
+    // Inside your existing switchView function, auto-close the drawer when navigating:
     function switchView(targetView: string): void {
-        // Only allow navigating to views that exist right now
+        closeMobileDrawer(); // <--- Closes drawer automatically when a user taps a tool
+
         const supportedViews = ['dashboard', 'tool-youtube'];
         const activeView = supportedViews.includes(targetView) ? targetView : 'dashboard';
 

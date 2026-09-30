@@ -193,3 +193,31 @@ html.light-theme .sun-arc-curve {
 html.light-theme .sun-horizon-line {
     stroke: #cbd5e1;
 }
+
+/* Add to src/styles/weather.css */
+@media (max-width: 600px) {
+    .weather-top-split {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        text-align: center;
+    }
+    .weather-reading-block {
+        align-items: center;
+    }
+    .sun-arc-box {
+        margin: 0 auto;
+    }
+    .real-map-container {
+        height: 220px; /* Optimal mobile viewport height */
+    }
+}
+
+@media (max-width: 420px) {
+    .metrics-quad {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+    .day-mini-card {
+        padding: 6px 2px;
+    }
+}

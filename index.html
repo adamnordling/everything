@@ -64,6 +64,69 @@
     </head>
     <body>
         <div class="app-layout">
+            <header class="mobile-top-bar" aria-label="Mobile Navigation Bar">
+                <button type="button" class="mobile-menu-btn" id="btn-mobile-menu" aria-label="Open navigation menu">
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="mobile-brand">
+                    <div class="brand-icon-box" style="width: 28px; height: 28px; border-radius: 7px">
+                        <svg
+                            width="15"
+                            height="15"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                        >
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                    </div>
+                    <span class="brand-title" style="font-size: 0.95rem">Everything</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                    <button
+                        type="button"
+                        class="icon-action-btn mobile-theme-btn"
+                        id="mobile-theme-btn"
+                        aria-label="Toggle theme"
+                    >
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- DRAWER BACKDROP (Touch overlay on mobile) -->
+            <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
             <!-- LEFT NAVIGATION SIDEBAR -->
             <aside class="app-sidebar" aria-label="Main Tool Navigation">
                 <div class="sidebar-header">
@@ -89,6 +152,15 @@
                             <span class="brand-subtitle">Developer &amp; Utility Suite</span>
                         </div>
                     </div>
+                    <!-- MOBILE CLOSE BUTTON (Hidden on desktop, visible on mobile) -->
+                    <button
+                        type="button"
+                        class="mobile-drawer-close"
+                        id="btn-drawer-close"
+                        aria-label="Close navigation menu"
+                    >
+                        &times;
+                    </button>
                 </div>
 
                 <div class="sidebar-nav">

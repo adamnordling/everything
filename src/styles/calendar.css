@@ -159,3 +159,19 @@
     border-radius: 50%;
     background-color: var(--accent-sky);
 }
+
+/* Add to src/styles/calendar.css */
+@media (max-width: 1100px) {
+    .calendar-compact-card {
+        min-height: unset;
+        height: auto;
+    }
+}
+
+@media (max-width: 400px) {
+    .cal-cell {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+}
