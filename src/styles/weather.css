@@ -211,7 +211,47 @@ html.light-theme .sun-horizon-line {
         height: 220px; /* Optimal mobile viewport height */
     }
 }
+/* Add to src/styles/weather.css */
+.weather-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
 
+.weather-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.weather-header-label {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+@media (max-width: 480px) {
+    .weather-card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .weather-title-group {
+        justify-content: space-between;
+    }
+    .btn-location-picker {
+        width: 100%;
+        justify-content: center;
+        padding: 5px 10px;
+    }
+}
 @media (max-width: 420px) {
     .metrics-quad {
         grid-template-columns: 1fr 1fr;

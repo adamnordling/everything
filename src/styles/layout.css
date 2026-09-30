@@ -391,12 +391,47 @@
     }
 }
 
+/* In src/styles/layout.css under @media (max-width: 1100px) */
 @media (max-width: 1100px) {
     .dashboard-grid-layout {
-        grid-template-columns: minmax(0, 1fr);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
     }
+
+    /* Flattens the nested column wrappers so all cards can be re-ordered */
+    .dash-left-column,
+    .dash-right-column,
+    .hero-split-row,
     .middle-split-row {
-        grid-template-columns: minmax(0, 1fr);
+        display: contents;
+    }
+
+    /* Mobile ordering */
+    .clock-hero-card {
+        order: 1;
+    }
+    .sys-telemetry-card {
+        order: 2;
+    }
+    .weather-expanded-card {
+        order: 3;
+    }
+    .calendar-compact-card {
+        order: 4;
+    }
+    .deadlines-expanded-card {
+        order: 5;
+    }
+    .daily-tasks-card {
+        order: 6;
+    }
+    .habits-card {
+        order: 7;
+    }
+    .scratchpad-card {
+        order: 8; /* Moved to the bottom on mobile */
+        min-height: 240px;
     }
 }
 

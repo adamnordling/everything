@@ -339,7 +339,7 @@ export function initTasks(onDataChanged?: () => void): { setDeadlineDate: (dateS
     return {
         setDeadlineDate(dateStr: string): void {
             if (dDate) dDate.value = dateStr;
-            dTitle?.focus();
+            // Removed dTitle?.focus() so it never steals focus or scrolls
         }
     };
 }

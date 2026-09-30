@@ -372,7 +372,7 @@
                                                 title="Click to copy Unix Timestamp"
                                             >
                                                 <div class="ambient-row-left">
-                                                    <span class="ambient-bullet">#</span>
+                                                    <span class="ambient-bullet-1">#</span>
                                                     <span class="ambient-label">UNIX EPOCH</span>
                                                 </div>
                                                 <div class="ambient-row-right">
@@ -477,7 +477,9 @@
                                         <div class="telemetry-top-bar">
                                             <div class="telemetry-network-block">
                                                 <div class="ping-pulse-indicator">
+                                                    <span class="telemetry-label-prefix">IP:</span>
                                                     <span class="live-ping-dot good" id="sys-ping-dot"></span>
+
                                                     <span
                                                         class="telemetry-ip privacy-blur copyable"
                                                         id="sys-ip"
@@ -486,12 +488,15 @@
                                                     >
                                                     <span class="telemetry-ping" id="sys-ping-val">-- ms</span>
                                                 </div>
-                                                <div
-                                                    class="telemetry-isp privacy-blur copyable"
-                                                    id="sys-isp"
-                                                    title="Click to copy ISP & Location"
-                                                >
-                                                    Resolving ISP &amp; ASN...
+                                                <div class="telemetry-isp-row">
+                                                    <span class="telemetry-label-prefix">ISP:</span>
+                                                    <span
+                                                        class="telemetry-isp privacy-blur copyable"
+                                                        id="sys-isp"
+                                                        title="Click to copy ISP & Location"
+                                                    >
+                                                        Resolving ISP &amp; ASN...
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div class="telemetry-quick-tags">
@@ -562,25 +567,10 @@
                                 <div class="middle-split-row">
                                     <!-- 3. LIVE ATMOSPHERE -->
                                     <div class="card weather-expanded-card">
-                                        <div class="card-header-flex" style="margin-bottom: 4px">
-                                            <div style="display: flex; align-items: center; gap: 8px">
-                                                <span
-                                                    style="
-                                                        font-size: 0.75rem;
-                                                        font-family: var(--font-mono);
-                                                        font-weight: 700;
-                                                        color: var(--text-secondary);
-                                                        text-transform: uppercase;
-                                                        letter-spacing: 0.05em;
-                                                    "
-                                                    >Live Atmosphere</span
-                                                >
-                                                <span
-                                                    class="pill-badge"
-                                                    id="wx-location-pill"
-                                                    style="font-size: 0.68rem"
-                                                    >Stockholm, SE</span
-                                                >
+                                        <div class="weather-card-header">
+                                            <div class="weather-title-group">
+                                                <span class="weather-header-label">Live Atmosphere</span>
+                                                <span class="pill-badge" id="wx-location-pill">Stockholm, SE</span>
                                             </div>
                                             <button
                                                 type="button"
@@ -883,7 +873,7 @@
                                 </div>
 
                                 <!-- 3. DAILY TASKS -->
-                                <div class="card">
+                                <div class="card daily-tasks-card">
                                     <div class="card-header-flex">
                                         <span
                                             style="
@@ -909,7 +899,7 @@
                                 </div>
 
                                 <!-- 4. MORNING ROUTINES -->
-                                <div class="card">
+                                <div class="card habits-card">
                                     <div class="card-header-flex">
                                         <span
                                             style="

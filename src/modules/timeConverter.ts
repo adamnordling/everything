@@ -4,21 +4,22 @@
 
 export interface TimezoneOption {
     label: string;
+    shortLabel: string;
     zone: string;
 }
 
 export const TIMEZONES: TimezoneOption[] = [
-    { label: 'Pacific Time (PT: PST/PDT)', zone: 'America/Los_Angeles' },
-    { label: 'Mountain Time (MT: MST/MDT)', zone: 'America/Denver' },
-    { label: 'Central Time (CT: CST/CDT)', zone: 'America/Chicago' },
-    { label: 'Eastern Time (ET: EST/EDT)', zone: 'America/New_York' },
-    { label: 'Universal Time (UTC / GMT)', zone: 'UTC' },
-    { label: 'London Time (GMT / BST)', zone: 'Europe/London' },
-    { label: 'Central European (CET / CEST)', zone: 'Europe/Stockholm' },
-    { label: 'India Standard Time (IST)', zone: 'Asia/Kolkata' },
-    { label: 'Japan / Korea (JST / KST)', zone: 'Asia/Tokyo' },
-    { label: 'Australian Eastern (AEST / AEDT)', zone: 'Australia/Sydney' },
-    { label: 'New Zealand (NZST / NZDT)', zone: 'Pacific/Auckland' }
+    { label: 'Pacific Time (PT: PST/PDT)', shortLabel: 'PT (PST / PDT)', zone: 'America/Los_Angeles' },
+    { label: 'Mountain Time (MT: MST/MDT)', shortLabel: 'MT (MST / MDT)', zone: 'America/Denver' },
+    { label: 'Central Time (CT: CST/CDT)', shortLabel: 'CT (CST / CDT)', zone: 'America/Chicago' },
+    { label: 'Eastern Time (ET: EST/EDT)', shortLabel: 'ET (EST / EDT)', zone: 'America/New_York' },
+    { label: 'Universal Time (UTC / GMT)', shortLabel: 'UTC / GMT', zone: 'UTC' },
+    { label: 'London Time (GMT / BST)', shortLabel: 'London (GMT / BST)', zone: 'Europe/London' },
+    { label: 'Central European (CET / CEST)', shortLabel: 'CET / CEST', zone: 'Europe/Stockholm' },
+    { label: 'India Standard Time (IST)', shortLabel: 'IST (India)', zone: 'Asia/Kolkata' },
+    { label: 'Japan / Korea (JST / KST)', shortLabel: 'JST / KST (Tokyo)', zone: 'Asia/Tokyo' },
+    { label: 'Australian Eastern (AEST / AEDT)', shortLabel: 'AEST / AEDT (Sydney)', zone: 'Australia/Sydney' },
+    { label: 'New Zealand (NZST / NZDT)', shortLabel: 'NZST / NZDT (Auckland)', zone: 'Pacific/Auckland' }
 ];
 
 export function initClockAndConverter(): void {
@@ -29,31 +30,34 @@ export function initClockAndConverter(): void {
     const yearFillBar = document.getElementById('year-fill-bar');
     const activeTzDisplay = document.getElementById('active-tz-display');
 
-    // Middle elements: Epoch, DST, Sunset
     const epochBtn = document.getElementById('clock-epoch-btn');
     const epochVal = document.getElementById('clock-epoch-val');
     const dstVal = document.getElementById('clock-dst-val');
     const sunsetVal = document.getElementById('clock-sunset-val');
 
-    // Timezone change controls & modal
     const tzBtn = document.getElementById('active-tz-btn');
     const tzModal = document.getElementById('modal-tz-picker');
     const tzCloseBtn = document.getElementById('modal-tz-close');
     const tzSelect = document.getElementById('tz-picker-select') as HTMLSelectElement | null;
     const tzSaveBtn = document.getElementById('btn-save-tz');
 
+    // CONVERTER DOM ELEMENTS (Must be declared before calling populateSourceSelect)
+    const hourInput = document.getElementById('tz-hour-input') as HTMLInputElement | null;
+    const minInput = document.getElementById('tz-min-input') as HTMLInputElement | null;
+    const formatBtn = document.getElementById('tz-format-toggle') as HTMLButtonElement | null;
+    const sourceSelect = document.getElementById('tz-source-select') as HTMLSelectElement | null;
+    const outputBadge = document.getElementById('tz-converted-output');
+
     const sessionStart = Date.now();
-    // Always default to your computer's local timezone on refresh
     let activeTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Stockholm';
 
     if (activeTzDisplay) activeTzDisplay.textContent = activeTz;
 
-    // 1-Click Copy Unix Timestamp
+    // 1. One-click copy epoch
     epochBtn?.addEventListener('click', () => {
         const currentSec = String(Math.floor(Date.now() / 1000));
         void navigator.clipboard.writeText(currentSec);
 
-        // Show floating copy badge above the button
         document.querySelectorAll('.inline-copy-badge').forEach(el => {
             el.remove();
         });
@@ -75,7 +79,7 @@ export function initClockAndConverter(): void {
         }, 1200);
     });
 
-    // DST Horizon Calculator for any timezone
+    // 2. DST Calculation (Compact text for mobile)
     function calculateDstHorizon(tz: string): string {
         const now = new Date();
         const year = now.getFullYear();
@@ -102,7 +106,6 @@ export function initClockAndConverter(): void {
         const nowOff = getOffset(now);
         const isDst = nowOff === Math.max(janOff, julOff);
 
-        // Search next 210 days to locate transition moment
         let probe = new Date(now.getTime() + 86400000);
         let foundDate: Date | null = null;
         for (let i = 1; i <= 210; i++) {
@@ -118,12 +121,16 @@ export function initClockAndConverter(): void {
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const dateStr = `${monthNames[foundDate.getMonth()]} ${foundDate.getDate()}`;
 
+        // Shorter format to fit narrow cards without wrapping
+        const isMobile = window.innerWidth <= 480;
+        if (isMobile) {
+            return isDst ? `Ends in ${daysUntil}d (${dateStr})` : `Starts in ${daysUntil}d (${dateStr})`;
+        }
         return isDst
-            ? `DST Active · Ends in ${daysUntil} days (${dateStr})`
-            : `Standard Time · Starts in ${daysUntil} days (${dateStr})`;
+            ? `DST Active · Ends in ${daysUntil}d (${dateStr})`
+            : `Standard · Starts in ${daysUntil}d (${dateStr})`;
     }
 
-    // Sunset Countdown Calculator
     function updateSunsetDisplay(): void {
         if (!sunsetVal) return;
         const cachedSunsetStr = localStorage.getItem('cached_sunset');
@@ -154,7 +161,13 @@ export function initClockAndConverter(): void {
 
     window.addEventListener('sunset-updated', updateSunsetDisplay);
 
-    // Populate Timezone modal dropdown
+    function updateDstDisplay(): void {
+        if (dstVal) {
+            dstVal.textContent = calculateDstHorizon(activeTz);
+        }
+    }
+
+    // Modal populate
     if (tzSelect) {
         tzSelect.innerHTML = TIMEZONES.map(t => `<option value="${t.zone}">${t.label}</option>`).join('');
         tzSelect.value = activeTz;
@@ -172,28 +185,13 @@ export function initClockAndConverter(): void {
     });
 
     tzCloseBtn?.addEventListener('click', closeTzModal);
-
-    // Click outside modal dialog to close
     window.addEventListener('click', (e: MouseEvent) => {
         if (e.target === tzModal) closeTzModal();
     });
 
-    // Escape key closes timezone modal
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'Escape' && tzModal && tzModal.style.display === 'flex') {
-            closeTzModal();
-        }
-    });
-
-    function updateDstDisplay(): void {
-        if (dstVal) {
-            dstVal.textContent = calculateDstHorizon(activeTz);
-        }
-    }
-
     tzSaveBtn?.addEventListener('click', () => {
         if (tzSelect) {
-            activeTz = tzSelect.value; // In-memory only: resets on refresh
+            activeTz = tzSelect.value;
             if (activeTzDisplay) activeTzDisplay.textContent = activeTz;
             closeTzModal();
             updateDstDisplay();
@@ -216,7 +214,6 @@ export function initClockAndConverter(): void {
         const now = new Date();
         const year = now.getFullYear();
 
-        // 1. Digital Clock in active timezone
         const fTime = new Intl.DateTimeFormat('en-GB', {
             hour: '2-digit',
             minute: '2-digit',
@@ -225,7 +222,6 @@ export function initClockAndConverter(): void {
         });
         if (clockDisplay) clockDisplay.textContent = fTime.format(now);
 
-        // 2. Date subline: e.g. "Sunday, 27 September · Week 39"
         const fDay = new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: activeTz }).format(now);
         const fDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', timeZone: activeTz }).format(
             now
@@ -236,23 +232,18 @@ export function initClockAndConverter(): void {
             dateSubEl.textContent = `${fDay}, ${fDate} · Week ${weekNum}`;
         }
 
-        // Live Unix Epoch Ticker
         if (epochVal) {
             epochVal.textContent = String(Math.floor(Date.now() / 1000));
         }
 
-        // Update DST & Sunset
-        // Update Sunset
         updateSunsetDisplay();
 
-        // 3. Active Session Stopwatch
         const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
         const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
         const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
         const s = String(elapsed % 60).padStart(2, '0');
         if (sessionBadge) sessionBadge.textContent = `Session: ${h}:${m}:${s}`;
 
-        // 4. Year Progress
         const startOfYear = new Date(year, 0, 1);
         const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000) + 1;
         const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -268,53 +259,45 @@ export function initClockAndConverter(): void {
     setInterval(tick, 1000);
 
     // =========================================================================
-    // ACCURATE TIMEZONE CONVERTER
+    // RESPONSIVE CONVERTER DROPDOWN POPULATOR
     // =========================================================================
-    const hourInput = document.getElementById('tz-hour-input') as HTMLInputElement | null;
-    const minInput = document.getElementById('tz-min-input') as HTMLInputElement | null;
-    const formatBtn = document.getElementById('tz-format-toggle') as HTMLButtonElement | null;
-    const sourceSelect = document.getElementById('tz-source-select') as HTMLSelectElement | null;
-    const outputBadge = document.getElementById('tz-converted-output');
-
     if (!hourInput || !minInput || !formatBtn || !sourceSelect || !outputBadge) return;
 
     type FormatMode = '24H' | 'AM' | 'PM';
     let currentMode: FormatMode = '24H';
 
-    sourceSelect.innerHTML = TIMEZONES.map(tz => `<option value="${tz.zone}">${tz.label}</option>`).join('');
-    sourceSelect.value = 'America/Los_Angeles'; // Default to PT
+    function populateSourceSelect(): void {
+        if (!sourceSelect) return;
+        const currentVal = sourceSelect.value || 'America/Los_Angeles';
+        const isMobile = window.innerWidth <= 600;
+        sourceSelect.innerHTML = TIMEZONES.map(
+            tz => `<option value="${tz.zone}">${isMobile ? tz.shortLabel : tz.label}</option>`
+        ).join('');
+        sourceSelect.value = currentVal;
+    }
 
-    // Sync input to selected source time on start
+    populateSourceSelect();
+    window.addEventListener('resize', () => {
+        populateSourceSelect();
+        updateDstDisplay();
+    });
+
     const nowInSource = new Date(new Date().toLocaleString('en-US', { timeZone: sourceSelect.value }));
     hourInput.value = String(nowInSource.getHours()).padStart(2, '0');
     minInput.value = String(nowInSource.getMinutes()).padStart(2, '0');
 
-    // -------------------------------------------------------------------------
-    // KEYBOARD ARROWS: Hour input (Smooth wrapping, never jumps focus to minutes)
-    // -------------------------------------------------------------------------
     hourInput.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'ArrowUp') {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             e.preventDefault();
             let val = parseInt(hourInput.value, 10);
             if (isNaN(val)) val = currentMode === '24H' ? 0 : 12;
-            val++;
+            val = e.key === 'ArrowUp' ? val + 1 : val - 1;
 
             if (currentMode === '24H') {
                 if (val > 23) val = 0;
-            } else {
-                if (val > 12) val = 1;
-            }
-            hourInput.value = String(val).padStart(2, '0');
-            calculateConversion();
-        } else if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            let val = parseInt(hourInput.value, 10);
-            if (isNaN(val)) val = currentMode === '24H' ? 0 : 12;
-            val--;
-
-            if (currentMode === '24H') {
                 if (val < 0) val = 23;
             } else {
+                if (val > 12) val = 1;
                 if (val < 1) val = 12;
             }
             hourInput.value = String(val).padStart(2, '0');
@@ -322,64 +305,40 @@ export function initClockAndConverter(): void {
         }
     });
 
-    // KEYBOARD ARROWS: Minute input
     minInput.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'ArrowUp') {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             e.preventDefault();
             let val = parseInt(minInput.value, 10);
             if (isNaN(val)) val = 0;
-            val = (val + 1) % 60;
-            minInput.value = String(val).padStart(2, '0');
-            calculateConversion();
-        } else if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            let val = parseInt(minInput.value, 10);
-            if (isNaN(val)) val = 0;
-            val = (val - 1 + 60) % 60;
+            val = e.key === 'ArrowUp' ? (val + 1) % 60 : (val - 1 + 60) % 60;
             minInput.value = String(val).padStart(2, '0');
             calculateConversion();
         }
     });
 
-    // TYPING AUTO-ADVANCE & CLAMPING (Only jumps to minutes when typing text)
     hourInput.addEventListener('input', (e: Event) => {
         const val = parseInt(hourInput.value, 10);
         if (!isNaN(val)) {
-            if (currentMode === '24H' && val > 23) {
-                hourInput.value = '23';
-            } else if (currentMode !== '24H' && val > 12) {
-                hourInput.value = '12';
-            }
+            if (currentMode === '24H' && val > 23) hourInput.value = '23';
+            else if (currentMode !== '24H' && val > 12) hourInput.value = '12';
         }
-
         const inputEvent = e as InputEvent;
         if (inputEvent.inputType === 'insertText' && hourInput.value.length >= 2) {
             minInput.focus();
             minInput.select();
         }
-
         calculateConversion();
     });
 
     minInput.addEventListener('input', () => {
         const val = parseInt(minInput.value, 10);
-        if (!isNaN(val) && val > 59) {
-            minInput.value = '59';
-        }
+        if (!isNaN(val) && val > 59) minInput.value = '59';
         calculateConversion();
     });
 
-    // Formatting on blur (pads single digits to 2 digits: '5' -> '05')
     hourInput.addEventListener('blur', () => {
         let val = parseInt(hourInput.value, 10);
         if (isNaN(val)) val = currentMode === '24H' ? 0 : 12;
-        if (currentMode !== '24H') {
-            if (val < 1) val = 1;
-            if (val > 12) val = 12;
-        } else {
-            if (val < 0) val = 0;
-            if (val > 23) val = 23;
-        }
         hourInput.value = String(val).padStart(2, '0');
         calculateConversion();
     });
@@ -394,9 +353,6 @@ export function initClockAndConverter(): void {
 
     sourceSelect.addEventListener('change', calculateConversion);
 
-    // -------------------------------------------------------------------------
-    // STRICT 3-WAY FORMAT CYCLE: 24H -> AM -> PM -> 24H (AM never skipped)
-    // -------------------------------------------------------------------------
     formatBtn.addEventListener('click', () => {
         let h = parseInt(hourInput.value, 10);
         if (isNaN(h)) h = 12;
@@ -422,9 +378,6 @@ export function initClockAndConverter(): void {
         calculateConversion();
     });
 
-    // -------------------------------------------------------------------------
-    // CONVERSION CALCULATION
-    // -------------------------------------------------------------------------
     function calculateConversion(): void {
         if (!hourInput || !minInput || !sourceSelect || !outputBadge) return;
 
@@ -482,12 +435,12 @@ export function initClockAndConverter(): void {
         const sourceDay = now.getDate();
         const localDay = new Date(targetUtcDate.toLocaleString('en-US', { timeZone: activeTz })).getDate();
         let dayNote = 'Same Day';
-        if (localDay > sourceDay) dayNote = '+1 Day (Tomorrow)';
-        if (localDay < sourceDay) dayNote = '-1 Day (Yesterday)';
+        if (localDay > sourceDay) dayNote = '+1 Day';
+        if (localDay < sourceDay) dayNote = '-1 Day';
 
         outputBadge.innerHTML = `
             <div class="converter-result-box">
-                <span class="converter-result-label">Your Local Time:</span>
+                <span class="converter-result-label">Local:</span>
                 <span class="converter-result-value">${time24}</span>
                 <span class="converter-result-secondary">(${time12})</span>
                 <span class="pill-badge">${dayNote}</span>

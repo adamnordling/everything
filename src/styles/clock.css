@@ -14,13 +14,9 @@
     gap: 10px;
 }
 
-/* TOP HEADER ROW: Digits on Left, Session on Top-Right */
+/* TOP HEADER ROW: Digits on Left, Session ALWAYS on Top-Right (No wrapping) */
 .clock-top-bar {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
+    position: relative;
     width: 100%;
 }
 
@@ -28,11 +24,13 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
+    flex: 1;
 }
 
 .time-digits-display {
     font-family: var(--font-mono);
-    font-size: clamp(2rem, 7vw, 2.7rem);
+    font-size: clamp(2.1rem, 7vw, 2.7rem);
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1;
@@ -41,42 +39,32 @@
 
 .clock-date-line {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: clamp(0.72rem, 2.2vw, 0.8rem);
     color: var(--text-secondary);
     font-weight: 500;
     margin-top: 2px;
-}
-
-.session-badge-pill {
-    background: rgba(56, 189, 248, 0.1);
-    color: var(--accent-sky);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    font-weight: 700;
-    font-size: 0.72rem;
-    padding: 3px 8px;
-    border-radius: 5px;
     white-space: nowrap;
-    font-family: var(--font-mono);
+    overflow: visible;
+    text-overflow: clip;
+}
+
+/* Pinned to top-right of container */
+.session-badge-pill {
+    position: absolute;
+    top: 2px;
+    right: 0;
 }
 
 /* =============================================================================
-   MIDDLE AMBIENT GRID: EPOCH, DST SENTINEL & SUNSET
-   ============================================================================= */
-
-/* =============================================================================
-   MIDDLE: 3 FULL-WIDTH TELEMETRY ROWS
-   ============================================================================= */
-
-/* =============================================================================
-   MIDDLE: 3 FULL-WIDTH TELEMETRY ROWS (UNIFIED HEIGHT & SPACING)
+   MIDDLE: 3 FULL-WIDTH TELEMETRY ROWS (PERFECT VERTICAL ICON ALIGNMENT)
    ============================================================================= */
 
 .clock-ambient-stack {
     display: flex;
     flex-direction: column;
     gap: 7px;
-    margin-top: 10px; /* Added breathing room below the clock digits & date */
-    margin-bottom: 12px; /* Added breathing room above Convert Time */
+    margin-top: 10px;
+    margin-bottom: 12px;
     width: 100%;
 }
 
@@ -85,13 +73,13 @@
     background: var(--bg-base);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    padding: 8px 12px;
-    min-height: 38px; /* Touch friendly */
+    padding: 7px 12px;
+    min-height: 35px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    line-height: 1.2; /* Resets default button line-height difference */
+    line-height: 1.2;
     font-family: inherit;
     font-size: inherit;
     box-sizing: border-box;
@@ -110,39 +98,76 @@
     border-color: var(--accent-mint);
     background: rgba(0, 220, 130, 0.05);
 }
+
 .ambient-row-left {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
 }
 
+/* Fixed 18px box ensures #, ◐, and ☀ align into a straight column */
 .ambient-bullet {
-    font-size: 0.8rem;
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
     color: var(--accent-mint);
     line-height: 1;
-    font-weight: 700;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.ambient-bullet-1 {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--accent-mint);
+    line-height: 1;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin: 0;
+    padding-right: 7px;
+    padding-left: 17px;
 }
 
 .ambient-label {
     font-family: var(--font-mono);
-    font-size: 0.64rem;
+    font-size: 0.62rem;
     font-weight: 700;
     color: var(--text-muted);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .ambient-row-right {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    min-width: 0;
+    flex-shrink: 1;
+    justify-content: flex-end;
 }
 
 .ambient-val {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: clamp(0.68rem, 2.2vw, 0.78rem);
     font-weight: 700;
     color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
 }
 
 .ambient-action-hint {
@@ -154,10 +179,11 @@
     padding: 1px 6px;
     border-radius: 4px;
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 /* =============================================================================
-   CONVERTER (SINGLE LINE, ZERO LAYOUT SHIFT)
+   CONVERTER MODULE
    ============================================================================= */
 
 .converter-stacked-module {
@@ -170,12 +196,12 @@
     gap: 6px;
 }
 
+/* Desktop layout: Single line */
 .converter-inputs-bar {
     display: flex;
     align-items: center;
     gap: 6px;
     width: 100%;
-    flex-wrap: wrap;
 }
 
 .converter-label {
@@ -193,7 +219,6 @@
     color: var(--text-muted);
 }
 
-/* Numeric input boxes with spinners hidden */
 .input-mini-time {
     background: var(--bg-card);
     border: 1px solid var(--border-bold);
@@ -226,7 +251,6 @@
     appearance: textfield;
 }
 
-/* Fixed-width button that cycles 24H -> AM -> PM -> 24H without jumping */
 .btn-format-cycle {
     background: var(--bg-elevated);
     border: 1px solid var(--border-bold);
@@ -270,7 +294,44 @@
     border-color: var(--accent-mint);
 }
 
-/* Output row framed underneath */
+/* Mobile Layout (<= 600px):
+   Row 1 = "Convert Time:"
+   Row 2 = [02] : [10] [24H] [PT (PST / PDT) ▾] (All 4 on the same row) */
+@media (max-width: 600px) {
+    .converter-inputs-bar {
+        display: grid;
+        grid-template-columns: auto auto auto auto 1fr;
+        gap: 6px;
+        align-items: center;
+        width: 100%;
+    }
+
+    .converter-label {
+        grid-column: 1 / -1;
+        margin-bottom: 2px;
+        font-size: 0.72rem;
+    }
+
+    .input-mini-time {
+        width: 36px;
+        height: 28px;
+    }
+
+    .btn-format-cycle {
+        width: 40px;
+        height: 28px;
+    }
+
+    .select-mini-tz {
+        grid-column: 5;
+        width: 100%;
+        min-width: 0;
+        height: 28px;
+        font-size: 0.72rem;
+    }
+}
+
+/* Result row: Locked to a single line */
 .converter-result-under {
     display: flex;
     align-items: center;
@@ -279,42 +340,49 @@
     font-family: var(--font-mono);
     font-size: 0.78rem;
     min-height: 24px;
-    white-space: nowrap;
+    width: 100%;
 }
 
 .converter-result-box {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: nowrap;
+    gap: 6px;
+    flex-wrap: nowrap; /* Stays on 1 single row */
+    width: 100%;
+    overflow: hidden;
 }
 
 .converter-result-label {
     color: var(--text-muted);
     font-size: 0.74rem;
+    flex-shrink: 0;
 }
 
 .converter-result-value {
     color: var(--accent-mint);
     font-weight: 800;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
+    flex-shrink: 0;
 }
 
 .converter-result-secondary {
     color: var(--text-secondary);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
+    flex-shrink: 0;
+}
+
+.converter-result-box .pill-badge {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    padding: 1px 6px;
 }
 
 /* =============================================================================
-   YEAR PROGRESS & TIMEZONE BUTTON (BOTTOM-RIGHT)
-   ============================================================================= */
-
-/* =============================================================================
-   YEAR PROGRESS & TIMEZONE BUTTON (ANCHORED TO VERY BOTTOM)
+   YEAR PROGRESS & TIMEZONE BUTTON (BOTTOM ANCHORED)
    ============================================================================= */
 
 .year-progress-module {
-    margin-top: auto; /* Pushes progress bar cleanly to the bottom edge */
+    margin-top: auto;
     padding-top: 8px;
 }
 
@@ -357,21 +425,4 @@
     background: linear-gradient(90deg, var(--accent-sky), var(--accent-mint));
     border-radius: 4px;
     transition: width 0.3s ease;
-}
-
-@media (max-width: 480px) {
-    .converter-inputs-bar {
-        display: grid;
-        grid-template-columns: auto auto auto auto 1fr;
-        gap: 6px;
-        align-items: center;
-    }
-    .converter-label {
-        grid-column: 1 / -1;
-        margin-bottom: 2px;
-    }
-    .select-mini-tz {
-        grid-column: 1 / -1;
-        width: 100%;
-    }
 }
