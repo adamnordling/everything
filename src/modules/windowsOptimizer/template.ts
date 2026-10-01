@@ -488,10 +488,10 @@ export const WINDOWS_OPTIMIZER_HTML = `
                     Ensures cores scale in ~1ms via Speed Shift/CPPC, disables PCIe link power drops, stops USB sleep disconnects for gaming mice, and reclaims 16–32 GB SSD space:
                 </p>
                 <div class="code-action-box" style="margin-top:6px;">
-<div class="code-copy-row">
-    <code class="font-mono">powercfg -restoredefaultschemes; powercfg /change standby-timeout-ac 0; powercfg /change disk-timeout-ac 0; powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0; powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0; powercfg /hibernate off; powercfg /setactive SCHEME_CURRENT</code>
-    <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="powercfg -restoredefaultschemes; powercfg /change standby-timeout-ac 0; powercfg /change disk-timeout-ac 0; powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0; powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0; powercfg /hibernate off; powercfg /setactive SCHEME_CURRENT">Copy Power Script</button>
-</div>
+                <div class="code-copy-row">
+                    <code class="font-mono">powercfg -restoredefaultschemes; powercfg /change monitor-timeout-ac 0; powercfg /change standby-timeout-ac 0; powercfg /change disk-timeout-ac 0; powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0; powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0; powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0; powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 0; powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS LIDACTION 0; powercfg /hibernate off; powercfg /setactive SCHEME_CURRENT</code>
+                    <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="powercfg -restoredefaultschemes; powercfg /change monitor-timeout-ac 0; powercfg /change standby-timeout-ac 0; powercfg /change disk-timeout-ac 0; powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0; powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0; powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS PBUTTONACTION 0; powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 0; powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS LIDACTION 0; powercfg /hibernate off; powercfg /setactive SCHEME_CURRENT">Copy Power Script</button>
+                </div>
                 </div>
             </div>
 
