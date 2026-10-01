@@ -183,6 +183,16 @@
                     </button>
 
                     <div class="nav-section-title">UTILITIES &amp; TOOLS</div>
+                    <button type="button" class="nav-item" data-view="tool-winopt">
+    <span class="nav-icon-badge" style="color: var(--accent-sky)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+    </span>
+    <span>Windows Playbook</span>
+</button>
                     <button type="button" class="nav-item" data-view="tool-youtube">
                         <span class="nav-icon-badge icon-youtube">
                             <svg
@@ -1627,6 +1637,331 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- =========================================================================
+     VIEW 3: WINDOWS & HARDWARE OPTIMIZATION PLAYBOOK
+     ========================================================================= -->
+<div class="view-panel" id="view-tool-winopt" style="display: none">
+    <div class="winopt-container">
+        <!-- TOP WORKBENCH HEADER & PROFILE SELECTOR -->
+        <div class="card winopt-hero">
+            <div class="winopt-hero-left">
+                <div class="brand-icon-box" style="background: linear-gradient(135deg, #0284c7 0%, #00dc82 100%)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0b0e14" stroke-width="2.5">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="12 17 2 12 17 22 12"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <h1 style="font-size: 1.15rem; font-weight: 800; margin: 0">Windows Playbook & Hardware Tuning</h1>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0; font-family: var(--font-mono)">
+                        Zero-bloat deployment, DDU driver hygiene, BIOS configuration & verified low-latency setup
+                    </p>
+                </div>
+            </div>
+
+        <!-- HARDWARE SELECTORS MATRIX (5 TAILORED AXES) -->
+<div class="winopt-profile-selectors">
+    <div class="selector-field">
+        <label for="winopt-os-select">OS TARGET</label>
+        <select id="winopt-os-select" class="select-mini-tz">
+            <option value="win10" selected>Windows 10 (22H2 / LTSC)</option>
+            <option value="win11">Windows 11 (23H2 / 24H2)</option>
+        </select>
+    </div>
+
+    <div class="selector-field">
+        <label for="winopt-mobo-select">MOTHERBOARD VENDOR</label>
+        <select id="winopt-mobo-select" class="select-mini-tz">
+            <option value="asus" selected>ASUS / ROG</option>
+            <option value="msi">MSI (Micro-Star)</option>
+            <option value="gigabyte">Gigabyte / AORUS</option>
+            <option value="asrock">ASRock</option>
+            <option value="oem">OEM / Dell / HP / Lenovo / Other</option>
+        </select>
+    </div>
+
+    <div class="selector-field">
+        <label for="winopt-cpu-select">CPU ARCHITECTURE</label>
+        <select id="winopt-cpu-select" class="select-mini-tz">
+            <option value="intel-legacy" selected>Intel Core Monolithic (6th-11th Gen, e.g. i7-9700K)</option>
+            <option value="intel-raptor">Intel Core 13th/14th Gen Raptor Lake (0x12B Microcode)</option>
+            <option value="intel-alder">Intel Core 12th Gen Alder Lake (Hybrid P/E)</option>
+            <option value="amd-x3d-single">AMD Ryzen Single-CCD X3D (5800X3D, 7800X3D, 9800X3D)</option>
+            <option value="amd-x3d-dual">AMD Ryzen Dual-CCD X3D (7900X3D, 7950X3D, 9950X3D)</option>
+            <option value="amd-standard">AMD Ryzen Standard (Non-X3D AM4 / AM5)</option>
+        </select>
+    </div>
+
+    <div class="selector-field" style="min-width: 200px;">
+        <label for="winopt-gpu-select">EXACT GRAPHICS CARD</label>
+        <select id="winopt-gpu-select" class="select-mini-tz" style="width: 100%"></select>
+    </div>
+
+    <div class="selector-field" style="min-width: 220px;">
+        <label for="winopt-ram-select">MEMORY (RAM) PROFILE</label>
+        <select id="winopt-ram-select" class="select-mini-tz" style="width: 100%"></select>
+    </div>
+</div>
+            </div>
+        </div>
+
+        <!-- HARDWARE DETECTIVE TERMINAL SCANNER (1-CLICK RUN & AUTO-PASTE) -->
+<!-- HARDWARE DETECTIVE TERMINAL SCANNER -->
+<div class="card spec-scanner-card">
+    <div class="spec-scanner-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span class="pill-badge" style="color:var(--accent-mint)">HARDWARE DETECTIVE</span>
+            <span style="font-size:0.82rem; font-weight:700; color:var(--text-primary)">Don't know your exact specs? Run this 1-line diagnostic:</span>
+        </div>
+        <span style="font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono)">Detects Mobo, CPU, GPU & Dual-Channel RAM speed</span>
+    </div>
+
+    <div class="code-copy-row" style="margin-top:6px;">
+        <code class="font-mono">powershell -NoProfile -Command "$m=(Get-CimInstance Win32_BaseBoard | ForEach-Object { $_.Manufacturer+' '+$_.Product }); $c=(Get-CimInstance Win32_Processor).Name.Trim(); $g=(Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name) -join ' / '; $mem=Get-CimInstance Win32_PhysicalMemory; $gb=[Math]::Round(($mem | Measure-Object Capacity -Sum).Sum / 1GB); $spd=($mem | Select-Object -First 1).ConfiguredClockSpeed; $stk=$mem.Count; $ddr=if($spd -gt 4500){'DDR5'}elseif($spd -gt 2000){'DDR4'}else{'DDR3'}; $ch=if($stk -gt 1){'Dual-Channel ('+$stk+' sticks)'}else{'SINGLE-CHANNEL ALERT (1 stick)'}; $out='MOBO: '+$m+' | CPU: '+$c+' | GPU: '+$g+' | RAM: '+$gb+'GB '+$ddr+' @ '+$spd+'MHz ['+$ch+']'; Write-Host $out -ForegroundColor Green; Set-Clipboard -Value $out"</code>
+        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="powershell -NoProfile -Command &quot;$m=(Get-CimInstance Win32_BaseBoard | ForEach-Object { $_.Manufacturer+' '+$_.Product }); $c=(Get-CimInstance Win32_Processor).Name.Trim(); $g=(Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name) -join ' / '; $mem=Get-CimInstance Win32_PhysicalMemory; $gb=[Math]::Round(($mem | Measure-Object Capacity -Sum).Sum / 1GB); $spd=($mem | Select-Object -First 1).ConfiguredClockSpeed; $stk=$mem.Count; $ddr=if($spd -gt 4500){'DDR5'}elseif($spd -gt 2000){'DDR4'}else{'DDR3'}; $ch=if($stk -gt 1){'Dual-Channel ('+$stk+' sticks)'}else{'SINGLE-CHANNEL ALERT (1 stick)'}; $out='MOBO: '+$m+' | CPU: '+$c+' | GPU: '+$g+' | RAM: '+$gb+'GB '+$ddr+' @ '+$spd+'MHz ['+$ch+']'; Write-Host $out -ForegroundColor Green; Set-Clipboard -Value $out&quot;">Copy Command</button>
+    </div>
+
+    <!-- AUTO-PARSE INPUT -->
+    <div class="spec-paste-bar">
+        <input type="text" id="winopt-spec-paste-input" class="spec-paste-field" placeholder="Paste the output string here (e.g. MOBO: ASUS ROG STRIX | CPU: Intel Core i7-9700K | GPU: NVIDIA GeForce GTX 1070 | RAM: 16GB DDR4 @ 3200MHz [Dual-Channel])..." />
+        <button type="button" id="winopt-spec-parse-btn" class="btn-action-pill" style="white-space:nowrap">Auto-Fill Menu</button>
+        <span id="winopt-spec-parse-status" style="font-size:0.75rem; font-family:var(--font-mono)"></span>
+    </div>
+</div>
+
+        <!-- DYNAMIC COMPATIBILITY & HARDWARE ADVISORY -->
+        <div id="hw-advisory-banner" class="advisory-container"></div>
+
+        <!-- CHRONOLOGICAL PHASES STREAM -->
+        <div class="winopt-steps-grid">
+            <!-- PHASE 1: CLEAN INSTALLATION & RUFUS BLUEPRINT -->
+            <div class="card winopt-step-card">
+                <div class="step-badge-row">
+                    <span class="pill-badge" style="color: var(--accent-sky)">PHASE 01</span>
+                    <span class="step-title" id="p1-iso-title">Clean ISO & Rufus Deployment</span>
+                </div>
+                <p class="step-desc" id="p1-iso-desc"></p>
+
+                <div class="links-action-bar">
+                    <a id="p1-iso-link" href="https://www.microsoft.com/software-download/windows10ISO" target="_blank" rel="noopener" class="link-chip-large">
+                        Download ISO ↗
+                    </a>
+                    <a href="https://rufus.ie/" target="_blank" rel="noopener" class="link-chip-large highlight">
+                        Download Rufus (v4+) Official ↗
+                    </a>
+                </div>
+
+                <div class="step-content-box">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">
+                        Exact Rufus Configuration (USB Preparation):
+                    </div>
+                    <div id="p1-rufus-options"></div>
+                </div>
+
+                <div class="step-content-box" id="p1-oobe-guide"></div>
+            </div>
+
+            <!-- PHASE 2: BIOS UPDATE & MOTHERBOARD TUNING -->
+            <div class="card winopt-step-card">
+                <div class="step-badge-row">
+                    <span class="pill-badge" style="color: var(--accent-amber)">PHASE 02</span>
+                    <span class="step-title">Motherboard BIOS Update & Hardware Tuning</span>
+                </div>
+                <p class="step-desc">
+                    Flashing your motherboard BIOS before installing drivers ensures CPU microcode stability, memory training, and PCIe Resizable BAR support.
+                </p>
+
+                <div class="step-content-box">
+                    <div class="bios-grid">
+                        <div class="bios-guide-col">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong>Motherboard Flash Utility:</strong>
+                                <span class="pill-badge" id="p2-mobo-tool-name">ASUS (EZ Flash 3)</span>
+                            </div>
+                            <ol class="ordered-step-list">
+                                <li>Format an empty USB drive to <strong>FAT32</strong>.</li>
+                                <li>Download the latest non-beta BIOS update from your motherboard support page:
+                                    <div style="margin:4px 0;"><a id="p2-mobo-link" href="#" target="_blank" rel="noopener" class="link-chip">Open Motherboard BIOS Portal ↗</a></div>
+                                </li>
+                                <li>Extract the BIOS file to the root of the USB drive (run BIOSRenamer if provided).</li>
+                                <li>Restart PC and tap <kbd>Delete</kbd> or <kbd>F2</kbd> to enter UEFI/BIOS.</li>
+                                <li>Select your flash utility, select the USB file, and let it flash. <em>Do not power off.</em></li>
+                            </ol>
+                        </div>
+                        <div class="bios-settings-col">
+                            <strong>Mandatory BIOS Settings to Enable:</strong>
+                            <ul class="clean-bullet-list" id="p2-bios-settings-list">
+                                <li><strong>XMP / EXPO / DOCP:</strong> Set to <em>Profile 1</em> (Runs RAM at advertised speeds instead of default JEDEC 2133/4800MHz).</li>
+                                <li><strong>Above 4G Decoding:</strong> Set to <strong>Enabled</strong>.</li>
+                                <li><strong>Re-Size BAR Support:</strong> Set to <strong>Auto</strong> or <strong>Enabled</strong>.</li>
+                                <li><strong>CSM:</strong> Set to <strong>Disabled</strong> (Pure UEFI boot mode).</li>
+                                <li><strong>Fast Boot (in BIOS):</strong> Set to <strong>Disabled</strong> (Enables cold boot device initialization).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHASE 3: FIRST-BOOT SAFETY NETS & ROLLBACK SCRIPTS -->
+            <div class="card winopt-step-card">
+                <div class="step-badge-row">
+                    <span class="pill-badge" style="color: var(--accent-mint)">PHASE 03</span>
+                    <span class="step-title">Safety Nets, Checkpoints & Driver Lock</span>
+                </div>
+                <p class="step-desc">
+                    Create an instant system restore checkpoint and block Windows Update from replacing your clean display drivers with outdated generic OEM drivers.
+                </p>
+
+                <!-- 1. System Restore -->
+                <div class="action-revert-pair">
+                    <div class="code-action-box">
+                        <div class="code-header-flex">
+                            <span class="code-title">Action 1: Enable & Create Initial System Restore Checkpoint (Run in PowerShell as Admin):</span>
+                            <span class="pill-badge" style="font-size:0.6rem">Safe</span>
+                        </div>
+                        <div class="code-copy-row">
+                            <code class="font-mono">Enable-ComputerRestore -Drive "C:\"; Checkpoint-Computer -Description "FreshInstall-Clean" -RestorePointType "MODIFY_SETTINGS"</code>
+                            <button type="button" class="btn-action-pill copy-btn-trigger" data-copy='Enable-ComputerRestore -Drive "C:\"; Checkpoint-Computer -Description "FreshInstall-Clean" -RestorePointType "MODIFY_SETTINGS"'>Copy</button>
+                        </div>
+                        <span class="code-explanation">
+                            <strong>What it does:</strong> Enables Shadow Copy on drive C: and snapshots your clean system state.
+                        </span>
+                    </div>
+
+                    <div class="revert-box">
+                        <div class="code-header-flex">
+                            <span class="revert-title">How to Roll Back / Undo:</span>
+                            <button type="button" class="btn-text-link copy-btn-trigger" data-copy="SystemPropertiesProtection">Copy Run Command</button>
+                        </div>
+                        <span class="revert-text">
+                            Press <kbd>Win</kbd> + <kbd>R</kbd>, type <code>SystemPropertiesProtection</code>, press Enter, and click <strong>"System Restore"</strong>.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 2. Windows Update Driver Override -->
+                <div class="action-revert-pair" style="margin-top: 10px;">
+                    <div class="code-action-box">
+                        <div class="code-header-flex">
+                            <span class="code-title">Action 2: Block Windows Update from Overwriting GPU & Chipset Drivers:</span>
+                            <span class="pill-badge" style="font-size:0.6rem">Recommended</span>
+                        </div>
+                        <div class="code-copy-row">
+                            <code class="font-mono">reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f</code>
+                            <button type="button" class="btn-action-pill copy-btn-trigger" data-copy='reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f'>Copy</button>
+                        </div>
+                        <span class="code-explanation">
+                            <strong>What it does:</strong> Windows Update will download security patches, but will NEVER overwrite your clean GPU or chipset drivers.
+                        </span>
+                    </div>
+
+                    <div class="revert-box">
+                        <div class="code-header-flex">
+                            <span class="revert-title">How to Revert / Undo:</span>
+                            <button type="button" class="btn-text-link copy-btn-trigger" data-copy='reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /f'>Copy Revert Command</button>
+                        </div>
+                        <div class="code-copy-row" style="margin-top:4px">
+                            <code class="font-mono revert-code">reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /f</code>
+                        </div>
+                        <span class="revert-text">
+                            Removes the policy key and restores standard Windows Update automated driver delivery.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHASE 4: DDU CLEAN & HARDWARE DRIVER FOUNDATION -->
+            <div class="card winopt-step-card">
+                <div class="step-badge-row">
+                    <span class="pill-badge" style="color: var(--accent-rose)">PHASE 04</span>
+                    <span class="step-title">DDU Deep Clean & Tailored Hardware Drivers</span>
+                </div>
+                <p class="step-desc">
+                    Display Driver Uninstaller (DDU) eliminates remnant shader caches, registry keys, and broken audio drivers before clean installation.
+                </p>
+
+                <!-- DDU WALKTHROUGH -->
+                <div class="step-content-box">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <strong style="color:var(--text-primary)">DDU Safe Mode Cleaning Protocol:</strong>
+                        <a href="https://www.wagnardsoft.com/display-driver-uninstaller-ddu-" target="_blank" rel="noopener" class="link-chip">Download Official DDU ↗</a>
+                    </div>
+                    <ol class="ordered-step-list">
+                        <li>Download DDU and your tailored GPU driver.</li>
+                        <li><strong>Disconnect your PC from the internet (unplug Ethernet / disconnect Wi-Fi).</strong></li>
+                        <li>Boot into Windows <strong>Safe Mode</strong>: Hold <kbd>Shift</kbd> while clicking Restart in Start Menu ➔ Troubleshoot ➔ Advanced Options ➔ Startup Settings ➔ Restart ➔ Press <kbd>4</kbd> (Safe Mode).</li>
+                        <li>Launch DDU in Safe Mode: Select device type <strong>GPU</strong> ➔ Click <strong>"Clean and do NOT restart"</strong> (or "Clean and Restart").</li>
+                        <li>Boot back into standard Windows and install your clean GPU driver while still offline.</li>
+                    </ol>
+                </div>
+
+                <!-- DYNAMIC CPU & GPU GUIDANCE -->
+                <div id="hw-dynamic-content" class="step-content-box"></div>
+            </div>
+
+            <!-- PHASE 5: CONTROLLED DEBLOAT & WINGET ESSENTIALS -->
+            <div class="card winopt-step-card">
+                <div class="step-badge-row">
+                    <span class="pill-badge" style="color: var(--accent-violet)">PHASE 05</span>
+                    <span class="step-title">Verified Debloating (Chris Titus Tech Utility)</span>
+                </div>
+                <p class="step-desc">
+                    Now connect your Ethernet cable. Run the open-source WinUtil tool to safely remove telemetry and scheduled background tasks without breaking Windows Defender, DirectX, or Xbox Store runtimes.
+                </p>
+
+                <div class="code-action-box">
+                    <span class="code-title">Launch CTT WinUtil in PowerShell (Administrator):</span>
+                    <div class="code-copy-row">
+                        <code class="font-mono">irm https://christitus.com/win | iex</code>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="irm https://christitus.com/win | iex">Copy</button>
+                    </div>
+                </div>
+
+                <div class="step-content-box" style="margin-top: 8px;">
+                    <div style="font-weight:700; color:var(--accent-mint); font-size:0.8rem; margin-bottom:4px;">
+                        Recommended WinUtil Settings (Do NOT Over-Tweak):
+                    </div>
+                    <div class="curated-tags-row">
+                        <span class="pill-badge">Essential Tweaks Only</span>
+                        <span class="pill-badge">Disable Telemetry</span>
+                        <span class="pill-badge">Set Services to Manual (Not Disabled)</span>
+                        <span class="pill-badge">Install Winget Packages</span>
+                    </div>
+                </div>
+
+                <!-- 1-CLICK CURATED ESSENTIALS INSTALLER (WINGET) -->
+                <div class="code-action-box" style="margin-top: 10px;">
+                    <span class="code-title">1-Click Curated Essentials Installer (7-Zip, Notepad++, VLC, PowerToys, MSI Afterburner):</span>
+                    <div class="code-copy-row">
+                        <code class="font-mono">winget install --id 7zip.7zip -e; winget install --id Notepad++.Notepad++ -e; winget install --id VideoLAN.VLC -e; winget install --id Microsoft.PowerToys -e; winget install --id Guru3D.MSIAfterburner -e</code>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="winget install --id 7zip.7zip -e; winget install --id Notepad++.Notepad++ -e; winget install --id VideoLAN.VLC -e; winget install --id Microsoft.PowerToys -e; winget install --id Guru3D.MSIAfterburner -e">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHASE 6: COMPETITIVE GAMING & LOW LATENCY CALIBRATION -->
+            <div class="card winopt-step-card">
+                <div class="step-badge-row">
+                    <span class="pill-badge" style="color: var(--accent-mint)">PHASE 06</span>
+                    <span class="step-title">Verified Low-Latency Calibration</span>
+                </div>
+                <div class="latency-grid">
+                    <div class="latency-item">
+                        <strong>Game Mode:</strong> Turn <strong>ON</strong> (Settings > Gaming > Game Mode). Game Mode prioritizes GPU and CPU execution queues to the foreground game thread and stops background Windows maintenance tasks.
+                    </div>
+                    <div class="latency-item">
+                        <strong>Core Isolation / Memory Integrity (VBS):</strong> If you want the maximum possible 1% low frame rates in competitive esports (CS2, Valorant, Overwatch 2), consider turning Memory Integrity <strong>OFF</strong> in Windows Security > Core Isolation.
+                    </div>
+                    <div class="latency-item">
+                        <strong>Power Plan:</strong> Keep standard <strong>Balanced</strong> on modern AMD Ryzen (PBO) and Intel Core CPUs. Forcing 100% clock states prevents cores from sleeping into low C-states, reducing thermal budget for max single-core boost.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                     <!-- =========================================================================
                          MODAL: REAL INTERACTIVE WORLD MAP

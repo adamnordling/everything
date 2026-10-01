@@ -6,7 +6,7 @@ import { initTasks } from './modules/tasks';
 import { initScratchpad } from './modules/scratchpad';
 import { initBackup } from './modules/backup';
 import { initYoutube } from './modules/youtube';
-
+import { initWindowsOptimizer } from './modules/windowsOptimizer';
 const VIEW_STORAGE_KEY = 'app_active_view';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewDashboard = document.getElementById('view-dashboard');
     const viewYoutube = document.getElementById('view-tool-youtube');
 
+    const viewWinOpt = document.getElementById('view-tool-winopt');
     // In src/main.ts:
     const mobileMenuBtn = document.getElementById('btn-mobile-menu');
     const mobileThemeBtn = document.getElementById('mobile-theme-btn');
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function switchView(targetView: string): void {
         closeMobileDrawer(); // <--- Closes drawer automatically when a user taps a tool
 
-        const supportedViews = ['dashboard', 'tool-youtube'];
+        const supportedViews = ['dashboard', 'tool-youtube', 'tool-winopt'];
         const activeView = supportedViews.includes(targetView) ? targetView : 'dashboard';
 
         localStorage.setItem(VIEW_STORAGE_KEY, activeView);
@@ -78,13 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        if (activeView === 'tool-youtube') {
-            if (viewDashboard) viewDashboard.style.display = 'none';
-            if (viewYoutube) viewYoutube.style.display = 'flex';
-        } else {
-            if (viewDashboard) viewDashboard.style.display = 'block';
-            if (viewYoutube) viewYoutube.style.display = 'none';
-        }
+if (activeView === 'tool-youtube') {
+    if (viewDashboard) viewDashboard.style.display = 'none';
+    if (viewYoutube) viewYoutube.style.display = 'flex';
+    if (viewWinOpt) viewWinOpt.style.display = 'none';
+} else if (activeView === 'tool-winopt') {
+    if (viewDashboard) viewDashboard.style.display = 'none';
+    if (viewYoutube) viewYoutube.style.display = 'none';
+    if (viewWinOpt) viewWinOpt.style.display = 'flex';
+} else {
+    if (viewDashboard) viewDashboard.style.display = 'block';
+    if (viewYoutube) viewYoutube.style.display = 'none';
+    if (viewWinOpt) viewWinOpt.style.display = 'none';
+}
     }
 
     navButtons.forEach(btn => {
@@ -168,4 +175,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initScratchpad();
     initBackup();
     initYoutube();
+    initWindowsOptimizer();
 });
