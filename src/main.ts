@@ -6,7 +6,7 @@ import { initTasks } from './modules/tasks';
 import { initScratchpad } from './modules/scratchpad';
 import { initBackup } from './modules/backup';
 import { initYoutube } from './modules/youtube';
-import { initWindowsOptimizer } from './modules/windowsOptimizer';
+import { initWindowsOptimizer } from './modules/windowsOptimizer/index';
 const VIEW_STORAGE_KEY = 'app_active_view';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -79,19 +79,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-if (activeView === 'tool-youtube') {
-    if (viewDashboard) viewDashboard.style.display = 'none';
-    if (viewYoutube) viewYoutube.style.display = 'flex';
-    if (viewWinOpt) viewWinOpt.style.display = 'none';
-} else if (activeView === 'tool-winopt') {
-    if (viewDashboard) viewDashboard.style.display = 'none';
-    if (viewYoutube) viewYoutube.style.display = 'none';
-    if (viewWinOpt) viewWinOpt.style.display = 'flex';
-} else {
-    if (viewDashboard) viewDashboard.style.display = 'block';
-    if (viewYoutube) viewYoutube.style.display = 'none';
-    if (viewWinOpt) viewWinOpt.style.display = 'none';
-}
+        if (activeView === 'tool-youtube') {
+            if (viewDashboard) viewDashboard.style.display = 'none';
+            if (viewYoutube) viewYoutube.style.display = 'flex';
+            if (viewWinOpt) viewWinOpt.style.display = 'none';
+        } else if (activeView === 'tool-winopt') {
+            if (viewDashboard) viewDashboard.style.display = 'none';
+            if (viewYoutube) viewYoutube.style.display = 'none';
+            if (viewWinOpt) viewWinOpt.style.display = 'flex';
+        } else {
+            if (viewDashboard) viewDashboard.style.display = 'block';
+            if (viewYoutube) viewYoutube.style.display = 'none';
+            if (viewWinOpt) viewWinOpt.style.display = 'none';
+        }
     }
 
     navButtons.forEach(btn => {

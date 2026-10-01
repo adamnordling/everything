@@ -1,12 +1,11 @@
-/* =============================================================================
-   WINDOWS OPTIMIZATION PLAYBOOK STYLES
-   ============================================================================= */
-
 .winopt-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .winopt-hero {
@@ -19,6 +18,7 @@
     border: 1px solid var(--border-bold);
     border-radius: 10px;
     padding: 16px 20px;
+    box-sizing: border-box;
 }
 
 .winopt-hero-left {
@@ -28,19 +28,17 @@
 }
 
 .winopt-profile-selectors {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 10px;
-    flex-wrap: wrap;
     width: 100%;
 }
 
 .selector-field {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    flex: 1 1 180px;
-    min-width: 170px;
+    gap: 4px;
+    min-width: 0;
 }
 
 .selector-field label {
@@ -56,6 +54,8 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    width: 100%;
+    min-width: 0;
 }
 
 .winopt-step-card {
@@ -66,6 +66,9 @@
     border: 1px solid var(--border-subtle);
     border-radius: 10px;
     padding: 18px 20px;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
 }
 
 .step-badge-row {
@@ -99,7 +102,7 @@
     color: var(--text-primary);
     background: var(--bg-elevated);
     border: 1px solid var(--border-bold);
-    padding: 6px 14px;
+    padding: 8px 14px;
     border-radius: 6px;
     text-decoration: none;
     transition: all 0.15s ease;
@@ -128,11 +131,12 @@
     padding: 12px 14px;
     min-width: 0;
     box-sizing: border-box;
+    width: 100%;
 }
 
-/* RUFUS & OOBE CALLOUTS */
 .rufus-setting-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 140px 1fr;
     gap: 8px;
     font-size: 0.78rem;
     font-family: var(--font-mono);
@@ -140,12 +144,11 @@
 
 .rufus-param {
     color: var(--text-muted);
-    width: 140px;
-    flex-shrink: 0;
 }
 
 .rufus-val {
     color: var(--text-primary);
+    word-break: break-word;
 }
 
 .rufus-dialog-box {
@@ -172,6 +175,7 @@
     font-size: 0.78rem;
     line-height: 1.45;
     color: var(--text-secondary);
+    word-break: break-word;
 }
 
 .clean-bullet-list li strong {
@@ -210,17 +214,10 @@
     padding-left: 10px;
 }
 
-/* BIOS GRID */
 .bios-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 16px;
-}
-
-@media (max-width: 900px) {
-    .bios-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 .bios-guide-col,
@@ -231,7 +228,6 @@
     font-size: 0.78rem;
 }
 
-/* ACTION & REVERT SYSTEM */
 .action-revert-pair {
     display: flex;
     flex-direction: column;
@@ -247,6 +243,7 @@
     flex-direction: column;
     gap: 6px;
     min-width: 0;
+    width: 100%;
     box-sizing: border-box;
 }
 
@@ -254,6 +251,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .code-title {
@@ -283,8 +282,8 @@
     font-size: 0.76rem;
     flex: 1;
     min-width: 0;
-    max-width: 100%;
     display: block;
+    scrollbar-width: thin;
 }
 
 .code-explanation {
@@ -334,7 +333,6 @@
     text-decoration: underline;
 }
 
-/* HARDWARE TAILORED BOXES */
 .hw-block {
     display: flex;
     flex-direction: column;
@@ -345,6 +343,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
     font-family: var(--font-mono);
     font-size: 0.78rem;
     font-weight: 800;
@@ -358,17 +358,11 @@
     font-size: 0.78rem;
 }
 
-/* LATENCY GRID */
 .latency-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 10px;
-}
-
-@media (max-width: 768px) {
-    .latency-grid {
-        grid-template-columns: 1fr;
-    }
+    width: 100%;
 }
 
 .latency-item {
@@ -379,6 +373,8 @@
     font-size: 0.78rem;
     color: var(--text-secondary);
     line-height: 1.45;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .latency-item strong {
@@ -389,21 +385,22 @@ kbd {
     background: var(--bg-card);
     border: 1px solid var(--border-bold);
     border-radius: 4px;
-    padding: 1px 5px;
+    padding: 2px 6px;
     font-family: var(--font-mono);
     font-size: 0.7rem;
     color: var(--accent-mint);
 }
 
-/* SPEC SCANNER */
 .spec-scanner-card {
     background: linear-gradient(135deg, rgba(0, 220, 130, 0.04) 0%, rgba(56, 189, 248, 0.04) 100%);
     border: 1px solid var(--border-bold);
     border-radius: 8px;
-    padding: 12px 16px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .spec-scanner-header {
@@ -418,18 +415,19 @@ kbd {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 4px;
+    flex-wrap: wrap;
 }
 
 .spec-paste-field {
-    flex: 1;
+    flex: 1 1 240px;
     background: var(--bg-base);
     border: 1px solid var(--border-subtle);
     border-radius: 5px;
-    padding: 6px 10px;
+    padding: 8px 10px;
     font-family: var(--font-mono);
     font-size: 0.76rem;
     color: var(--text-primary);
+    min-width: 0;
 }
 
 .spec-paste-field:focus {
@@ -437,7 +435,6 @@ kbd {
     outline: none;
 }
 
-/* ADVISORY CONTAINER */
 .advisory-container {
     display: flex;
     flex-direction: column;
@@ -475,10 +472,7 @@ kbd {
     color: #a7f3d0;
 }
 
-/* =============================================================================
-   CHRIS TITUS WINUTIL ACCORDIONS & 2-COLUMN BENCH
-   ============================================================================= */
-
+/* CTT WORKBENCH GRID */
 .ctt-workbench-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -486,12 +480,7 @@ kbd {
     margin-top: 10px;
     width: 100%;
     align-items: start;
-}
-
-@media (max-width: 900px) {
-    .ctt-workbench-layout {
-        grid-template-columns: minmax(0, 1fr);
-    }
+    box-sizing: border-box;
 }
 
 .ctt-column {
@@ -523,11 +512,21 @@ kbd {
     margin-bottom: 8px;
 }
 
-.ctt-section-title.green { color: var(--accent-mint); }
-.ctt-section-title.amber { color: var(--accent-amber); }
-.ctt-section-title.sky { color: var(--accent-sky); }
-.ctt-section-title.mint { color: var(--accent-mint); }
-.ctt-section-title.violet { color: var(--accent-violet); }
+.ctt-section-title.green {
+    color: var(--accent-mint);
+}
+.ctt-section-title.amber {
+    color: var(--accent-amber);
+}
+.ctt-section-title.sky {
+    color: var(--accent-sky);
+}
+.ctt-section-title.mint {
+    color: var(--accent-mint);
+}
+.ctt-section-title.violet {
+    color: var(--accent-violet);
+}
 
 .ctt-accordion {
     background: var(--bg-base);
@@ -544,7 +543,7 @@ kbd {
     background: var(--bg-surface);
     border: none;
     border-bottom: 1px solid transparent;
-    padding: 10px 14px;
+    padding: 12px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -579,11 +578,6 @@ kbd {
     flex-shrink: 0;
 }
 
-.ctt-accordion-header.green { color: var(--accent-mint); }
-.ctt-accordion-header.amber { color: var(--accent-amber); }
-.ctt-accordion-header.sky { color: var(--accent-sky); }
-.ctt-accordion-header.mint { color: var(--accent-mint); }
-
 .ctt-accordion-body {
     padding: 10px 12px;
     display: flex;
@@ -598,7 +592,7 @@ kbd {
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 10px 12px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -608,6 +602,7 @@ kbd {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .ctt-row-label {
@@ -623,7 +618,6 @@ kbd {
     padding-left: 2px;
 }
 
-/* STATUS PILLS */
 .status-indicator {
     font-family: var(--font-mono);
     font-size: 0.62rem;
@@ -653,7 +647,6 @@ kbd {
     border: 1px solid var(--accent-amber);
 }
 
-/* DNS CODE BOX & PREVIEW */
 .dns-code-box {
     width: 100%;
     min-width: 0;
@@ -667,30 +660,15 @@ kbd {
     overflow-x: auto;
     display: block;
     max-width: 100%;
-    padding-bottom: 4px;
+    padding: 6px 0;
     scrollbar-width: thin;
     scrollbar-color: var(--border-bold) transparent;
 }
 
-.dns-scroll-code::-webkit-scrollbar {
-    height: 4px;
-}
-
-.dns-scroll-code::-webkit-scrollbar-thumb {
-    background: var(--border-bold);
-    border-radius: 2px;
-}
-
 .dns-static-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 8px;
-}
-
-@media (max-width: 600px) {
-    .dns-static-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 .dns-static-card {
@@ -718,14 +696,69 @@ kbd {
     background: var(--bg-card);
     border: 1px solid rgba(56, 189, 248, 0.25);
     border-radius: 6px;
-    padding: 10px;
+    padding: 10px 12px;
     font-size: 0.76rem;
     line-height: 1.45;
 }
 
-.snake-oil-box {
-    background: rgba(244, 63, 94, 0.05);
-    border: 1px dashed rgba(244, 63, 94, 0.3);
-    border-radius: 6px;
-    padding: 10px 12px;
+/* =============================================================================
+   MOBILE VIEWPORT & TOUCH RESPONSIVE POLISH (<= 768px, <= 480px)
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .ctt-workbench-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .winopt-step-card {
+        padding: 14px;
+    }
+
+    .rufus-setting-row {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+
+    .code-copy-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .code-copy-row button {
+        width: 100%;
+        padding: 8px;
+    }
+
+    .spec-paste-bar button {
+        width: 100%;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .winopt-hero {
+        padding: 12px;
+    }
+
+    .winopt-profile-selectors {
+        grid-template-columns: 1fr;
+    }
+
+    .step-badge-row {
+        flex-wrap: wrap;
+    }
+
+    .step-title {
+        font-size: 0.92rem;
+    }
+
+    .latency-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .bios-grid {
+        grid-template-columns: 1fr;
+    }
 }

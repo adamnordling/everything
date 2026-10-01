@@ -13,4 +13,4 @@
 @import './calendar.css' layer(components);
 @import './tasks.css' layer(components);
 @import './youtube.css' layer(components);
-@import './windowsOptimizer.css' layer(components);
+@import './windowsOptimizer/index.css' layer(components);
