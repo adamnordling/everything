@@ -1,9 +1,14 @@
 .card {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
-    border-radius: 10px;
+    border-radius: var(--card-radius);
     padding: 16px 18px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    transition: border-color 0.2s ease;
+}
+
+.card:hover {
+    border-color: var(--border-bold);
 }
 
 .card-header-flex {
@@ -17,19 +22,24 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
+}
+
+.card-title-group svg {
+    color: var(--accent-brand);
 }
 
 .pill-badge {
     background: var(--bg-elevated);
-    border: 1px solid var(--border-bold);
-    padding: 2px 8px;
-    border-radius: 5px;
+    border: 1px solid var(--border-subtle);
+    padding: 2px 7px;
+    border-radius: 4px;
     font-size: 0.7rem;
+    font-family: var(--font-mono);
     font-weight: 600;
-    color: var(--accent-mint);
+    color: var(--accent-brand);
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -40,30 +50,32 @@
     border: 1px solid var(--border-bold);
     color: var(--text-primary);
     font-weight: 600;
-    font-size: 0.8rem;
-    padding: 0 12px;
-    border-radius: 5px;
+    font-size: 0.78rem;
+    font-family: var(--font-mono);
+    padding: 3px 10px;
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .btn-action-pill:hover {
-    background: var(--accent-mint);
-    border-color: var(--accent-mint);
-    color: #0b0e14;
+    background: var(--accent-brand);
+    border-color: var(--accent-brand);
+    color: #ffffff;
 }
 
 .input-field {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border-bold);
     color: var(--text-primary);
     padding: 7px 10px;
     border-radius: 5px;
     font-size: 0.82rem;
+    transition: border-color 0.15s ease;
 }
 
 .input-field:focus {
-    border-color: var(--accent-mint);
+    border-color: var(--accent-brand);
     outline: none;
 }
 
@@ -90,18 +102,16 @@
 
 .empty-state-notice {
     background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
+    border: 1px dashed var(--border-bold);
     border-radius: 6px;
     padding: 16px;
     text-align: center;
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    font-family: var(--font-mono);
 }
 
-/* =============================================================================
-   WORKSTATION SCRATCHPAD & CLIPBOARD BUFFER
-   ============================================================================= */
-
+/* WORKSTATION SCRATCHPAD & CLIPBOARD BUFFER */
 .scratchpad-card {
     display: flex;
     flex-direction: column;
@@ -140,10 +150,10 @@
 }
 
 .scratchpad-area:focus {
-    border-color: var(--accent-mint);
+    border-color: var(--accent-brand);
 }
 
 .scratchpad-area::placeholder {
     color: var(--text-muted);
-    opacity: 0.6;
+    opacity: 0.5;
 }

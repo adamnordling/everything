@@ -1,43 +1,63 @@
 :root {
-    --bg-base: #0b0e14;
-    --bg-surface: #10141e;
-    --bg-card: #151a26;
-    --bg-elevated: #1b2232;
-    --border-subtle: #1e2638;
-    --border-bold: #2a354c;
+    /* Base Dark Canvas (Warm Obsidian / Graphite) */
+    --bg-base: #0c0d10;
+    --bg-surface: #121317;
+    --bg-card: #16181e;
+    --bg-elevated: #1d1f26;
 
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    /* Subtle Hairline Borders - Easy on the eyes */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-bold: rgba(255, 255, 255, 0.12);
 
-    --accent-mint: #00dc82;
-    --accent-mint-glow: rgba(0, 220, 130, 0.15);
-    --accent-sky: #38bdf8;
-    --accent-amber: #f59e0b;
-    --accent-emerald: #10b981;
-    --accent-rose: #f43f5e;
-    --accent-violet: #8b5cf6;
-    --accent-indigo: #6366f1;
+    /* High-legibility Warm Typography */
+    --text-primary: #f3f1ec;
+    --text-secondary: #9ea0a8;
+    --text-muted: #64666e;
+
+    /* Option 1: Terracotta / Rust Ochre Accent */
+    --accent-brand: #d97746;
+    --accent-brand-glow: rgba(217, 119, 70, 0.14);
+    --accent-brand-subtle: rgba(217, 119, 70, 0.08);
+
+    /* Unified Theme Anchors (Mapped for visual calm) */
+    --accent-mint: #d97746;             /* Re-anchors primary highlights to Terracotta */
+    --accent-mint-glow: rgba(217, 119, 70, 0.14);
+    --accent-sky: #e08b5f;              /* Soft ochre highlight */
+    --accent-amber: #e59850;            /* Warm solar amber */
+    --accent-rose: #d65d64;             /* Muted red for errors/overdue */
+    --accent-emerald: #4ade80;          /* Reserved strictly for live ping/healthy indicators */
+    --accent-violet: #d97746;
+    --accent-indigo: #c86b3c;
 
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --card-radius: 8px;
 }
 
 html.light-theme {
-    --bg-base: #f1f5f9;
+    /* Warm Alabaster & Editorial Paper */
+    --bg-base: #f7f6f2;
     --bg-surface: #ffffff;
-    --bg-card: #f8fafc;
-    --bg-elevated: #e2e8f0;
-    --border-subtle: #e2e8f0;
-    --border-bold: #cbd5e1;
+    --bg-card: #fdfdfc;
+    --bg-elevated: #efede7;
 
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #64748b;
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --border-bold: rgba(0, 0, 0, 0.12);
 
-    --accent-mint: #059669;
-    --accent-mint-glow: rgba(5, 150, 105, 0.15);
-    --accent-sky: #0284c7;
-    --accent-amber: #d97706;
-    --accent-rose: #e11d48;
-    --accent-violet: #7c3aed;
+    --text-primary: #1e1e22;
+    --text-secondary: #575961;
+    --text-muted: #8c8e96;
+
+    /* Deep Warm Sienna Terracotta */
+    --accent-brand: #c4582c;
+    --accent-brand-glow: rgba(196, 88, 44, 0.12);
+    --accent-brand-subtle: rgba(196, 88, 44, 0.06);
+
+    --accent-mint: #c4582c;
+    --accent-mint-glow: rgba(196, 88, 44, 0.12);
+    --accent-sky: #a84b25;
+    --accent-amber: #b86221;
+    --accent-rose: #be3b45;
+    --accent-emerald: #16a34a;
+    --accent-violet: #c4582c;
+    --accent-indigo: #a84b25;
 }
