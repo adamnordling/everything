@@ -35,3 +35,20 @@ Base64 & URL Decode/Encode Pill:
 
 finance up and down
 crypto up and down news
+
+
+windwos playbook:
+
+
+irm https://christitus.com/win | iex		copy funkar inte	eware, uBlock Origin blocked a potential ClickFix attack: 
+
+Ctrl R powershell-admin?
+fixa så alla cmd command är mindre, bättre copy, ser ut som powershell markdown
+
+fixa coloring, more minimanstlic
+
+icon at top windows?
+
+smoother looking dropdown menus
+
+BIOS mer advanced >> speed shift fanns inte t.ex. mkt fanns inte. settings osv för gamla mothercards....

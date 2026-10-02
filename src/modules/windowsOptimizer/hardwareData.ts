@@ -1,9 +1,40 @@
+export type MoboPlatformId =
+    | 'asus-intel-modern'
+    | 'asus-intel-300-500'
+    | 'asus-intel-vintage'
+    | 'asus-amd-am4'
+    | 'asus-amd-am5'
+    | 'msi-intel-modern'
+    | 'msi-intel-300-500'
+    | 'msi-amd-am4'
+    | 'msi-amd-am5'
+    | 'gigabyte-intel-modern'
+    | 'gigabyte-intel-300-500'
+    | 'gigabyte-amd-am4'
+    | 'gigabyte-amd-am5'
+    | 'asrock-intel'
+    | 'asrock-amd'
+    | 'oem-generic';
+
 export interface HardwareProfile {
     os: 'win10' | 'win11';
-    mobo: 'asus' | 'msi' | 'gigabyte' | 'asrock' | 'oem';
+    mobo: MoboPlatformId;
     cpu: 'amd-x3d-dual' | 'amd-x3d-single' | 'amd-standard' | 'intel-raptor' | 'intel-alder' | 'intel-legacy';
     gpuId: string;
     ramId: string;
+}
+
+export interface MoboPlatformSpec {
+    id: MoboPlatformId;
+    name: string;
+    vendor: 'asus' | 'msi' | 'gigabyte' | 'asrock' | 'oem';
+    isAmd: boolean;
+    chipsetKeywords: string[];
+    cpuKeywords: string[];
+    toolName: string;
+    supportUrl: string;
+    memoryProfileName: string;
+    supportsRebarDefault: boolean;
 }
 
 export interface GpuModelSpec {
@@ -28,6 +59,215 @@ export interface RamModelSpec {
     isJedecStock: boolean;
 }
 
+const NVIDIA_OFFICIAL_DRIVERS = 'https://www.nvidia.com/en-us/geforce/drivers/';
+const AMD_OFFICIAL_DRIVERS = 'https://www.amd.com/en/support/download/drivers.html';
+const INTEL_OFFICIAL_DRIVERS =
+    'https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html';
+
+export const MOBO_PLATFORMS: MoboPlatformSpec[] = [
+    // ASUS
+    {
+        id: 'asus-intel-modern',
+        name: 'ASUS ROG / TUF / Prime (Intel 600/700/800 — Z690, Z790, B760)',
+        vendor: 'asus',
+        isAmd: false,
+        chipsetKeywords: ['z690', 'z790', 'z890', 'b660', 'b760', 'h670', 'h770'],
+        cpuKeywords: ['12th gen', '13th gen', '14th gen', 'ultra', '12', '13', '14'],
+        toolName: 'EZ Flash 3',
+        supportUrl: 'https://www.asus.com/support/download-center/',
+        memoryProfileName: 'XMP I',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'asus-intel-300-500',
+        name: 'ASUS ROG / Strix / Prime (Intel 300/400/500 — Z390, Z490, Z590, B360)',
+        vendor: 'asus',
+        isAmd: false,
+        chipsetKeywords: ['z390', 'z370', 'b360', 'b365', 'h370', 'z490', 'b460', 'h470', 'z590', 'b560'],
+        cpuKeywords: ['8th gen', '9th gen', '10th gen', '11th gen', '9700', '9900', '8700', '10700', '10900'],
+        toolName: 'EZ Flash 3',
+        supportUrl: 'https://www.asus.com/support/download-center/',
+        memoryProfileName: 'X.M.P. I',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'asus-intel-vintage',
+        name: 'ASUS Legacy Intel (Z77, Z87, Z97, Z170, Z270 — 3rd–7th Gen)',
+        vendor: 'asus',
+        isAmd: false,
+        chipsetKeywords: ['z170', 'z270', 'z97', 'z87', 'z77', 'h110', 'b150', 'b250'],
+        cpuKeywords: ['3770', '4770', '4790', '6700', '7700'],
+        toolName: 'EZ Flash 2 / 3',
+        supportUrl: 'https://www.asus.com/support/download-center/',
+        memoryProfileName: 'X.M.P.',
+        supportsRebarDefault: false
+    },
+    {
+        id: 'asus-amd-am4',
+        name: 'ASUS ROG / TUF / Prime (AMD AM4 — B450, B550, X470, X570)',
+        vendor: 'asus',
+        isAmd: true,
+        chipsetKeywords: ['x570', 'b550', 'a520', 'x470', 'b450', 'x370', 'b350'],
+        cpuKeywords: ['1000', '2000', '3000', '5000', '5800x3d', '5700x3d', 'am4'],
+        toolName: 'EZ Flash 3',
+        supportUrl: 'https://www.asus.com/support/download-center/',
+        memoryProfileName: 'D.O.C.P.',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'asus-amd-am5',
+        name: 'ASUS ROG / Crosshair / TUF (AMD AM5 — B650, X670, X870)',
+        vendor: 'asus',
+        isAmd: true,
+        chipsetKeywords: ['x670', 'x670e', 'b650', 'b650e', 'a620', 'x870', 'x870e', 'b850'],
+        cpuKeywords: ['7000', '8000', '9000', '7800x3d', '7950x3d', '9800x3d', 'am5'],
+        toolName: 'EZ Flash 3',
+        supportUrl: 'https://www.asus.com/support/download-center/',
+        memoryProfileName: 'EXPO I',
+        supportsRebarDefault: true
+    },
+
+    // MSI
+    {
+        id: 'msi-intel-modern',
+        name: 'MSI (Intel 600/700/800 — Z690, Z790, B760 Click BIOS 5/X)',
+        vendor: 'msi',
+        isAmd: false,
+        chipsetKeywords: ['z690', 'z790', 'z890', 'b660', 'b760', 'h670', 'h770'],
+        cpuKeywords: ['12th gen', '13th gen', '14th gen', '12', '13', '14'],
+        toolName: 'M-Flash',
+        supportUrl: 'https://www.msi.com/support/download/',
+        memoryProfileName: 'XMP',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'msi-intel-300-500',
+        name: 'MSI (Intel 300/400/500 — Z390, Z490, Z590, B360, B460)',
+        vendor: 'msi',
+        isAmd: false,
+        chipsetKeywords: ['z390', 'z370', 'b360', 'z490', 'b460', 'z590', 'b560'],
+        cpuKeywords: ['8th gen', '9th gen', '10th gen', '11th gen', '9700', '9900', '10700', '10900'],
+        toolName: 'M-Flash',
+        supportUrl: 'https://www.msi.com/support/download/',
+        memoryProfileName: 'XMP',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'msi-amd-am4',
+        name: 'MSI (AMD AM4 — B450, B550, X570 Tomahawk / Gaming)',
+        vendor: 'msi',
+        isAmd: true,
+        chipsetKeywords: ['x570', 'b550', 'a520', 'x470', 'b450', 'x370', 'b350'],
+        cpuKeywords: ['1000', '2000', '3000', '5000', '5800x3d', 'am4'],
+        toolName: 'M-Flash',
+        supportUrl: 'https://www.msi.com/support/download/',
+        memoryProfileName: 'A-XMP',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'msi-amd-am5',
+        name: 'MSI (AMD AM5 — B650, X670, X870 Tomahawk / Carbon)',
+        vendor: 'msi',
+        isAmd: true,
+        chipsetKeywords: ['x670', 'b650', 'a620', 'x870', 'b850'],
+        cpuKeywords: ['7000', '8000', '9000', '7800x3d', 'am5'],
+        toolName: 'M-Flash',
+        supportUrl: 'https://www.msi.com/support/download/',
+        memoryProfileName: 'EXPO / A-XMP',
+        supportsRebarDefault: true
+    },
+
+    // GIGABYTE / AORUS
+    {
+        id: 'gigabyte-intel-modern',
+        name: 'Gigabyte / AORUS (Intel 600/700/800 — Z690, Z790, B760)',
+        vendor: 'gigabyte',
+        isAmd: false,
+        chipsetKeywords: ['z690', 'z790', 'z890', 'b660', 'b760'],
+        cpuKeywords: ['12th gen', '13th gen', '14th gen'],
+        toolName: 'Q-Flash',
+        supportUrl: 'https://www.gigabyte.com/Support/Motherboard',
+        memoryProfileName: 'X.M.P.',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'gigabyte-intel-300-500',
+        name: 'Gigabyte / AORUS (Intel 300/400/500 — Z390, Z490, Z590)',
+        vendor: 'gigabyte',
+        isAmd: false,
+        chipsetKeywords: ['z390', 'z370', 'b360', 'z490', 'b460', 'z590', 'b560'],
+        cpuKeywords: ['8th gen', '9th gen', '10th gen', '11th gen'],
+        toolName: 'Q-Flash',
+        supportUrl: 'https://www.gigabyte.com/Support/Motherboard',
+        memoryProfileName: 'X.M.P.',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'gigabyte-amd-am4',
+        name: 'Gigabyte / AORUS (AMD AM4 — B450, B550, X570 Elite / Pro)',
+        vendor: 'gigabyte',
+        isAmd: true,
+        chipsetKeywords: ['x570', 'b550', 'x470', 'b450'],
+        cpuKeywords: ['1000', '2000', '3000', '5000', '5800x3d'],
+        toolName: 'Q-Flash',
+        supportUrl: 'https://www.gigabyte.com/Support/Motherboard',
+        memoryProfileName: 'X.M.P.',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'gigabyte-amd-am5',
+        name: 'Gigabyte / AORUS (AMD AM5 — B650, X670, X870 Master / Elite)',
+        vendor: 'gigabyte',
+        isAmd: true,
+        chipsetKeywords: ['x670', 'b650', 'x870'],
+        cpuKeywords: ['7000', '8000', '9000', '7800x3d'],
+        toolName: 'Q-Flash',
+        supportUrl: 'https://www.gigabyte.com/Support/Motherboard',
+        memoryProfileName: 'EXPO',
+        supportsRebarDefault: true
+    },
+
+    // ASROCK
+    {
+        id: 'asrock-intel',
+        name: 'ASRock (Intel — Z390, Z490, Z690, Z790, B660, B760)',
+        vendor: 'asrock',
+        isAmd: false,
+        chipsetKeywords: ['z390', 'z490', 'z590', 'z690', 'z790', 'b660', 'b760'],
+        cpuKeywords: ['intel', 'core', 'i7', 'i9', 'i5'],
+        toolName: 'Instant Flash',
+        supportUrl: 'https://www.asrock.com/support/index.asp',
+        memoryProfileName: 'XMP',
+        supportsRebarDefault: true
+    },
+    {
+        id: 'asrock-amd',
+        name: 'ASRock (AMD AM4 / AM5 — B450, B550, X570, B650, X670)',
+        vendor: 'asrock',
+        isAmd: true,
+        chipsetKeywords: ['b450', 'b550', 'x570', 'b650', 'x670', 'x870'],
+        cpuKeywords: ['ryzen', 'amd', 'x3d'],
+        toolName: 'Instant Flash',
+        supportUrl: 'https://www.asrock.com/support/index.asp',
+        memoryProfileName: 'XMP / EXPO',
+        supportsRebarDefault: true
+    },
+
+    // OEM
+    {
+        id: 'oem-generic',
+        name: 'OEM / Prebuilt / Laptop (Dell, HP, Lenovo Locked UEFI)',
+        vendor: 'oem',
+        isAmd: false,
+        chipsetKeywords: ['alienware', 'optiplex', 'legion', 'omen', 'pavilion', 'latitude', 'thinkpad'],
+        cpuKeywords: [],
+        toolName: 'Firmware Update',
+        supportUrl: 'https://www.google.com/search?q=motherboard+bios+update+download',
+        memoryProfileName: 'XMP / Stock Profile',
+        supportsRebarDefault: false
+    }
+];
+
 export const GPU_DATABASE: GpuModelSpec[] = [
     {
         id: 'gtx-1080-ti',
@@ -37,10 +277,10 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         supportsRebar: false,
         recommendHags: false,
         preferredOs: 'win10',
-        recommendedDriverVersion: '566.36 / 560.94 WHQL (Low Overhead)',
+        recommendedDriverVersion: '566.36 WHQL / Game Ready',
         driverNotes:
-            'Benchmarked as one of the lowest-overhead DWM drivers for Pascal. Avoid newer branches with heavy telemetry.',
-        directDownloadUrl: 'https://www.nvidia.com/download/driverDetails.aspx/230852/'
+            'Benchmarked as one of the lowest-overhead DWM drivers for Pascal. Keep HAGS turned OFF in Windows Display settings.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'gtx-1080',
@@ -50,9 +290,9 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         supportsRebar: false,
         recommendHags: false,
         preferredOs: 'win10',
-        recommendedDriverVersion: '566.36 / 560.94 WHQL',
-        driverNotes: 'Optimized Pascal branch without experimental RTX AI features.',
-        directDownloadUrl: 'https://www.nvidia.com/download/driverDetails.aspx/230852/'
+        recommendedDriverVersion: '566.36 WHQL / Game Ready',
+        driverNotes: 'Optimized Pascal branch without experimental RTX AI overhead. Keep HAGS turned OFF.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'gtx-1070-ti',
@@ -62,9 +302,9 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         supportsRebar: false,
         recommendHags: false,
         preferredOs: 'win10',
-        recommendedDriverVersion: '566.36 / 560.94 WHQL',
-        driverNotes: 'Solid 1% low frame-time stability for GP104 silicon.',
-        directDownloadUrl: 'https://www.nvidia.com/download/driverDetails.aspx/230852/'
+        recommendedDriverVersion: '566.36 WHQL / Game Ready',
+        driverNotes: 'Solid 1% low frame-time stability for GP104 silicon. Keep HAGS turned OFF.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'gtx-1070',
@@ -74,9 +314,10 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         supportsRebar: false,
         recommendHags: false,
         preferredOs: 'win10',
-        recommendedDriverVersion: '566.36 / 560.94 WHQL',
-        driverNotes: 'Proven stable release for GTX 1070. Strip telemetry with NVCleanstall.',
-        directDownloadUrl: 'https://www.nvidia.com/download/driverDetails.aspx/230852/'
+        recommendedDriverVersion: '566.36 WHQL / Game Ready',
+        driverNotes:
+            'Proven stable release for GTX 1070. Use Custom Install > "Perform a clean installation". Keep HAGS turned OFF.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'gtx-1060',
@@ -86,9 +327,9 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         supportsRebar: false,
         recommendHags: false,
         preferredOs: 'win10',
-        recommendedDriverVersion: '566.36 / 560.94 WHQL',
-        driverNotes: 'Lowest VRAM footprint and stable DPC latency on Pascal 6GB/3GB.',
-        directDownloadUrl: 'https://www.nvidia.com/download/driverDetails.aspx/230852/'
+        recommendedDriverVersion: '566.36 WHQL / Game Ready',
+        driverNotes: 'Lowest VRAM footprint and stable DPC latency on Pascal 6GB/3GB. Keep HAGS turned OFF.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-2080-ti',
@@ -100,7 +341,7 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready Driver',
         driverNotes: 'Turing supports hardware scheduling (HAGS ON) and modern DLSS 2 Super Resolution.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-2080',
@@ -111,8 +352,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready Driver',
-        driverNotes: 'Supports DLSS 2. Clean install via NVCleanstall.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Supports DLSS 2. Keep HAGS turned ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-2070',
@@ -123,8 +364,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready Driver',
-        driverNotes: 'Optimal for 1080p/1440p competitive gaming with Reflex.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Optimal for 1080p/1440p competitive gaming with Reflex. Keep HAGS ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-2060',
@@ -135,8 +376,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready Driver',
-        driverNotes: 'Use NVCleanstall to conserve VRAM overhead.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Supports hardware scheduling and DLSS 2. Keep HAGS ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'gtx-1660',
@@ -147,8 +388,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready Driver',
-        driverNotes: 'Turing NVENC engine. Keep HAGS enabled.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Turing NVENC engine. Keep HAGS ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-3060',
@@ -159,8 +400,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready / Studio',
-        driverNotes: 'Requires Resizable BAR enabled in BIOS and modern driver for DLSS 2/3.5.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Requires Resizable BAR enabled in BIOS and HAGS ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-3070',
@@ -171,8 +412,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready / Studio',
-        driverNotes: 'Enable ReBAR for boosted frame consistency.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Enable ReBAR in BIOS and HAGS ON for frame consistency.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-3080',
@@ -183,8 +424,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready / Studio',
-        driverNotes: 'Full Ampere feature set. Strip GFE bloat.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Full Ampere feature set with ReBAR + HAGS ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-3090',
@@ -195,8 +436,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest WHQL Game Ready / Studio',
-        driverNotes: '24GB VRAM workstation and gaming powerhouse.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: '24GB VRAM workstation and gaming. ReBAR + HAGS ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-4060',
@@ -208,7 +449,7 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest WHQL Game Ready',
         driverNotes: 'HAGS mandatory for DLSS 3 Frame Generation.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-4070',
@@ -219,8 +460,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest WHQL Game Ready',
-        driverNotes: 'Ada Lovelace architecture. DLSS 3 Frame Gen support.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Ada Lovelace architecture. DLSS 3 Frame Gen requires HAGS ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-4080',
@@ -231,8 +472,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest WHQL Game Ready',
-        driverNotes: 'High-bandwidth Ada Lovelace. Full Reflex + ReBAR.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'High-bandwidth Ada Lovelace. Full Reflex, ReBAR and HAGS ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-4090',
@@ -243,8 +484,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest WHQL Game Ready',
-        driverNotes: 'Top-tier Ada silicon. Clean bare install via NVCleanstall.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Top-tier Ada silicon. ReBAR + HAGS ON mandatory.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rtx-5080',
@@ -255,8 +496,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest WHQL Game Ready',
-        driverNotes: 'Blackwell architecture. Windows 11 strictly recommended.',
-        directDownloadUrl: 'https://www.nvidia.com/en-us/geforce/drivers/'
+        driverNotes: 'Blackwell architecture. Windows 11 with HAGS ON recommended.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
     },
     {
         id: 'rx-6600',
@@ -267,8 +508,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
-        driverNotes: 'Choose "Minimal Install" to strip recording/streaming services.',
-        directDownloadUrl: 'https://www.amd.com/en/support/download/drivers.html'
+        driverNotes: 'Choose "Minimal Install" to strip background recording daemons. Enable SAM.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
     },
     {
         id: 'rx-6700-xt',
@@ -279,8 +520,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
-        driverNotes: 'RDNA 2 sweet spot. Smart Access Memory enabled.',
-        directDownloadUrl: 'https://www.amd.com/en/support/download/drivers.html'
+        driverNotes: 'RDNA 2 sweet spot. Smart Access Memory (SAM) enabled.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
     },
     {
         id: 'rx-6800-xt',
@@ -291,8 +532,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'both',
         recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
-        driverNotes: '16GB VRAM. Enable SAM in Radeon Software.',
-        directDownloadUrl: 'https://www.amd.com/en/support/download/drivers.html'
+        driverNotes: '16GB VRAM. Enable SAM in Radeon Software. Minimal Install.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
     },
     {
         id: 'rx-7800-xt',
@@ -303,8 +544,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
-        driverNotes: 'RDNA 3 Chiplet GPU. Anti-Lag enabled.',
-        directDownloadUrl: 'https://www.amd.com/en/support/download/drivers.html'
+        driverNotes: 'RDNA 3 Chiplet GPU. Anti-Lag enabled. Minimal Install.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
     },
     {
         id: 'rx-7900-xtx',
@@ -315,8 +556,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
-        driverNotes: 'Flagship RDNA 3. Avoid full install bloat.',
-        directDownloadUrl: 'https://www.amd.com/en/support/download/drivers.html'
+        driverNotes: 'Flagship RDNA 3. Avoid full install bloat with Minimal setup.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
     },
     {
         id: 'arc-a580',
@@ -327,9 +568,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest Intel Arc WHQL Graphics Driver',
-        driverNotes: 'Mandatory ReBAR. Disable telemetry in Arc Control.',
-        directDownloadUrl:
-            'https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html'
+        driverNotes: 'Mandatory ReBAR in BIOS. Disable telemetry in Arc Control.',
+        directDownloadUrl: INTEL_OFFICIAL_DRIVERS
     },
     {
         id: 'arc-a770',
@@ -340,9 +580,8 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         recommendHags: true,
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest Intel Arc WHQL Graphics Driver',
-        driverNotes: 'ReBAR required for proper memory access.',
-        directDownloadUrl:
-            'https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html'
+        driverNotes: 'ReBAR required for proper memory access. Windows 11 recommended.',
+        directDownloadUrl: INTEL_OFFICIAL_DRIVERS
     },
     {
         id: 'arc-b580',
@@ -354,8 +593,7 @@ export const GPU_DATABASE: GpuModelSpec[] = [
         preferredOs: 'win11',
         recommendedDriverVersion: 'Latest Intel Battlemage WHQL Driver',
         driverNotes: 'Battlemage architecture with Xe2 cores.',
-        directDownloadUrl:
-            'https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html'
+        directDownloadUrl: INTEL_OFFICIAL_DRIVERS
     }
 ];
 
@@ -473,39 +711,3 @@ export const RAM_DATABASE: RamModelSpec[] = [
         isJedecStock: false
     }
 ];
-
-export const MOBO_DATA: Record<
-    HardwareProfile['mobo'],
-    { name: string; toolName: string; supportUrl: string; memoryProfileName: string }
-> = {
-    asus: {
-        name: 'ASUS / ROG',
-        toolName: 'EZ Flash 3',
-        supportUrl: 'https://www.asus.com/support/download-center/',
-        memoryProfileName: 'XMP (Intel) or D.O.C.P. / EXPO (AMD)'
-    },
-    msi: {
-        name: 'MSI (Micro-Star)',
-        toolName: 'M-Flash',
-        supportUrl: 'https://www.msi.com/support/download/',
-        memoryProfileName: 'XMP / A-XMP / EXPO'
-    },
-    gigabyte: {
-        name: 'Gigabyte / AORUS',
-        toolName: 'Q-Flash',
-        supportUrl: 'https://www.gigabyte.com/Support/Motherboard',
-        memoryProfileName: 'XMP / EXPO'
-    },
-    asrock: {
-        name: 'ASRock',
-        toolName: 'Instant Flash',
-        supportUrl: 'https://www.asrock.com/support/index.asp',
-        memoryProfileName: 'XMP / EXPO'
-    },
-    oem: {
-        name: 'OEM / Dell / HP / Lenovo / Other',
-        toolName: 'BIOS Flash / Firmware Update',
-        supportUrl: 'https://www.google.com/search?q=motherboard+bios+update+download',
-        memoryProfileName: 'XMP / Custom Profile'
-    }
-};

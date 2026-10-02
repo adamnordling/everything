@@ -20,12 +20,12 @@
     --accent-brand-subtle: rgba(217, 119, 70, 0.08);
 
     /* Unified Theme Anchors (Mapped for visual calm) */
-    --accent-mint: #d97746;             /* Re-anchors primary highlights to Terracotta */
+    --accent-mint: #d97746; /* Re-anchors primary highlights to Terracotta */
     --accent-mint-glow: rgba(217, 119, 70, 0.14);
-    --accent-sky: #e08b5f;              /* Soft ochre highlight */
-    --accent-amber: #e59850;            /* Warm solar amber */
-    --accent-rose: #d65d64;             /* Muted red for errors/overdue */
-    --accent-emerald: #4ade80;          /* Reserved strictly for live ping/healthy indicators */
+    --accent-sky: #e08b5f; /* Soft ochre highlight */
+    --accent-amber: #e59850; /* Warm solar amber */
+    --accent-rose: #d65d64; /* Muted red for errors/overdue */
+    --accent-emerald: #4ade80; /* Reserved strictly for live ping/healthy indicators */
     --accent-violet: #d97746;
     --accent-indigo: #c86b3c;
 
