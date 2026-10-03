@@ -51,4 +51,5 @@ icon at top windows?
 
 smoother looking dropdown menus
 
+fix some better coloring on icons nav bar?
 BIOS mer advanced >> speed shift fanns inte t.ex. mkt fanns inte. settings osv för gamla mothercards....
