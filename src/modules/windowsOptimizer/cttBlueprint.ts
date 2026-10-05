@@ -157,7 +157,17 @@ export const CTT_ADVANCED_ITEMS: CttItemBlueprint[] = [
     {
         label: 'Visual Effects - Set to Best Performance',
         action: 'UNCHECK',
-        why: 'Makes desktop text blurry and pixelated by disabling ClearType font smoothing.'
+        why: 'CRITICAL: CTT turns off ClearType font smoothing and thumbnails. Instead, use our Phase 6 Visual Script (Smooth Fonts + Thumbnails + 0ms animations).'
+    },
+    {
+        label: 'Services - Set to Manual (Vanguard / EAC Safety)',
+        action: 'CHECK',
+        why: 'MANDATORY FOR RIOT / EAC: Setting non-essential services to Manual allows Vanguard (vgc) and EAC to launch dependencies on demand without triggering VAN 1067 / 9003.'
+    },
+    {
+        label: 'Windows Update - Disable',
+        action: 'UNCHECK',
+        why: 'LEAVE ON MANUAL: Disabling Windows Update completely breaks Winget (Error 0x80070422), Microsoft Store, and DirectX runtime deliveries.'
     },
     {
         label: 'Adobe URL Block List - Enable',

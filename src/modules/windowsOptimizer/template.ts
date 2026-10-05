@@ -179,6 +179,8 @@ export const WINDOWS_OPTIMIZER_HTML = `
             <p class="step-desc">
                 Flashing your motherboard BIOS before installing drivers ensures CPU microcode stability, memory training, and PCIe Resizable BAR support.
             </p>
+            
+            
 
             <div class="step-content-box">
                 <div class="bios-grid">
@@ -203,6 +205,16 @@ export const WINDOWS_OPTIMIZER_HTML = `
                     </div>
                 </div>
             </div>
+            
+            <div class="step-content-box" style="margin-top: 8px; border-left: 3px solid var(--accent-brand);">
+    <strong style="color:var(--text-primary)">Anti-Cheat Compatibility Guardrail (Riot Vanguard &amp; EasyAntiCheat):</strong>
+    <p style="font-size:0.74rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
+        If you play <strong>League of Legends, Valorant, Fortnite, or Apex</strong>:
+        <br/>• <strong>Secure Boot:</strong> Must be set to <strong>Enabled (Standard/Windows UEFI Mode)</strong>.
+        <br/>• <strong>TPM 2.0 (Intel PTT / AMD fTPM):</strong> Must remain <strong>Enabled</strong>.
+        <br/>• <strong>CSM:</strong> Must be <strong>Disabled (Pure UEFI)</strong>. If CSM is turned on, Vanguard rejects the boot environment (Error VAN 9003).
+    </p>
+</div>
         </div>
 
         <!-- PHASE 3: FIRST-BOOT SAFETY NETS & DRIVER LOCK -->
@@ -485,7 +497,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
             </div>
         </div>
 
-        <!-- PHASE 6: KERNEL LATENCY & HARDWARE INTERRUPTS -->
+<!-- PHASE 6: KERNEL LATENCY & HARDWARE INTERRUPTS -->
         <div class="card winopt-step-card">
             <div class="step-badge-row">
                 <span class="pill-badge phase-pill">PHASE 06</span>
@@ -497,8 +509,11 @@ export const WINDOWS_OPTIMIZER_HTML = `
 
             <!-- STEP 1: BALANCED POWER -->
             <div class="step-content-box">
-                <strong style="color:var(--text-primary)">Step 1: Calibrated Balanced Power Script (Silent Idle, Peak Boost):</strong>
-                <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)">Step 1: Calibrated Balanced Power Script (Silent Idle, Peak Boost):</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">Core Power</span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
                     <strong>Why use it:</strong> "Ultimate Performance" plans pin CPU clocks at 100% frequency even when browsing the web, generating unnecessary heat and fan noise. This script configures Balanced mode to drop idle clock speeds to quiet states, while configuring PCIe Link State Power Management to <strong>Off</strong> and disabling USB selective suspend so gaming mice never disconnect or hitch during movement. It also turns off hibernation to reclaim 16–32 GB of drive space.
                 </p>
                 <div class="terminal-code-window" style="margin-top:6px;">
@@ -543,7 +558,10 @@ export const WINDOWS_OPTIMIZER_HTML = `
 
             <!-- STEP 3: NETWORK ADAPTER -->
             <div class="step-content-box">
-                <strong style="color:var(--text-primary)">Step 3: Network Adapter Hardware Optimization (Kill Packet Sleep):</strong>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)">Step 3: Network Adapter Hardware Optimization (Kill Packet Sleep):</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">Device Manager</span>
+                </div>
                 <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
                     <strong>Why use it:</strong> Features like "Energy Efficient Ethernet" place the physical Ethernet transceiver into low-power sleep between bursts of packets, introducing 2–10ms packet latency jitter when data resumes. Disabling green features maintains constant line readiness.
                 </p>
@@ -562,9 +580,12 @@ export const WINDOWS_OPTIMIZER_HTML = `
 
             <!-- STEP 4: MMCSS -->
             <div class="step-content-box">
-                <strong style="color:var(--text-primary)">Step 4: Disable MMCSS Network Throttling &amp; System CPU Reservation:</strong>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)">Step 4: Disable MMCSS Network Throttling &amp; System CPU Reservation:</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">Network Queue</span>
+                </div>
                 <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
-                    <strong>Why use it:</strong> By default, Windows Multimedia Class Scheduler Service (MMCSS) throttles non-multimedia network packets by up to 20% whenever an audio or media application is active, and reserves 20% of CPU time for background Windows services. Setting <code>NetworkThrottlingIndex</code> to <code>0xFFFFFFFF</code> (disabled) and <code>SystemResponsiveness</code> to <code>0</code> eliminates packet throttling during online gaming and audio streaming.
+                    <strong>Why use it:</strong> By default, Windows Multimedia Class Scheduler Service (MMCSS) throttles non-multimedia network packets by up to 20% whenever an audio or media application is active, and reserves 20% of CPU time for background Windows services. Setting <code>NetworkThrottlingIndex</code> to <code>0xFFFFFFFF</code> (disabled) and <code>SystemResponsiveness</code> to <code>0</code> eliminates packet throttling during online gaming and Discord audio streaming.
                 </p>
                 <div class="terminal-code-window" style="margin-top:6px;">
                     <div class="terminal-bar">
@@ -581,13 +602,16 @@ export const WINDOWS_OPTIMIZER_HTML = `
                         <span class="revert-title">How to Revert / Undo:</span>
                         <button type="button" class="btn-text-link copy-btn-trigger" data-copy="reg add &quot;HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile&quot; /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add &quot;HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile&quot; /v SystemResponsiveness /t REG_DWORD /d 20 /f">Copy Revert</button>
                     </div>
-                    <span class="revert-text">Restores standard Windows default values (Index: 10, Responsiveness: 20): <code>reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20 /f</code></span>
+                    <span class="revert-text">Restores standard Windows default values (Index: 10, Responsiveness: 20): <code>reg add "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20 /f</code></span>
                 </div>
             </div>
 
             <!-- STEP 5: GAME DVR -->
             <div class="step-content-box">
-                <strong style="color:var(--text-primary)">Step 5: Disable Game DVR Background Recording:</strong>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)">Step 5: Disable Game DVR Background Recording:</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">GPU Encoder</span>
+                </div>
                 <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
                     <strong>Why use it:</strong> Windows background Game DVR silently records gameplay clips in a continuous buffer, utilizing GPU encoder hardware and CPU cycles. Turning it off frees up hardware video encoder bandwidth and prevents micro-stutters during heavy gameplay.
                 </p>
@@ -606,69 +630,154 @@ export const WINDOWS_OPTIMIZER_HTML = `
                         <span class="revert-title">How to Revert / Undo:</span>
                         <button type="button" class="btn-text-link copy-btn-trigger" data-copy="reg add &quot;HKCU\\\\System\\\\GameConfigStore&quot; /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete &quot;HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\GameDVR&quot; /v AllowGameDVR /f">Copy Revert</button>
                     </div>
-                    <span class="revert-text">Re-enables Windows background game recording: <code>reg add "HKCU\\System\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR" /v AllowGameDVR /f</code></span>
+                    <span class="revert-text">Re-enables Windows background game recording: <code>reg add "HKCU\\\\System\\\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\GameDVR" /v AllowGameDVR /f</code></span>
                 </div>
             </div>
 
-            <!-- STEP 6: MISC POLISH WITH REVERT COMMANDS -->
-            <div class="latency-grid">
-                <div class="latency-item">
-                    <strong style="color:var(--text-primary)">Step 6A: MenuShowDelay (10ms):</strong>
-                    <p style="font-size:0.73rem; margin:4px 0 6px 0; color:var(--text-secondary);">
-                        Eliminates the sluggish 400ms delay before submenus expand.
-                    </p>
-                    <div class="terminal-code-window">
-                        <div class="terminal-bar">
-                            <div class="terminal-badge"><span class="terminal-dot"></span><span>10ms Delay</span></div>
-                            <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="reg add &quot;HKCU\\\\Control Panel\\\\Desktop&quot; /v MenuShowDelay /t REG_SZ /d 10 /f">Copy</button>
+<!-- STEP 6: VISUAL EFFECTS SCRIPT -->
+            <div class="step-content-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)">Step 6: Responsive Visual Effects (Zero Lag · Keeps Fonts, Drag &amp; Previews):</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">Esports UI</span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
+                    <strong>Why use it:</strong> Strips 14 GPU/CPU composition animations (window zoom, fade effects, tooltip slides). Specifically preserves <strong>Smooth edges of screen fonts (ClearType)</strong>, <strong>Show window contents while dragging</strong>, and <strong>Show thumbnails instead of icons</strong>. Restarts Explorer automatically to apply.
+                </p>
+                <div class="terminal-code-window" style="margin-top:6px;">
+                    <div class="terminal-bar">
+                        <div class="terminal-badge">
+                            <span class="terminal-dot"></span>
+                            <span class="terminal-title">PowerShell (Admin) · Run Once</span>
                         </div>
-                        <pre class="terminal-code-body"><code>reg add "HKCU\\\\Control Panel\\\\Desktop" /v MenuShowDelay /t REG_SZ /d 10 /f</code></pre>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="$D=&quot;HKCU:\\Control Panel\\Desktop&quot;; $E=&quot;HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer&quot;; Set-ItemProperty -Path &quot;$E\\VisualEffects&quot; -Name &quot;VisualFXSetting&quot; -Value 3 -Type DWord; Set-ItemProperty -Path $D -Name &quot;UserPreferencesMask&quot; -Value ([byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00)); Set-ItemProperty -Path &quot;$D\\WindowMetrics&quot; -Name &quot;MinAnimate&quot; -Value &quot;0&quot;; Set-ItemProperty -Path $D -Name &quot;FontSmoothing&quot; -Value &quot;2&quot;; Set-ItemProperty -Path $D -Name &quot;FontSmoothingType&quot; -Value 2; Set-ItemProperty -Path $D -Name &quot;DragFullWindows&quot; -Value &quot;1&quot;; Set-ItemProperty -Path &quot;$E\\Advanced&quot; -Name &quot;IconsOnly&quot; -Value 0 -Type DWord; Stop-Process -Name explorer -Force">Copy</button>
                     </div>
-                    <div style="margin-top:6px; font-size:0.7rem; color:var(--text-muted)">
-                        <strong>Revert:</strong> <code>reg add "HKCU\\Control Panel\\Desktop" /v MenuShowDelay /t REG_SZ /d 400 /f</code>
+                    <pre class="terminal-code-body"><code>$D="HKCU:\\Control Panel\\Desktop"; $E="HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer"; Set-ItemProperty -Path "$E\\VisualEffects" -Name "VisualFXSetting" -Value 3 -Type DWord; Set-ItemProperty -Path $D -Name "UserPreferencesMask" -Value ([byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00)); Set-ItemProperty -Path "$D\\WindowMetrics" -Name "MinAnimate" -Value "0"; Set-ItemProperty -Path $D -Name "FontSmoothing" -Value "2"; Set-ItemProperty -Path $D -Name "FontSmoothingType" -Value 2; Set-ItemProperty -Path $D -Name "DragFullWindows" -Value "1"; Set-ItemProperty -Path "$E\\Advanced" -Name "IconsOnly" -Value 0 -Type DWord; Stop-Process -Name explorer -Force</code></pre>
+                </div>
+                <div class="revert-box" style="margin-top:6px;">
+                    <div class="code-header-flex">
+                        <span class="revert-title">How to Revert / Undo:</span>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="SystemPropertiesPerformance">Open Visual Dialog</button>
                     </div>
+                    <span class="revert-text">Press <kbd>Win</kbd> + <kbd>R</kbd> ➔ type <code>SystemPropertiesPerformance</code> ➔ select <em>"Let Windows choose what's best for my computer"</em>.</span>
                 </div>
+            </div>
 
-                <div class="latency-item">
-                    <strong style="color:var(--text-primary)">Step 6B: Audio Resampling Alignment (48,000 Hz):</strong>
-                    <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                        Almost all games render audio natively at 48 kHz. Setting your DAC or headset to 48 kHz avoids Windows software resampling overhead.
-                        <br/><br/>
-                        Press <kbd>Win</kbd> + <kbd>R</kbd> ➔ <code>mmsys.cpl</code> ➔ Properties ➔ Advanced ➔ set <strong>24-bit, 48000 Hz</strong>.
-                    </p>
+ <!-- STEP 7: DYNAMIC STATIC PAGEFILE -->
+            <div class="step-content-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)" id="p6-pagefile-title">Step 7: Automated Static NVMe Pagefile:</strong>
+                    <span class="pill-badge" id="p6-pagefile-badge" style="font-size:0.65rem">Calculating...</span>
                 </div>
-
-                <div class="latency-item">
-                    <strong style="color:var(--text-primary)">Step 6C: NVMe TRIM &amp; Game De-Indexing:</strong>
-                    <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                        1. <strong>TRIM Check:</strong> Run <code>fsutil behavior query DisableDeleteNotify</code> (should be 0).<br/>
-                        2. <strong>De-Index:</strong> In Windows Indexing Options, uncheck game installation drives so search indexing daemons don't scan game folders during gameplay.
-                    </p>
-                </div>
-
-                <div class="latency-item">
-                    <strong style="color:var(--text-primary)">Step 6D: Disable NTFS 8.3 &amp; LastAccess:</strong>
-                    <p style="font-size:0.73rem; margin:4px 0 6px 0; color:var(--text-secondary);">
-                        Stops Windows from writing secondary MS-DOS short file names and timestamp records on every file read.
-                    </p>
-                    <div class="terminal-code-window">
-                        <div class="terminal-bar">
-                            <div class="terminal-badge"><span class="terminal-dot"></span><span>NTFS Tweaks</span></div>
-                            <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="fsutil behavior set disable8dot3 1; fsutil behavior set disablelastaccess 1">Copy</button>
+                <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;" id="p6-pagefile-desc">
+                    Calculating optimal pagefile size for your selected RAM profile...
+                </p>
+                <div class="terminal-code-window" style="margin-top:6px;">
+                    <div class="terminal-bar">
+                        <div class="terminal-badge">
+                            <span class="terminal-dot"></span>
+                            <span class="terminal-title">PowerShell (Admin) · Run Once</span>
                         </div>
-                        <pre class="terminal-code-body"><code>fsutil behavior set disable8dot3 1; fsutil behavior set disablelastaccess 1</code></pre>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" id="p6-pagefile-copy-btn" data-copy="">Copy</button>
                     </div>
-                    <div style="margin-top:6px; font-size:0.7rem; color:var(--text-muted)">
-                        <strong>Revert:</strong> <code>fsutil behavior set disable8dot3 0; fsutil behavior set disablelastaccess 0</code>
-                    </div>
+                    <pre class="terminal-code-body"><code id="p6-pagefile-code">Loading command...</code></pre>
                 </div>
+                <div class="revert-box" style="margin-top:6px;">
+                    <div class="code-header-flex">
+                        <span class="revert-title">How to Revert / Undo:</span>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="Get-CimInstance Win32_ComputerSystem | Set-CimInstance -Property @{AutomaticManagedPagefile=$True}; Remove-ItemProperty -Path &quot;HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management&quot; -Name &quot;PagingFiles&quot; -ErrorAction SilentlyContinue">Restore Automatic Management</button>
+                    </div>
+                    <span class="revert-text">Restores default Windows dynamic pagefile sizing: <code>Get-CimInstance Win32_ComputerSystem | Set-CimInstance -Property @{AutomaticManagedPagefile=$True}</code></span>
+                </div>
+            </div>
+            <!-- STEP 8: CORE ISOLATION / HVCI AUDIT -->
+            <div class="step-content-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)">Step 8: Core Isolation &amp; Memory Integrity (HVCI) Latency Audit:</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">1% Low Latency</span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
+                    <strong>Why check it:</strong> Hypervisor-Protected Code Integrity (HVCI) isolates the kernel inside a virtualized hypervisor container. On gaming rigs, it can impose a 3–8% CPU overhead on 1% lows. On Windows 10, it is usually OFF by default (and hidden if CPU virtualization is disabled in BIOS). Use this diagnostic to verify its state:
+                </p>
+                <div class="terminal-code-window" style="margin-top:6px;">
+                    <div class="terminal-bar">
+                        <div class="terminal-badge">
+                            <span class="terminal-dot"></span>
+                            <span class="terminal-title">PowerShell (Admin) · Audit &amp; Disable HVCI</span>
+                        </div>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="$k=&quot;HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity&quot;; $hv=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).Enabled; if($hv -eq 1){ Set-ItemProperty -Path $k -Name &quot;Enabled&quot; -Value 0 -Type DWord; Write-Host &quot;HVCI was ENABLED. Disabled for bare-metal gaming latency. Restart PC to apply.&quot; -ForegroundColor Yellow } else { Write-Host &quot;HVCI is already OFF. Maximum bare-metal performance active.&quot; -ForegroundColor Green }">Audit &amp; Disable</button>
+                    </div>
+                    <pre class="terminal-code-body"><code>Check HypervisorEnforcedCodeIntegrity ➔ Set Enabled=0 for bare-metal CPU execution</code></pre>
+                </div>
+                <div class="revert-box" style="margin-top:6px;">
+                    <div class="code-header-flex">
+                        <span class="revert-title">How to Revert / Undo:</span>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="Set-ItemProperty -Path &quot;HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity&quot; -Name &quot;Enabled&quot; -Value 1 -Type DWord">Enable HVCI</button>
+                    </div>
+                    <span class="revert-text">Re-enables hypervisor memory integrity: <code>Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Value 1 -Type DWord</code></span>
+                </div>
+            </div>
 
-                <div class="latency-item">
-                    <strong style="color:var(--text-primary)">Step 6E: Contiguous Fixed Pagefile:</strong>
-                    <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                        Fixing the pagefile size to a static 8192 MB (8 GB) prevents dynamic pagefile fragmentation and storage allocation hitches.<br/><br/>
-                        Press <kbd>Win</kbd> + <kbd>R</kbd> ➔ <code>sysdm.cpl</code> ➔ Performance Settings ➔ Advanced ➔ Virtual Memory ➔ Set Initial &amp; Maximum to <strong>8192 MB</strong>.
-                    </p>
+            <!-- STEP 9: SUBSYSTEM & AUDIO POLISH (CLEAN GRID) -->
+            <div class="step-content-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)">Step 9: Targeted Subsystem &amp; Audio Latency Polish:</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">Fine-Tuning Grid</span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
+                    Quick finishing adjustments for desktop responsiveness, direct audio hardware alignment, and storage index hygiene:
+                </p>
+
+                <div class="latency-grid" style="margin-top:8px;">
+                    <div class="latency-item">
+                        <strong style="color:var(--text-primary)">Desktop Menu Delay (10ms):</strong>
+                        <p style="font-size:0.73rem; margin:4px 0 6px 0; color:var(--text-secondary);">
+                            Eliminates the sluggish 400ms delay before submenus expand.
+                        </p>
+                        <div class="terminal-code-window">
+                            <div class="terminal-bar">
+                                <div class="terminal-badge"><span class="terminal-dot"></span><span>10ms Delay</span></div>
+                                <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="reg add &quot;HKCU\\Control Panel\\Desktop&quot; /v MenuShowDelay /t REG_SZ /d 10 /f">Copy</button>
+                            </div>
+                            <pre class="terminal-code-body"><code>reg add "HKCU\\Control Panel\\Desktop" /v MenuShowDelay /t REG_SZ /d 10 /f</code></pre>
+                        </div>
+                        <div style="margin-top:6px; font-size:0.7rem; color:var(--text-muted)">
+                            <strong>Revert:</strong> <code>reg add "HKCU\\Control Panel\\Desktop" /v MenuShowDelay /t REG_SZ /d 400 /f</code>
+                        </div>
+                    </div>
+
+                    <div class="latency-item">
+                        <strong style="color:var(--text-primary)">Audio Resampling Alignment (48,000 Hz):</strong>
+                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                            Almost all games render audio natively at 48 kHz. Setting your DAC or headset to 48 kHz avoids Windows software resampling overhead.
+                            <br/><br/>
+                            Press <kbd>Win</kbd> + <kbd>R</kbd> ➔ <code>mmsys.cpl</code> ➔ Properties ➔ Advanced ➔ set <strong>24-bit, 48000 Hz</strong>.
+                        </p>
+                    </div>
+
+                    <div class="latency-item">
+                        <strong style="color:var(--text-primary)">Disable NTFS 8.3 &amp; LastAccess:</strong>
+                        <p style="font-size:0.73rem; margin:4px 0 6px 0; color:var(--text-secondary);">
+                            Stops Windows from writing secondary MS-DOS short file names and timestamp records on every file read.
+                        </p>
+                        <div class="terminal-code-window">
+                            <div class="terminal-bar">
+                                <div class="terminal-badge"><span class="terminal-dot"></span><span>NTFS Tweaks</span></div>
+                                <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="fsutil behavior set disable8dot3 1; fsutil behavior set disablelastaccess 1">Copy</button>
+                            </div>
+                            <pre class="terminal-code-body"><code>fsutil behavior set disable8dot3 1; fsutil behavior set disablelastaccess 1</code></pre>
+                        </div>
+                        <div style="margin-top:6px; font-size:0.7rem; color:var(--text-muted)">
+                            <strong>Revert:</strong> <code>fsutil behavior set disable8dot3 0; fsutil behavior set disablelastaccess 0</code>
+                        </div>
+                    </div>
+
+                    <div class="latency-item">
+                        <strong style="color:var(--text-primary)">NVMe TRIM &amp; Game De-Indexing:</strong>
+                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                            1. <strong>TRIM Check:</strong> Run <code>fsutil behavior query DisableDeleteNotify</code> (should return 0).<br/>
+                            2. <strong>De-Index:</strong> In Windows Indexing Options, uncheck game installation drives so search indexing daemons don't scan game folders during gameplay.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

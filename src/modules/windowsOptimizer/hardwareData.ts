@@ -597,6 +597,45 @@ export const GPU_DATABASE: GpuModelSpec[] = [
     }
 ];
 
+export interface PagefileSpec {
+    initMB: number;
+    maxMB: number;
+    badgeText: string;
+    explanation: string;
+}
+
+export function getPagefileRecommendation(currentRam: RamModelSpec): PagefileSpec {
+    const ramName = currentRam.name.toLowerCase();
+
+    if (ramName.includes('single') || ramName.includes('8gb') || currentRam.id.includes('single')) {
+        return {
+            initMB: 8192,
+            maxMB: 16384,
+            badgeText: '8GB/16GB RAM · 8GB-16GB Buffer',
+            explanation:
+                '8GB/16GB RAM Setup: Uses an 8GB initial buffer with a 16GB expansion ceiling. Because physical RAM is limited, modern games easily exceed 16GB total commit charge; this prevents out-of-memory game crashes.'
+        };
+    }
+
+    if (ramName.includes('32gb+')) {
+        return {
+            initMB: 4096,
+            maxMB: 4096,
+            badgeText: '64GB+ RAM · 4GB Lean',
+            explanation:
+                '64GB+ RAM Setup: Lean 4096 MB static allocation. With 64GB+ of physical memory, your system will never run out of RAM; 4GB satisfies Windows kernel triage dump and API requirements without wasting SSD storage.'
+        };
+    }
+
+    return {
+        initMB: 8192,
+        maxMB: 8192,
+        badgeText: 'Standard Dual-Channel · 8GB Static',
+        explanation:
+            'Standard Gaming Setup: Pure static 8192 MB. Prevents NVMe drive allocation spikes and locks memory paging to a single contiguous block on C:.'
+    };
+}
+
 export const RAM_DATABASE: RamModelSpec[] = [
     {
         id: 'ddr5-6000-dual',

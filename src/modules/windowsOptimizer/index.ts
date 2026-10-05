@@ -5,7 +5,8 @@ import {
     type MoboPlatformSpec,
     GPU_DATABASE,
     RAM_DATABASE,
-    MOBO_PLATFORMS
+    MOBO_PLATFORMS,
+    getPagefileRecommendation
 } from './hardwareData';
 import {
     type CttItemBlueprint,
@@ -150,6 +151,22 @@ export function initWindowsOptimizer(): void {
         }
     }
 
+    function renderPhase6(): void {
+        const currentRam = RAM_DATABASE.find(r => r.id === profile.ramId) ?? RAM_DATABASE[0];
+        const { initMB, maxMB, badgeText, explanation } = getPagefileRecommendation(currentRam);
+
+        const badgeEl = document.getElementById('p6-pagefile-badge');
+        const descEl = document.getElementById('p6-pagefile-desc');
+        const codeEl = document.getElementById('p6-pagefile-code');
+        const copyBtn = document.getElementById('p6-pagefile-copy-btn');
+
+        const command = `Get-CimInstance Win32_ComputerSystem | Set-CimInstance -Property @{AutomaticManagedPagefile=$False}; Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" -Name "PagingFiles" -Value "C:\\pagefile.sys ${initMB} ${maxMB}" -Type MultiString; Write-Host "Static ${initMB}MB Pagefile allocated on C:. Restart PC to apply." -ForegroundColor Green`;
+
+        if (badgeEl) badgeEl.textContent = badgeText;
+        if (descEl) descEl.textContent = explanation;
+        if (codeEl) codeEl.textContent = command;
+        if (copyBtn) copyBtn.setAttribute('data-copy', command);
+    }
     function populateMoboSelect(): void {
         if (!moboSelect) return;
         moboSelect.innerHTML = MOBO_PLATFORMS.map(
@@ -806,6 +823,7 @@ export function initWindowsOptimizer(): void {
         renderPhase2();
         renderDynamicHardware();
         renderCttBlueprint();
+        renderPhase6();
     }
 
     osSelect?.addEventListener('change', () => {
