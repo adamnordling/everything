@@ -6,7 +6,9 @@ import {
     GPU_DATABASE,
     RAM_DATABASE,
     MOBO_PLATFORMS,
-    getPagefileRecommendation
+    getPagefileRecommendation,
+    NVIDIA_3D_SETTINGS_DATABASE,
+    AMD_ADRENALIN_SETTINGS_DATABASE
 } from './hardwareData';
 import {
     type CttItemBlueprint,
@@ -151,6 +153,175 @@ export function initWindowsOptimizer(): void {
         }
     }
 
+    function renderPhase4Settings(): void {
+        const prereqsMount = document.getElementById('p4-display-prereqs-mount');
+        const settingsMount = document.getElementById('p4-driver-settings-table-mount');
+        const titleEl = document.getElementById('p4-driver-control-title');
+        const badgeEl = document.getElementById('p4-driver-control-badge');
+        const descEl = document.getElementById('p4-driver-control-desc');
+
+        if (!prereqsMount || !settingsMount) return;
+
+        const currentGpu = GPU_DATABASE.find(g => g.id === profile.gpuId) ?? GPU_DATABASE[0];
+        const isIntelLegacy = profile.cpu === 'intel-legacy';
+        const isAmdGpu = currentGpu.family === 'amd-rdna';
+
+        // -------------------------------------------------------------
+        // 1. AMD RADEON SETUP
+        // -------------------------------------------------------------
+        if (isAmdGpu) {
+            if (titleEl) titleEl.textContent = 'Step 3: AMD Software: Adrenalin Edition Calibration:';
+            if (badgeEl) badgeEl.textContent = 'Radeon Adrenalin';
+            if (descEl) {
+                descEl.textContent =
+                    'Open AMD Software (Alt+R) ➔ Gaming. Configure Display prerequisites, then apply 3D settings:';
+            }
+
+            prereqsMount.innerHTML = `
+                <div class="latency-grid">
+                    <div class="latency-item" style="border-color: rgba(214, 93, 100, 0.3);">
+                        <strong style="color:var(--text-primary);">1. Display Refresh Rate &amp; FreeSync:</strong>
+                        <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.4;">
+                            Go to <strong>Gaming ➔ Display</strong>. Confirm <em>AMD FreeSync</em> is <strong>Enabled</strong> and verify your panel refresh rate is at its native maximum (144Hz / 240Hz+).
+                        </p>
+                    </div>
+                    <div class="latency-item" style="border-color: rgba(214, 93, 100, 0.3);">
+                        <strong style="color:var(--text-primary);">2. Pixel Format (Full 0–255 RGB):</strong>
+                        <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.4;">
+                            Under <strong>Gaming ➔ Display ➔ Pixel Format</strong>: Select <strong>RGB 4:4:4 Pixel Format PC Standard (Full RGB)</strong>. Eliminates washed-out blacks on HDMI/DP.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            settingsMount.innerHTML = `
+                <div class="latency-grid">
+                    ${AMD_ADRENALIN_SETTINGS_DATABASE.map(
+                        item => `
+                        <div class="latency-item" style="border-color: rgba(214, 93, 100, 0.3);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <strong style="color:var(--text-primary); font-size:0.78rem;">${item.name}</strong>
+                                <span class="pill-badge" style="color:var(--accent-rose);">${item.recommended}</span>
+                            </div>
+                            <p style="font-size:0.72rem; color:var(--text-secondary); margin:0; line-height:1.4;">${item.why}</p>
+                        </div>
+                    `
+                    ).join('')}
+                </div>
+            `;
+            return;
+        }
+
+        // -------------------------------------------------------------
+        // 2. NVIDIA GEFORCE SETUP (PASCAL & MODERN RTX)
+        // -------------------------------------------------------------
+        if (titleEl) titleEl.textContent = `Step 3: NVIDIA Control Panel Calibration (${currentGpu.name}):`;
+        if (badgeEl)
+            badgeEl.textContent = currentGpu.family === 'nvidia-pascal' ? 'Pascal Calibrated' : 'Modern RTX Calibrated';
+        if (descEl) {
+            descEl.innerHTML =
+                'Complete the <strong>Display</strong> prerequisites first, then apply the <strong>Manage 3D settings</strong> matrix below:';
+        }
+
+        // 3A: PREREQUISITE DISPLAY CARDS (THE 60Hz TRAP & FULL DYNAMIC RANGE)
+        prereqsMount.innerHTML = `
+            <div class="latency-grid">
+                <div class="latency-item" style="border-color: var(--accent-brand);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <strong style="color:var(--text-primary);">A. Escape the 60Hz "Ultra HD" Trap:</strong>
+                        <span class="pill-badge" style="color:var(--accent-brand);">Display ➔ Change resolution</span>
+                    </div>
+                    <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                        In NVIDIA Control Panel ➔ <em>Change resolution</em>: Do <strong>NOT</strong> select your resolution from the top "Ultra HD, HD, SD" list (it caps refresh rates at 60Hz!).
+                        <br/><br/>
+                        Scroll down past the TV list to the <strong>"PC"</strong> section (e.g. <code>PC ➔ 1920x1080</code> or <code>2560x1440</code>). Select your native resolution here to unlock your monitor's true <strong>144Hz, 165Hz, 240Hz, or 360Hz+</strong>.
+                    </p>
+                </div>
+
+                <div class="latency-item" style="border-color: var(--accent-brand);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <strong style="color:var(--text-primary);">B. Full Output Dynamic Range (0–255 RGB):</strong>
+                        <span class="pill-badge" style="color:var(--accent-brand);">Change resolution ➔ Step 3</span>
+                    </div>
+                    <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                        On the same <em>Change resolution</em> page, scroll down to Step 3:
+                        <br/>1. Select <strong>"Use NVIDIA color settings"</strong>.
+                        <br/>2. Output dynamic range: Change from <strong>Limited (16–235)</strong> to <strong>Full (0–255)</strong>.
+                        <br/><br/>
+                        Fixes Windows treating monitors as HDMI TVs with washed-out gray blacks and clipped contrast.
+                    </p>
+                </div>
+
+                <div class="latency-item">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <strong style="color:var(--text-primary);">C. G-Sync Setup Protocol:</strong>
+                        <span class="pill-badge">Display ➔ Set up G-SYNC</span>
+                    </div>
+                    <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                        • Check <strong>"Enable G-SYNC, G-SYNC Compatible"</strong>.<br/>
+                        • Select <strong>"Enable for full screen mode"</strong> (or windowed and full screen if gaming borderless).<br/>
+                        • Verify your specific display is selected and checked in Step 3.
+                    </p>
+                </div>
+
+                <div class="latency-item">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <strong style="color:var(--text-primary);">D. Desktop Color Depth:</strong>
+                        <span class="pill-badge">8 bpc vs 10 bpc</span>
+                    </div>
+                    <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                        Under <em>Output color depth</em>: Set to <strong>8 bpc</strong> for standard sRGB panels, or <strong>10 bpc</strong> if your monitor features a true 10-bit wide-gamut panel. (Avoid 10 bpc over older DisplayPort 1.2 cables if it forces DSC or limits refresh rate).
+                    </p>
+                </div>
+            </div>
+        `;
+
+        // 3B: FULL 3D SETTINGS TABLE
+        const categories = ['Latency & Sync', 'Performance & Cache', 'Textures & Quality', 'Antialiasing'] as const;
+
+        settingsMount.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:6px;">
+                    <span style="font-family:var(--font-mono); font-size:0.76rem; font-weight:800; color:var(--text-primary); text-transform:uppercase;">
+                        Manage 3D Settings (Global Settings Tab)
+                    </span>
+                    <span class="pill-badge" style="font-size:0.65rem;">28 Settings Codified</span>
+                </div>
+                ${categories
+                    .map(category => {
+                        const items = NVIDIA_3D_SETTINGS_DATABASE.filter(s => s.category === category);
+                        return `
+                        <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:6px; padding:10px 12px;">
+                            <div style="font-family:var(--font-mono); font-size:0.72rem; font-weight:800; color:var(--accent-brand); text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid var(--border-subtle); padding-bottom:4px;">
+                                ${category}
+                            </div>
+                            <div class="latency-grid">
+                                ${items
+                                    .map(item => {
+                                        const val = item.getValue(currentGpu, isIntelLegacy);
+                                        const why = item.why(currentGpu, isIntelLegacy);
+                                        const borderStyle = item.isHighlighted
+                                            ? 'border-color: var(--accent-brand);'
+                                            : '';
+                                        return `
+                                        <div class="latency-item" style="${borderStyle}">
+                                            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:6px;">
+                                                <strong style="color:var(--text-primary); font-size:0.76rem;">${item.name}</strong>
+                                                <span class="pill-badge" style="white-space:nowrap;">${val}</span>
+                                            </div>
+                                            <p style="font-size:0.71rem; color:var(--text-secondary); margin:0; line-height:1.4;">${why}</p>
+                                        </div>
+                                    `;
+                                    })
+                                    .join('')}
+                            </div>
+                        </div>
+                    `;
+                    })
+                    .join('')}
+            </div>
+        `;
+    }
     function renderPhase6(): void {
         const currentRam = RAM_DATABASE.find(r => r.id === profile.ramId) ?? RAM_DATABASE[0];
         const { initMB, maxMB, badgeText, explanation } = getPagefileRecommendation(currentRam);
@@ -822,6 +993,7 @@ export function initWindowsOptimizer(): void {
         renderPhase1();
         renderPhase2();
         renderDynamicHardware();
+        renderPhase4Settings(); // <--- Add this call
         renderCttBlueprint();
         renderPhase6();
     }

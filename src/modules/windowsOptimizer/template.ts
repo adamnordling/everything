@@ -203,7 +203,25 @@ export const WINDOWS_OPTIMIZER_HTML = `
                         <strong>Mandatory BIOS Settings to Enable:</strong>
                         <ul class="clean-bullet-list" id="p2-bios-settings-list"></ul>
                     </div>
+                    
+                    
                 </div>
+                
+                <!-- RAM SLOT TOPOLOGY (DAISY-CHAIN CALLOUT) -->
+            <div class="step-content-box" style="border-left: 3px solid var(--accent-brand);">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)">Motherboard RAM Slot Placement (Daisy-Chain Signal Integrity):</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">Slots A2 &amp; B2 (2 &amp; 4)</span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
+                    Nearly all consumer motherboards (including ASUS ROG, MSI, Gigabyte, and ASRock) utilize a <strong>Daisy-Chain memory trace layout</strong>. The memory traces route from the CPU socket directly to Slot 2, then continue to Slot 4.
+                </p>
+                <ul class="clean-bullet-list" style="margin-top:6px;">
+                    <li><strong>Always install 2 sticks in Slots 2 and 4 (labeled A2 and B2):</strong> Counting away from the CPU socket: <em>[CPU] ➔ Empty (A1) ➔ Stick (A2) ➔ Empty (B1) ➔ Stick (B2)</em>.</li>
+                    <li><strong>Why this matters:</strong> Placing sticks in Slots 1 and 3 leaves open, unterminated trace stubs beyond the DIMM slots. Signal reflections bounce back along the PCB, causing memory instability, failed XMP/EXPO boots, and random game crash-to-desktop errors.</li>
+                </ul>
+            </div>
+                
             </div>
             
             <div class="step-content-box" style="margin-top: 8px; border-left: 3px solid var(--accent-brand);">
@@ -312,69 +330,26 @@ export const WINDOWS_OPTIMIZER_HTML = `
             </div>
 
             <div id="hw-dynamic-content" class="step-content-box"></div>
-
+            
+<!-- STEP 3: DISPLAY & 3D SETTINGS CALIBRATION -->
             <div class="step-content-box" style="margin-top:4px;">
-                <strong style="color:var(--text-primary)">Step 3: Post-Install Graphics &amp; Display Calibration:</strong>
-                <p style="font-size:0.75rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
-                    Once the clean driver is installed and you reboot, apply these essential control panel and system settings:
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary)" id="p4-driver-control-title">Step 3: Display Calibration &amp; Driver 3D Engine:</strong>
+                    <span class="pill-badge" id="p4-driver-control-badge" style="font-size:0.65rem">Dynamic Calibration</span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); margin:4px 0 6px 0; line-height:1.45;" id="p4-driver-control-desc">
+                    Follow the prerequisite display setup before applying the 3D settings matrix below:
                 </p>
 
-                <div class="latency-grid" style="margin-top:8px;">
-                    <!-- DYNAMIC HAGS CARD -->
-                    <div class="latency-item" id="hags-calibration-card" style="border-color: var(--accent-brand);">
-                        <strong style="color:var(--accent-brand)">1. Hardware-Accelerated GPU Scheduling (HAGS):</strong>
-                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;" id="hags-calibration-text">
-                            Navigate to: <strong>Windows Settings (Win+I) ➔ System ➔ Display ➔ Graphics ➔ Change default graphics settings</strong>.
-                        </p>
-                    </div>
+                <!-- 3A: PREREQUISITE DISPLAY SETTINGS (THE 60Hz TRAP & FULL RGB) -->
+                <div id="p4-display-prereqs-mount" style="width:100%; margin-top:8px;"></div>
 
-                    <div class="latency-item">
-                        <strong style="color:var(--text-primary)">2. Escape the 60Hz "Ultra HD" Trap:</strong>
-                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                            In NVIDIA Control Panel ➔ <em>Change resolution</em>: Do <strong>NOT</strong> pick resolutions from the top "Ultra HD, HD, SD" list (they cap monitors at 60Hz!).
-                            <br/><br/>
-                            Scroll down past Ultra HD to the <strong>"PC"</strong> section (e.g. <code>PC ➔ 1920x1080</code> or <code>2560x1440</code>). Select your native resolution here to unlock your monitor's true <strong>144Hz, 165Hz, or 240Hz+</strong>.
-                        </p>
-                    </div>
-
-                    <div class="latency-item">
-                        <strong style="color:var(--text-primary)">3. Set Shader Cache Size to 10 GB:</strong>
-                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                            In NVIDIA Control Panel ➔ <em>Manage 3D settings</em> ➔ set <strong>Shader Cache Size</strong> to <strong>10 GB</strong> (instead of Driver Default).
-                            <br/><br/>
-                            Prevents modern DirectX 12 games (CoD, Fortnite, Apex) from continually re-compiling shaders during firefights, eliminating frame stutter.
-                        </p>
-                    </div>
-
-                    <div class="latency-item">
-                        <strong style="color:var(--text-primary)">4. The Blur Busters Low-Latency Formula:</strong>
-                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                            • <strong>G-Sync / FreeSync:</strong> Enabled (Full Screen).<br/>
-                            • <strong>NVCP Vertical Sync:</strong> <strong>ON</strong> (in driver, NOT in-game).<br/>
-                            • <strong>In-Game V-Sync:</strong> <strong>OFF</strong>.<br/>
-                            • <strong>Frame Cap:</strong> Cap <strong>3 to 4 FPS below monitor Hz</strong> (141 FPS on 144Hz; 237 FPS on 240Hz). Keeps frames inside the zero-lag G-Sync window.
-                        </p>
-                    </div>
-
-                    <div class="latency-item">
-                        <strong style="color:var(--text-primary)">5. Recommended 3D Driver Settings:</strong>
-                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                            • <strong>Power Management Mode:</strong> <strong>Normal</strong> (prevents 60W idle draw and high fan noise).<br/>
-                            • <strong>Low Latency Mode:</strong> <strong>On</strong> (In games with NVIDIA Reflex, set in-game Reflex to <em>On + Boost</em>).<br/>
-                            • <strong>Texture Filtering - Quality:</strong> <strong>High Performance</strong>.
-                        </p>
-                    </div>
-
-                    <div class="latency-item">
-                        <strong style="color:var(--text-primary)">6. Full Output Dynamic Range (0–255):</strong>
-                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                            In NVIDIA Control Panel ➔ <em>Change resolution</em> ➔ Scroll down to step 3: Check <strong>"Use NVIDIA color settings"</strong> ➔ Set <em>Output dynamic range</em> to <strong>Full (0–255)</strong>.
-                            <br/><br/>
-                            Fixes Windows treating monitors as HDMI TVs with washed-out, limited 16–235 black levels.
-                        </p>
-                    </div>
-                </div>
+                <!-- 3B: FULL 3D SETTINGS TABLE -->
+                <div id="p4-driver-settings-table-mount" style="width:100%; margin-top:14px;"></div>
             </div>
+
+               
+       
         </div>
 
         <!-- PHASE 5: CHRIS TITUS WINUTIL BLUEPRINT -->
@@ -776,6 +751,29 @@ export const WINDOWS_OPTIMIZER_HTML = `
                         <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
                             1. <strong>TRIM Check:</strong> Run <code>fsutil behavior query DisableDeleteNotify</code> (should return 0).<br/>
                             2. <strong>De-Index:</strong> In Windows Indexing Options, uncheck game installation drives so search indexing daemons don't scan game folders during gameplay.
+                        </p>
+                    </div>
+                    
+                    <!-- APP HARDWARE ACCELERATION (DISCORD / CHROME / SPOTIFY) -->
+                    <div class="latency-item">
+                        <strong style="color:var(--text-primary)">App Hardware Acceleration (Discord, Chrome, Spotify):</strong>
+                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                            Chromium and Electron apps allocate background Direct3D swapchains. When an intensive game hits 95–99% GPU usage, background video streams drop frames, causing Desktop Window Manager (DWM) stuttering on your primary monitor.
+                            <br/><br/>
+                            • <strong>Discord:</strong> User Settings ➔ Advanced ➔ Toggle <strong>Hardware Acceleration OFF</strong>.<br/>
+                            • <strong>Chrome / Brave / Edge:</strong> Settings ➔ System ➔ Toggle <em>"Use graphics acceleration when available"</em> <strong>OFF</strong> if gaming on mismatched refresh monitors (e.g. 144Hz + 60Hz).<br/>
+                            • <strong>Spotify:</strong> Click ••• Menu ➔ View ➔ Toggle <strong>Hardware Acceleration OFF</strong>.
+                        </p>
+                    </div>
+
+                    <!-- MOUSE POLLING RATE (1,000 Hz vs 4,000 / 8,000 Hz) -->
+                    <div class="latency-item">
+                        <strong style="color:var(--text-primary)">Mouse Polling Rate (1,000 Hz vs. 4,000 / 8,000 Hz):</strong>
+                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                            Polling rate is the update frequency of your sensor, not cursor speed (DPI). High polling rates (4K / 8K) send 4,000–8,000 hardware interrupts per second to CPU Core 0. On 8-thread CPUs (like i7-9700K or Ryzen 3600/5600), fast mouse swipes can consume 25–35% of a CPU core, causing frame drops in <em>League of Legends</em> and <em>Valorant</em>.
+                            <br/><br/>
+                            • <strong>Competitive Standard:</strong> Set your mouse software (Corsair iCUE, Razer Synapse, Logitech G HUB) to <strong>1,000 Hz</strong> for rock-solid frame pacing.<br/>
+                            • <strong>Live Rate Checker:</strong> Test your actual sensor frequency at <a href="https://cpstest.org/polling-rate-test/" target="_blank" rel="noopener" class="link-chip">Polling Rate Test ↗</a>.
                         </p>
                     </div>
                 </div>

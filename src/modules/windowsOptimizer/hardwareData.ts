@@ -50,6 +50,255 @@ export interface GpuModelSpec {
     directDownloadUrl: string;
 }
 
+export interface Driver3DSetting {
+    name: string;
+    category: 'Latency & Sync' | 'Performance & Cache' | 'Textures & Quality' | 'Antialiasing';
+    getValue: (gpu: GpuModelSpec, isIntelLegacy: boolean) => string;
+    why: (gpu: GpuModelSpec, isIntelLegacy: boolean) => string;
+    isHighlighted?: boolean;
+}
+
+export const NVIDIA_3D_SETTINGS_DATABASE: Driver3DSetting[] = [
+    // 1. LATENCY & SYNC
+    {
+        name: 'Low Latency Mode',
+        category: 'Latency & Sync',
+        isHighlighted: true,
+        getValue: (gpu: GpuModelSpec): string => (gpu.family === 'nvidia-pascal' ? 'On' : 'On (or Ultra with G-Sync)'),
+        why: (gpu: GpuModelSpec): string =>
+            gpu.family === 'nvidia-pascal'
+                ? 'GTX 10-Series (Pascal): Set to ON (caps pre-rendered frames to 1). In Reflex games, NVIDIA Reflex automatically overrides and manages this.'
+                : 'Modern RTX: Set to ON. If pairing with G-Sync + driver V-Sync ON + frame cap, set to ULTRA for automated frame alignment.'
+    },
+    {
+        name: 'Vertical sync',
+        category: 'Latency & Sync',
+        isHighlighted: true,
+        getValue: (): string => 'On (with G-Sync) / Off (Fixed Hz)',
+        why: (): string =>
+            'If using G-Sync/FreeSync: Driver V-Sync ON + In-game V-Sync OFF + Cap -3 FPS below Hz completely eliminates tearing with ZERO input lag penalty. On fixed-refresh panels, keep OFF.'
+    },
+    {
+        name: 'Max Frame Rate',
+        category: 'Latency & Sync',
+        getValue: (): string => 'Off (or Cap -3 below Hz)',
+        why: (): string =>
+            'Cap in-game whenever possible. If the game lacks a reliable limiter, set driver Max Frame Rate to 141 (on 144Hz) or 237 (on 240Hz) to keep G-Sync active.'
+    },
+    {
+        name: 'Monitor Technology',
+        category: 'Latency & Sync',
+        getValue: (): string => 'G-SYNC / G-SYNC Compatible',
+        why: (): string =>
+            'Select G-Sync if your monitor supports variable refresh rate; select Fixed Refresh Rate if running standard panels.'
+    },
+    {
+        name: 'Virtual Reality pre-rendered frames',
+        category: 'Latency & Sync',
+        getValue: (): string => '1',
+        why: (): string => 'Guarantees the lowest buffer lag for SteamVR and OpenXR runtimes.'
+    },
+    {
+        name: 'Vulkan/OpenGL present method',
+        category: 'Latency & Sync',
+        getValue: (): string => 'Prefer layered on DXGI Swapchain',
+        why: (): string =>
+            'Allows Vulkan/OpenGL titles (like DOOM and emulation) to use modern Windows 10/11 Flip Model presentation.'
+    },
+
+    // 2. PERFORMANCE & CACHE
+    {
+        name: 'Shader Cache Size',
+        category: 'Performance & Cache',
+        isHighlighted: true,
+        getValue: (): string => '10 GB',
+        why: (): string =>
+            'Driver Default (~1–4GB) is too small for modern games (Apex, CoD, Fortnite). Once full, old shaders are purged and recompiled mid-game, causing firefight stutter. 10 GB provides dedicated headroom.'
+    },
+    {
+        name: 'Power management mode',
+        category: 'Performance & Cache',
+        isHighlighted: true,
+        getValue: (): string => 'Normal (Optimal Power)',
+        why: (): string =>
+            'Avoid "Prefer maximum performance" globally! It pins clock speeds at idle, pulling 60W+ at desktop and causing fan noise. Your GPU boosts to peak frequency within 1ms under 3D load anyway.'
+    },
+    {
+        name: 'Threaded optimization',
+        category: 'Performance & Cache',
+        isHighlighted: true,
+        getValue: (_gpu: GpuModelSpec, isLegacy: boolean): string => (isLegacy ? 'On' : 'Auto'),
+        why: (_gpu: GpuModelSpec, isLegacy: boolean): string =>
+            isLegacy
+                ? 'Monolithic CPU (e.g. i7-9700K 8-core/8-thread): Forcing ON ensures the display driver offloads draw calls across all physical cores.'
+                : 'Modern Multi-Threaded: Leave on Auto so game engines with custom task schedulers direct their own thread pools.'
+    },
+    {
+        name: 'CUDA - Sysmem Fallback Policy',
+        category: 'Performance & Cache',
+        getValue: (): string => 'Prefer No Sysmem Fallback',
+        why: (): string =>
+            'Prevents GPU VRAM spills from thrashing into system RAM over PCIe, which drops framerates by 80%. If VRAM runs out, apps allocate locally instead of freezing.'
+    },
+    {
+        name: 'Background Application Max Frame Rate',
+        category: 'Performance & Cache',
+        getValue: (): string => '20 – 30 FPS',
+        why: (): string =>
+            'Caps background Discord, OBS, or Chrome streams to 30 FPS while tabbed into a game, preserving GPU encoder bandwidth and preventing VRAM contention.'
+    },
+    {
+        name: 'Preferred refresh rate',
+        category: 'Performance & Cache',
+        getValue: (): string => 'Highest available',
+        why: (): string => 'Forces Windows to dispatch 3D runtimes at full native panel Hz (144Hz, 240Hz, etc.).'
+    },
+    {
+        name: 'CUDA - GPUs',
+        category: 'Performance & Cache',
+        getValue: (): string => 'All',
+        why: (): string => 'Ensures all onboard CUDA compute units are available for physics and compute workloads.'
+    },
+    {
+        name: 'OpenGL GDI compatibility',
+        category: 'Performance & Cache',
+        getValue: (): string => 'Auto',
+        why: (): string => 'Provides default hardware GDI acceleration for desktop windows.'
+    },
+    {
+        name: 'OpenGL rendering GPU',
+        category: 'Performance & Cache',
+        getValue: (gpu: GpuModelSpec): string => gpu.name,
+        why: (): string =>
+            'Explicitly selects your dedicated GPU, preventing Windows from choosing motherboard video ports.'
+    },
+
+    // 3. TEXTURES & QUALITY
+    {
+        name: 'Texture filtering - Quality',
+        category: 'Textures & Quality',
+        isHighlighted: true,
+        getValue: (gpu: GpuModelSpec): string =>
+            gpu.family === 'nvidia-pascal' ? 'High Performance' : 'High Performance / Quality',
+        why: (gpu: GpuModelSpec): string =>
+            gpu.family === 'nvidia-pascal'
+                ? 'GTX 10-Series (Pascal): Set to High Performance. Reduces texture shader ALU operations, directly improving 1% low frame consistency.'
+                : 'Modern RTX: High Performance gives maximum competitive frametime stability with zero visible texture degradation.'
+    },
+    {
+        name: 'Texture filtering - Negative LOD bias',
+        category: 'Textures & Quality',
+        getValue: (): string => 'Allow',
+        why: (): string =>
+            'Allows native mipmap sharpening when Anisotropic Filtering is active. (Only set to Clamp if forcing AF via driver).'
+    },
+    {
+        name: 'Texture filtering - Anisotropic sample optimization',
+        category: 'Textures & Quality',
+        getValue: (): string => 'On',
+        why: (): string =>
+            'Limits sample count on secondary textures to save memory bandwidth with zero loss in visual clarity.'
+    },
+    {
+        name: 'Texture filtering - Trilinear optimization',
+        category: 'Textures & Quality',
+        getValue: (): string => 'On',
+        why: (): string => 'Improves texture filtering cache throughput by enabling trilinear interpolation.'
+    },
+    {
+        name: 'Anisotropic filtering',
+        category: 'Textures & Quality',
+        getValue: (): string => 'Application-controlled',
+        why: (): string => 'Leave controlled by the game engine to prevent texture atlas flickering.'
+    },
+
+    // 4. ANTIALIASING & RESOLUTION
+    {
+        name: 'Antialiasing - FXAA',
+        category: 'Antialiasing',
+        getValue: (): string => 'Off',
+        why: (): string =>
+            'FXAA smears a blurry post-processing filter over the screen, degrading crosshair clarity and text.'
+    },
+    {
+        name: 'Antialiasing - Gamma correction',
+        category: 'Antialiasing',
+        getValue: (): string => 'On',
+        why: (): string => 'Calibrates color linearity of edge smoothing at 0% performance cost.'
+    },
+    {
+        name: 'Antialiasing - Mode',
+        category: 'Antialiasing',
+        getValue: (): string => 'Application-controlled',
+        why: (): string => 'Prevents driver MSAA overrides from breaking modern deferred rendering pipelines.'
+    },
+    {
+        name: 'Antialiasing - Transparency',
+        category: 'Antialiasing',
+        getValue: (): string => 'Off',
+        why: (): string =>
+            'Supersampling foliage and chain-link fences adds heavy fill-rate latency on older GPUs like GTX 1070.'
+    },
+    {
+        name: 'Multi-Frame Sampled AA (MFAA)',
+        category: 'Antialiasing',
+        getValue: (): string => 'Off',
+        why: (): string => 'Adds temporal frame-blending overhead in competitive multiplayer titles.'
+    },
+    {
+        name: 'Triple buffering',
+        category: 'Antialiasing',
+        getValue: (): string => 'Off',
+        why: (): string => 'Legacy OpenGL option only. Introduces 1 full frame of input lag if enabled.'
+    },
+    {
+        name: 'Image Scaling (NIS)',
+        category: 'Antialiasing',
+        getValue: (): string => 'Off',
+        why: (): string =>
+            'Adds an upscaling spatial filter pass. Run your monitor at native resolution for lowest input lag.'
+    },
+    {
+        name: 'DSR - Factors',
+        category: 'Antialiasing',
+        getValue: (): string => 'Off',
+        why: (): string => 'Downsampling multipliers consume immense VRAM and compute. Keep off for esports gaming.'
+    }
+];
+
+export const AMD_ADRENALIN_SETTINGS_DATABASE = [
+    {
+        name: 'Radeon Anti-Lag',
+        recommended: 'Enabled',
+        why: 'Paces CPU thread submission to prevent CPU queuing ahead of the GPU. Cuts input lag dramatically in GPU-bound scenarios.'
+    },
+    {
+        name: 'AMD Smart Access Memory (SAM)',
+        recommended: 'Enabled',
+        why: 'Enables full PCIe Resizable BAR access so your CPU can map the entire GPU VRAM frame buffer simultaneously.'
+    },
+    {
+        name: 'Radeon Chill / Boost / Super Resolution',
+        recommended: 'Disabled',
+        why: 'Dynamic resolution scaling and frame throttling introduce inconsistent mouse movement and frame pacing spikes.'
+    },
+    {
+        name: 'Radeon Enhanced Sync',
+        recommended: 'Disabled',
+        why: 'Causes display flickering with FreeSync. Pair AMD FreeSync with a -3 FPS frame cap instead.'
+    },
+    {
+        name: 'Texture Filtering Quality',
+        recommended: 'Performance',
+        why: 'Optimizes texture filtering passes for maximum 1% low frame time consistency.'
+    },
+    {
+        name: 'Pixel Format (Gaming ➔ Display)',
+        recommended: 'RGB 4:4:4 Pixel Format PC Standard (Full RGB)',
+        why: 'Prevents washed-out 16–235 color compression over HDMI/DisplayPort.'
+    }
+];
+
 export interface RamModelSpec {
     id: string;
     name: string;
