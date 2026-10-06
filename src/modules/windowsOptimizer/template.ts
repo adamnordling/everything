@@ -28,7 +28,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                 </div>
             </div>
 
-<div class="selector-field">
+            <div class="selector-field">
                 <label for="winopt-mobo-select">MOTHERBOARD &amp; BIOS PLATFORM</label>
                 <div class="select-wrapper">
                     <select id="winopt-mobo-select" class="winopt-select"></select>
@@ -98,12 +98,13 @@ export const WINDOWS_OPTIMIZER_HTML = `
         <div class="spec-scanner-header">
             <div style="display:flex; align-items:center; gap:8px;">
                 <span class="pill-badge">BENCHMARK LAB</span>
-                <span style="font-size:0.82rem; font-weight:700; color:var(--text-primary)">Quantify Your Improvement (Auto-Comparing Telemetry):</span>
+                <span style="font-size:0.82rem; font-weight:700; color:var(--text-primary)">Telemetry Footprint &amp; Verification Suite:</span>
             </div>
-            <span style="font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono)">Saves Before &amp; After Scorecard to Desktop</span>
+            <span style="font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono)">Process Footprint &amp; Latency Guide</span>
         </div>
         <p style="font-size:0.75rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
-            Run this command in PowerShell (Admin). On your first run, it creates a baseline <code>Windows-Benchmark-Before.clixml</code> on your Desktop. Complete Phase 1 through 7, then run it again to generate your before-and-after scorecard.
+            Run this script in PowerShell (Admin). On run 1, it saves <code>Windows-Benchmark-Before.clixml</code> on your Desktop. Complete the playbook, then run it again to calculate resource reductions.
+            <br/><strong>Note on Benchmark Limits:</strong> Windows dynamically scales caches and background services. True stutter elimination is verified via <strong>DPC Latency (under 250 µs in LatencyMon)</strong> and <strong>1% low FPS in games</strong> rather than process counts alone.
         </p>
 
         <div class="terminal-code-window" style="margin-top:6px;">
@@ -114,7 +115,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                 </div>
                 <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="&amp; { $desktop=[Environment]::GetFolderPath('Desktop'); $beforePath=Join-Path $desktop 'Windows-Benchmark-Before.clixml'; $afterPath=Join-Path $desktop 'Windows-Benchmark-After.clixml'; $reportPath=Join-Path $desktop 'Windows-Benchmark-Report.txt'; $procs=Get-Process; $procCount=$procs.Count; $threadCount=($procs.Threads).Count; $handleCount=($procs | Measure-Object -Property Handles -Sum).Sum; $os=Get-CimInstance Win32_OperatingSystem; $totalRamMB=[Math]::Round($os.TotalVisibleMemorySize/1024,0); $freeRamMB=[Math]::Round($os.FreePhysicalMemory/1024,0); $usedRamMB=$totalRamMB-$freeRamMB; $ramPct=[Math]::Round(($usedRamMB/$totalRamMB)*100,1); $cpu=(Get-CimInstance Win32_Processor).Name.Trim(); $gpu=(Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name) -join ' / '; $nonMsServices=Get-CimInstance Win32_Service | Where-Object { $_.State -eq 'Running' -and $_.PathName -notmatch 'Windows|System32' }; $serviceCount=($nonMsServices | Measure-Object).Count; $dwm=Get-Process dwm -ErrorAction SilentlyContinue; $dwmMemMB=if($dwm){[Math]::Round($dwm.WorkingSet64/1MB,1)}else{0}; $snapshot=[PSCustomObject]@{ Timestamp=(Get-Date).ToString('yyyy-MM-dd HH:mm:ss'); CPU=$cpu; GPU=$gpu; Active_Processes=$procCount; Active_Threads=$threadCount; Open_Handles=$handleCount; Used_RAM_MB=$usedRamMB; Free_RAM_MB=$freeRamMB; RAM_Usage_Pct=$ramPct; Non_MS_Services=$serviceCount; DWM_RAM_MB=$dwmMemMB }; if(-not(Test-Path $beforePath)){ $snapshot | Export-Clixml -Path $beforePath; Write-Host ''; Write-Host '[STEP 1 COMPLETE: BASELINE SAVED TO DESKTOP]' -ForegroundColor Green; $snapshot | Format-List; Write-Host ''; Write-Host 'Complete Phase 1 to Phase 7, then run this command again to see your scorecard!' -ForegroundColor Cyan; Write-Host '' } else { $before=Import-Clixml -Path $beforePath; $snapshot | Export-Clixml -Path $afterPath; $pDiff=$snapshot.Active_Processes-$before.Active_Processes; $tDiff=$snapshot.Active_Threads-$before.Active_Threads; $hDiff=$snapshot.Open_Handles-$before.Open_Handles; $rDiff=$snapshot.Used_RAM_MB-$before.Used_RAM_MB; $sDiff=$snapshot.Non_MS_Services-$before.Non_MS_Services; $dDiff=$snapshot.DWM_RAM_MB-$before.DWM_RAM_MB; $comp=@( [PSCustomObject]@{Metric='Active Processes';Before=$before.Active_Processes;After=$snapshot.Active_Processes;Change=&quot;$pDiff&quot;;Status=if($pDiff -le 0){'✓ Reduced'}else{'Increased'}}, [PSCustomObject]@{Metric='Kernel Threads';Before=$before.Active_Threads;After=$snapshot.Active_Threads;Change=&quot;$tDiff&quot;;Status=if($tDiff -le 0){'✓ Reduced'}else{'Increased'}}, [PSCustomObject]@{Metric='System Handles';Before=$before.Open_Handles;After=$snapshot.Open_Handles;Change=&quot;$hDiff&quot;;Status=if($hDiff -le 0){'✓ Reduced'}else{'Increased'}}, [PSCustomObject]@{Metric='RAM Used (MB)';Before=$before.Used_RAM_MB;After=$snapshot.Used_RAM_MB;Change=&quot;$rDiff MB&quot;;Status=if($rDiff -le 0){'✓ Freed'}else{'Increased'}}, [PSCustomObject]@{Metric='3rd-Party Services';Before=$before.Non_MS_Services;After=$snapshot.Non_MS_Services;Change=&quot;$sDiff&quot;;Status=if($sDiff -le 0){'✓ Stripped'}else{'Added'}}, [PSCustomObject]@{Metric='DWM Memory (MB)';Before=$before.DWM_RAM_MB;After=$snapshot.DWM_RAM_MB;Change=&quot;$dDiff MB&quot;;Status=if($dDiff -le 0){'✓ Lean'}else{'Increased'}} ); Write-Host ''; Write-Host '================== OPTIMIZATION SCORECARD ==================' -ForegroundColor Cyan; $comp | Format-Table -AutoSize; $comp | Out-File -FilePath $reportPath; Write-Host ('[Scorecard saved to: ' + $reportPath + ']'); Write-Host '' } }">Copy Benchmark Script</button>
             </div>
-            <pre class="terminal-code-body"><code>&amp; { $desktop=[Environment]::GetFolderPath('Desktop'); $beforePath=Join-Path $desktop 'Windows-Benchmark-Before.clixml'; $afterPath=Join-Path $desktop 'Windows-Benchmark-After.clixml'; $reportPath=Join-Path $desktop 'Windows-Benchmark-Report.txt'; $procs=Get-Process; $procCount=$procs.Count; $threadCount=($procs.Threads).Count; $handleCount=($procs | Measure-Object -Property Handles -Sum).Sum; $os=Get-CimInstance Win32_OperatingSystem; $totalRamMB=[Math]::Round($os.TotalVisibleMemorySize/1024,0); $freeRamMB=[Math]::Round($os.FreePhysicalMemory/1024,0); $usedRamMB=$totalRamMB-$freeRamMB; $ramPct=[Math]::Round(($usedRamMB/$totalRamMB)*100,1); $cpu=(Get-CimInstance Win32_Processor).Name.Trim(); $gpu=(Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name) -join ' / '; $nonMsServices=Get-CimInstance Win32_Service | Where-Object { $_.State -eq 'Running' -and $_.PathName -notmatch 'Windows|System32' }; $serviceCount=($nonMsServices | Measure-Object).Count; $dwm=Get-Process dwm -ErrorAction SilentlyContinue; $dwmMemMB=if($dwm){[Math]::Round($dwm.WorkingSet64/1MB,1)}else{0}; $snapshot=[PSCustomObject]@{ Timestamp=(Get-Date).ToString('yyyy-MM-dd HH:mm:ss'); CPU=$cpu; GPU=$gpu; Active_Processes=$procCount; Active_Threads=$threadCount; Open_Handles=$handleCount; Used_RAM_MB=$usedRamMB; Free_RAM_MB=$freeRamMB; RAM_Usage_Pct=$ramPct; Non_MS_Services=$serviceCount; DWM_RAM_MB=$dwmMemMB }; if(-not(Test-Path $beforePath)){ $snapshot | Export-Clixml -Path $beforePath; Write-Host '[STEP 1 COMPLETE: BASELINE SAVED TO DESKTOP]' -ForegroundColor Green; $snapshot | Format-List } else { ... # Compares Before &amp; After Metrics and Outputs Scorecard } }</code></pre>
+            <pre class="terminal-code-body"><code>&amp; { $desktop=[Environment]::GetFolderPath('Desktop'); $beforePath=Join-Path $desktop 'Windows-Benchmark-Before.clixml'; $afterPath=Join-Path $desktop 'Windows-Benchmark-After.clixml'; ... # Compares Before &amp; After Metrics and Outputs Scorecard }</code></pre>
         </div>
     </div>
 
@@ -148,7 +149,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
             </div>
 
             <div class="step-content-box">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                     <strong style="color:var(--text-primary)">Step 1B: Boot USB &amp; 100% Clean Drive Wipe (Shift + F10):</strong>
                     <span class="pill-badge" style="font-size:0.65rem">Purges Dirty OEM Partitions</span>
                 </div>
@@ -179,8 +180,6 @@ export const WINDOWS_OPTIMIZER_HTML = `
             <p class="step-desc">
                 Flashing your motherboard BIOS before installing drivers ensures CPU microcode stability, memory training, and PCIe Resizable BAR support.
             </p>
-            
-            
 
             <div class="step-content-box">
                 <div class="bios-grid">
@@ -203,36 +202,32 @@ export const WINDOWS_OPTIMIZER_HTML = `
                         <strong>Mandatory BIOS Settings to Enable:</strong>
                         <ul class="clean-bullet-list" id="p2-bios-settings-list"></ul>
                     </div>
-                    
-                    
                 </div>
-                
-                <!-- RAM SLOT TOPOLOGY (DAISY-CHAIN CALLOUT) -->
-            <div class="step-content-box" style="border-left: 3px solid var(--accent-brand);">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <strong style="color:var(--text-primary)">Motherboard RAM Slot Placement (Daisy-Chain Signal Integrity):</strong>
-                    <span class="pill-badge" style="font-size:0.65rem">Slots A2 &amp; B2 (2 &amp; 4)</span>
+
+                <div class="step-content-box" style="border-left: 3px solid var(--accent-brand); margin-top: 8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <strong style="color:var(--text-primary)">Motherboard RAM Slot Placement (Daisy-Chain Signal Integrity):</strong>
+                        <span class="pill-badge" style="font-size:0.65rem">Slots A2 &amp; B2 (2 &amp; 4)</span>
+                    </div>
+                    <p style="font-size:0.75rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
+                        Nearly all consumer motherboards utilize a <strong>Daisy-Chain memory trace layout</strong>. Traces route from the CPU socket directly to Slot 2, then continue to Slot 4.
+                    </p>
+                    <ul class="clean-bullet-list" style="margin-top:6px;">
+                        <li><strong>Always install 2 sticks in Slots 2 and 4 (labeled A2 and B2):</strong> Counting away from CPU: <em>[CPU] ➔ Empty (A1) ➔ Stick (A2) ➔ Empty (B1) ➔ Stick (B2)</em>.</li>
+                        <li><strong>Why this matters:</strong> Placing sticks in Slots 1 and 3 leaves open, unterminated trace stubs. Signal reflections bounce back along the PCB, causing memory instability and game crashes.</li>
+                    </ul>
                 </div>
-                <p style="font-size:0.75rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
-                    Nearly all consumer motherboards (including ASUS ROG, MSI, Gigabyte, and ASRock) utilize a <strong>Daisy-Chain memory trace layout</strong>. The memory traces route from the CPU socket directly to Slot 2, then continue to Slot 4.
-                </p>
-                <ul class="clean-bullet-list" style="margin-top:6px;">
-                    <li><strong>Always install 2 sticks in Slots 2 and 4 (labeled A2 and B2):</strong> Counting away from the CPU socket: <em>[CPU] ➔ Empty (A1) ➔ Stick (A2) ➔ Empty (B1) ➔ Stick (B2)</em>.</li>
-                    <li><strong>Why this matters:</strong> Placing sticks in Slots 1 and 3 leaves open, unterminated trace stubs beyond the DIMM slots. Signal reflections bounce back along the PCB, causing memory instability, failed XMP/EXPO boots, and random game crash-to-desktop errors.</li>
-                </ul>
             </div>
-                
-            </div>
-            
+
             <div class="step-content-box" style="margin-top: 8px; border-left: 3px solid var(--accent-brand);">
-    <strong style="color:var(--text-primary)">Anti-Cheat Compatibility Guardrail (Riot Vanguard &amp; EasyAntiCheat):</strong>
-    <p style="font-size:0.74rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
-        If you play <strong>League of Legends, Valorant, Fortnite, or Apex</strong>:
-        <br/>• <strong>Secure Boot:</strong> Must be set to <strong>Enabled (Standard/Windows UEFI Mode)</strong>.
-        <br/>• <strong>TPM 2.0 (Intel PTT / AMD fTPM):</strong> Must remain <strong>Enabled</strong>.
-        <br/>• <strong>CSM:</strong> Must be <strong>Disabled (Pure UEFI)</strong>. If CSM is turned on, Vanguard rejects the boot environment (Error VAN 9003).
-    </p>
-</div>
+                <strong style="color:var(--text-primary)">Anti-Cheat Compatibility Guardrail (Riot Vanguard &amp; EasyAntiCheat):</strong>
+                <p style="font-size:0.74rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
+                    If you play <strong>League of Legends, Valorant, Fortnite, or Apex</strong>:
+                    <br/>• <strong>Secure Boot:</strong> Must be set to <strong>Enabled (Standard/Windows UEFI Mode)</strong>.
+                    <br/>• <strong>TPM 2.0 (Intel PTT / AMD fTPM):</strong> Must remain <strong>Enabled</strong>.
+                    <br/>• <strong>CSM:</strong> Must be <strong>Disabled (Pure UEFI)</strong>. If CSM is turned on, Vanguard rejects the boot environment (Error VAN 9003).
+                </p>
+            </div>
         </div>
 
         <!-- PHASE 3: FIRST-BOOT SAFETY NETS & DRIVER LOCK -->
@@ -252,13 +247,13 @@ export const WINDOWS_OPTIMIZER_HTML = `
                             <span class="terminal-dot"></span>
                             <span class="terminal-title">PowerShell (Admin) · Action 1: Create System Restore Point</span>
                         </div>
-                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="Enable-ComputerRestore -Drive &quot;C:\\&quot;; Checkpoint-Computer -Description &quot;FreshInstall-Clean&quot; -RestorePointType &quot;MODIFY_SETTINGS&quot;">Copy</button>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="Enable-ComputerRestore -Drive 'C:\'; Checkpoint-Computer -Description 'FreshInstall-Clean' -RestorePointType 'MODIFY_SETTINGS'">Copy</button>
                     </div>
-                    <pre class="terminal-code-body"><code>Enable-ComputerRestore -Drive "C:\\"; Checkpoint-Computer -Description "FreshInstall-Clean" -RestorePointType "MODIFY_SETTINGS"</code></pre>
+                    <pre class="terminal-code-body"><code>Enable-ComputerRestore -Drive "C:\"; Checkpoint-Computer -Description "FreshInstall-Clean" -RestorePointType "MODIFY_SETTINGS"</code></pre>
                 </div>
 
                 <div class="revert-box">
-                    <div class="code-header-flex">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
                         <span class="revert-title">How to Roll Back / Undo:</span>
                         <button type="button" class="btn-text-link copy-btn-trigger" data-copy="SystemPropertiesProtection">Copy Run Command</button>
                     </div>
@@ -268,25 +263,25 @@ export const WINDOWS_OPTIMIZER_HTML = `
                 </div>
             </div>
 
-            <div class="action-revert-pair" style="margin-top: 10px;">
+<div class="action-revert-pair" style="margin-top: 10px;">
                 <div class="terminal-code-window">
                     <div class="terminal-bar">
                         <div class="terminal-badge">
                             <span class="terminal-dot"></span>
                             <span class="terminal-title">Command Prompt (Admin) · Action 2: Block Driver Overwrite</span>
                         </div>
-                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="reg add &quot;HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate&quot; /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f">Copy</button>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy='reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f'>Copy</button>
                     </div>
-                    <pre class="terminal-code-body"><code>reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f</code></pre>
+                    <pre class="terminal-code-body"><code>reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f</code></pre>
                 </div>
 
                 <div class="revert-box">
-                    <div class="code-header-flex">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
                         <span class="revert-title">How to Revert / Undo:</span>
-                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="reg delete &quot;HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate&quot; /v ExcludeWUDriversInQualityUpdate /f">Copy Revert Command</button>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy='reg delete "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /f'>Copy Revert Command</button>
                     </div>
                     <span class="revert-text">
-                        Removes the policy key and restores standard automated driver delivery.
+                        Restores driver auto-updates: <code>reg delete "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /f</code>
                     </span>
                 </div>
             </div>
@@ -318,7 +313,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                 <strong style="color:var(--text-primary)">Step 2: DDU Safe Mode Deep Clean Protocol:</strong>
                 <ol class="ordered-step-list">
                     <li><strong>DISCONNECT FROM THE INTERNET:</strong> Unplug Ethernet or disable Wi-Fi. (Remain offline until Step 4 is complete).</li>
-                    <li><strong>Reboot into Safe Mode:</strong> Hold <kbd>Shift</kbd> while clicking Restart in the Start Menu ➔ Troubleshoot ➔ Advanced Options ➔ Startup Settings ➔ Restart ➔ Press <kbd>4</kbd> (Enable Safe Mode).</li>
+                    <li><strong>Reboot into Safe Mode:</strong> Hold <kbd>Shift</kbd> while clicking Restart in Start Menu ➔ Troubleshoot ➔ Advanced Options ➔ Startup Settings ➔ Restart ➔ Press <kbd>4</kbd> (Enable Safe Mode).</li>
                     <li><strong>Launch DDU in Safe Mode:</strong>
                         <ul class="clean-bullet-list" style="margin-top:4px;">
                             <li><strong>iGPU Clean (if on desktop):</strong> Select device type <strong>GPU</strong> ➔ Select <strong>Intel</strong> ➔ Click <em>"Clean and do NOT restart"</em>.</li>
@@ -330,8 +325,8 @@ export const WINDOWS_OPTIMIZER_HTML = `
             </div>
 
             <div id="hw-dynamic-content" class="step-content-box"></div>
-            
-<!-- STEP 3: DISPLAY & 3D SETTINGS CALIBRATION -->
+
+            <!-- STEP 3: DISPLAY & 3D SETTINGS CALIBRATION -->
             <div class="step-content-box" style="margin-top:4px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <strong style="color:var(--text-primary)" id="p4-driver-control-title">Step 3: Display Calibration &amp; Driver 3D Engine:</strong>
@@ -341,15 +336,9 @@ export const WINDOWS_OPTIMIZER_HTML = `
                     Follow the prerequisite display setup before applying the 3D settings matrix below:
                 </p>
 
-                <!-- 3A: PREREQUISITE DISPLAY SETTINGS (THE 60Hz TRAP & FULL RGB) -->
                 <div id="p4-display-prereqs-mount" style="width:100%; margin-top:8px;"></div>
-
-                <!-- 3B: FULL 3D SETTINGS TABLE -->
                 <div id="p4-driver-settings-table-mount" style="width:100%; margin-top:14px;"></div>
             </div>
-
-               
-       
         </div>
 
         <!-- PHASE 5: CHRIS TITUS WINUTIL BLUEPRINT -->
@@ -369,9 +358,9 @@ export const WINDOWS_OPTIMIZER_HTML = `
                         <span class="terminal-dot"></span>
                         <span class="terminal-title">PowerShell (Administrator) · Launch CTT WinUtil</span>
                     </div>
-                    <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="irm https://christitus.com/win | iex">Copy Command</button>
+                    <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="iwr -useb https://christitus.com/win | iex">Copy Command</button>
                 </div>
-                <pre class="terminal-code-body"><code>irm https://christitus.com/win | iex</code></pre>
+                <pre class="terminal-code-body"><code>iwr -useb https://christitus.com/win | iex</code></pre>
             </div>
 
             <div class="ctt-workbench-layout">
@@ -428,7 +417,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                             <span class="pill-badge" style="font-size:0.65rem">Benchmark Script</span>
                         </div>
                         <p style="font-size:0.74rem; color:var(--text-secondary); margin:4px 0 6px 0; line-height:1.45;">
-                            Run this script in PowerShell to test your actual UDP latency across the top 6 resolvers:
+                            Run this script in PowerShell to test your actual UDP latency across top public resolvers:
                         </p>
 
                         <div class="terminal-code-window">
@@ -437,11 +426,12 @@ export const WINDOWS_OPTIMIZER_HTML = `
                                     <span class="terminal-dot"></span>
                                     <span class="terminal-title">PowerShell (Admin) · DNS Benchmark</span>
                                 </div>
-                                <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="$s=@([PSCustomObject]@{N='Cloudflare';I='1.1.1.1'},[PSCustomObject]@{N='Quad9';I='9.9.9.9'},[PSCustomObject]@{N='Google';I='8.8.8.8'},[PSCustomObject]@{N='OpenDNS';I='208.67.222.222'},[PSCustomObject]@{N='AdGuard';I='94.140.14.14'},[PSCustomObject]@{N='Control D';I='76.76.2.0'}); $d=@('cloudflare.com','steampowered.com','google.com','microsoft.com','riotgames.com'); Write-Host '--- RUNNING DNS BENCHMARK OVER RAW UDP ---' -ForegroundColor Cyan; $res=foreach($srv in $s){ $times=@(); for($i=0;$i -lt 3;$i++){ foreach($dom in $d){ try{ $sw=[System.Diagnostics.Stopwatch]::StartNew(); $null=Resolve-DnsName -Name $dom -Server $srv.I -Type A -QuickTimeout -DnsOnly -ErrorAction Stop; $sw.Stop(); $times+=$sw.Elapsed.TotalMilliseconds }catch{} } }; $avg=if($times.Count -gt 0){[Math]::Round(($times | Measure-Object -Average).Average, 1)}else{999}; [PSCustomObject]@{ Provider=$srv.N; IP=$srv.I; 'Avg(ms)'=$avg } }; $res | Sort-Object 'Avg(ms)' | Format-Table -AutoSize">Copy Benchmark</button>
+                                <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="$s=@([PSCustomObject]@{N='Cloudflare';I='1.1.1.1'},[PSCustomObject]@{N='Quad9';I='9.9.9.9'},[PSCustomObject]@{N='Google';I='8.8.8.8'},[PSCustomObject]@{N='AdGuard';I='94.140.14.14'},[PSCustomObject]@{N='OpenDNS';I='208.67.222.222'},[PSCustomObject]@{N='Control D';I='76.76.2.0'}); $d=@('cloudflare.com','steampowered.com','google.com','microsoft.com','riotgames.com'); Write-Host '--- RUNNING DNS BENCHMARK OVER RAW UDP ---' -ForegroundColor Cyan; $res=foreach($srv in $s){ $times=@(); for($i=0;$i -lt 3;$i++){ foreach($dom in $d){ try{ $sw=[System.Diagnostics.Stopwatch]::StartNew(); $null=Resolve-DnsName -Name $dom -Server $srv.I -Type A -QuickTimeout -DnsOnly -ErrorAction Stop; $sw.Stop(); $times+=$sw.Elapsed.TotalMilliseconds }catch{} } }; $avg=if($times.Count -gt 0){[Math]::Round(($times | Measure-Object -Average).Average, 1)}else{999}; [PSCustomObject]@{ Provider=$srv.N; IP=$srv.I; 'Avg(ms)'=$avg } }; $res | Sort-Object 'Avg(ms)' | Format-Table -AutoSize">Copy Benchmark</button>
                             </div>
-                            <pre class="terminal-code-body"><code>$s=@([PSCustomObject]@{N='Cloudflare';I='1.1.1.1'},[PSCustomObject]@{N='Quad9';I='9.9.9.9'},[PSCustomObject]@{N='Google';I='8.8.8.8'},[PSCustomObject]@{N='OpenDNS';I='208.67.222.222'},[PSCustomObject]@{N='AdGuard';I='94.140.14.14'},[PSCustomObject]@{N='Control D';I='76.76.2.0'}); $d=@('cloudflare.com','steampowered.com','google.com','microsoft.com','riotgames.com'); ... # Resolves and ranks fastest DNS</code></pre>
+                            <pre class="terminal-code-body"><code>$s=@([PSCustomObject]@{N='Cloudflare';I='1.1.1.1'},[PSCustomObject]@{N='Quad9';I='9.9.9.9'},[PSCustomObject]@{N='Google';I='8.8.8.8'},[PSCustomObject]@{N='AdGuard';I='94.140.14.14'}...); ... # Resolves and ranks fastest DNS</code></pre>
                         </div>
 
+                        <!-- 4 DIVERSE DNS PROVIDERS -->
                         <div class="dns-static-grid" style="margin-top:8px;">
                             <div class="dns-static-card fastest">
                                 <div class="dns-tile-top">
@@ -449,16 +439,37 @@ export const WINDOWS_OPTIMIZER_HTML = `
                                     <span class="pill-badge" style="font-size:0.65rem">Lowest Gaming Ping</span>
                                 </div>
                                 <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0;">
-                                    Consistently ranks #1 on DNSPerf worldwide. Fastest query turnaround, zero logs, pure throughput for gaming.
+                                    Ranked #1 on DNSPerf. Zero logs, Anycast routing, lowest round-trip query time.
                                 </p>
                             </div>
+
                             <div class="dns-static-card">
                                 <div class="dns-tile-top">
                                     <strong style="color:var(--text-primary)">2. Quad9 (9.9.9.9)</strong>
                                     <span class="pill-badge" style="font-size:0.65rem">Malware Blocking</span>
                                 </div>
                                 <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0;">
-                                    Operated by an independent Swiss non-profit. Blocks malicious phishing and malware domains at the resolution layer.
+                                    Non-profit Swiss resolver with automated threat-intelligence blocking at the network edge.
+                                </p>
+                            </div>
+
+                            <div class="dns-static-card">
+                                <div class="dns-tile-top">
+                                    <strong style="color:var(--text-primary)">3. Google (8.8.8.8)</strong>
+                                    <span class="pill-badge" style="font-size:0.65rem">Global Reliability</span>
+                                </div>
+                                <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0;">
+                                    Massive global infrastructure with nearly 100% uptime. Optimal backup secondary resolver.
+                                </p>
+                            </div>
+
+                            <div class="dns-static-card">
+                                <div class="dns-tile-top">
+                                    <strong style="color:var(--text-primary)">4. AdGuard (94.140.14.14)</strong>
+                                    <span class="pill-badge" style="font-size:0.65rem">Ad &amp; Tracker Blocker</span>
+                                </div>
+                                <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0;">
+                                    Blocks ads, telemetries, and tracking domains at the DNS level before packets touch apps.
                                 </p>
                             </div>
                         </div>
@@ -472,7 +483,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
             </div>
         </div>
 
-<!-- PHASE 6: KERNEL LATENCY & HARDWARE INTERRUPTS -->
+        <!-- PHASE 6: KERNEL LATENCY & HARDWARE INTERRUPTS -->
         <div class="card winopt-step-card">
             <div class="step-badge-row">
                 <span class="pill-badge phase-pill">PHASE 06</span>
@@ -502,11 +513,11 @@ export const WINDOWS_OPTIMIZER_HTML = `
                     <pre class="terminal-code-body"><code>powercfg -restoredefaultschemes; powercfg /change monitor-timeout-ac 0; powercfg /change standby-timeout-ac 0; powercfg /change disk-timeout-ac 0; powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0; powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0; powercfg /hibernate off; powercfg /setactive SCHEME_CURRENT</code></pre>
                 </div>
                 <div class="revert-box" style="margin-top:6px;">
-                    <div class="code-header-flex">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
                         <span class="revert-title">How to Revert / Undo:</span>
                         <button type="button" class="btn-text-link copy-btn-trigger" data-copy="powercfg -restoredefaultschemes; powercfg /hibernate on">Copy Revert</button>
                     </div>
-                    <span class="revert-text">Restores standard Windows default power profiles and re-enables hibernation: <code>powercfg -restoredefaultschemes; powercfg /hibernate on</code></span>
+                    <span class="revert-text">Restores standard Windows default power profiles: <code>powercfg -restoredefaultschemes; powercfg /hibernate on</code></span>
                 </div>
             </div>
 
@@ -527,7 +538,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                 </ul>
                 <div class="revert-box" style="margin-top:6px;">
                     <span class="revert-title">How to Revert / Undo:</span>
-                    <span class="revert-text">Open <code>MSI_util_v3.exe</code> as Admin, uncheck the MSI box for the device, set Interrupt Priority back to <strong>Undefined</strong>, and click <strong>Apply</strong>.</span>
+                    <span class="revert-text">Open <code>MSI_util_v3.exe</code> as Admin, uncheck MSI for the device, set Interrupt Priority back to <strong>Undefined</strong>, and click <strong>Apply</strong>.</span>
                 </div>
             </div>
 
@@ -553,35 +564,35 @@ export const WINDOWS_OPTIMIZER_HTML = `
                 </div>
             </div>
 
-            <!-- STEP 4: MMCSS -->
+<!-- STEP 4: MMCSS -->
             <div class="step-content-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <strong style="color:var(--text-primary)">Step 4: Disable MMCSS Network Throttling &amp; System CPU Reservation:</strong>
                     <span class="pill-badge" style="font-size:0.65rem">Network Queue</span>
                 </div>
                 <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
-                    <strong>Why use it:</strong> By default, Windows Multimedia Class Scheduler Service (MMCSS) throttles non-multimedia network packets by up to 20% whenever an audio or media application is active, and reserves 20% of CPU time for background Windows services. Setting <code>NetworkThrottlingIndex</code> to <code>0xFFFFFFFF</code> (disabled) and <code>SystemResponsiveness</code> to <code>0</code> eliminates packet throttling during online gaming and Discord audio streaming.
+                    <strong>Why use it:</strong> By default, Windows Multimedia Class Scheduler Service (MMCSS) throttles non-multimedia network packets by up to 20% whenever an audio application is active, and reserves 20% of CPU time for background services. Setting <code>NetworkThrottlingIndex</code> to <code>0xFFFFFFFF</code> and <code>SystemResponsiveness</code> to <code>0</code> eliminates packet throttling during online gaming and Discord streaming.
                 </p>
                 <div class="terminal-code-window" style="margin-top:6px;">
                     <div class="terminal-bar">
                         <div class="terminal-badge">
                             <span class="terminal-dot"></span>
-                            <span class="terminal-title">PowerShell (Admin) · MMCSS Fix</span>
+                            <span class="terminal-title">PowerShell / CMD (Admin) · MMCSS Fix</span>
                         </div>
-                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="reg add &quot;HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile&quot; /v NetworkThrottlingIndex /t REG_DWORD /d 4294967295 /f; reg add &quot;HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile&quot; /v SystemResponsiveness /t REG_DWORD /d 0 /f">Copy</button>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy='reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 4294967295 /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f'>Copy</button>
                     </div>
-                    <pre class="terminal-code-body"><code>reg add "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 4294967295 /f; reg add "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f</code></pre>
+                    <pre class="terminal-code-body"><code>reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 4294967295 /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f</code></pre>
                 </div>
                 <div class="revert-box" style="margin-top:6px;">
-                    <div class="code-header-flex">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
                         <span class="revert-title">How to Revert / Undo:</span>
-                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="reg add &quot;HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile&quot; /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add &quot;HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile&quot; /v SystemResponsiveness /t REG_DWORD /d 20 /f">Copy Revert</button>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy='reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20 /f'>Copy Revert</button>
                     </div>
-                    <span class="revert-text">Restores standard Windows default values (Index: 10, Responsiveness: 20): <code>reg add "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add "HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Multimedia\\\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20 /f</code></span>
+                    <span class="revert-text">Restores standard Windows default values (Index: 10, Responsiveness: 20): <code>reg add "HKLM\\SOFTWARE\\Microsoft\\\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20 /f</code></span>
                 </div>
             </div>
 
-            <!-- STEP 5: GAME DVR -->
+          <!-- STEP 5: GAME DVR -->
             <div class="step-content-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <strong style="color:var(--text-primary)">Step 5: Disable Game DVR Background Recording:</strong>
@@ -594,50 +605,67 @@ export const WINDOWS_OPTIMIZER_HTML = `
                     <div class="terminal-bar">
                         <div class="terminal-badge">
                             <span class="terminal-dot"></span>
-                            <span class="terminal-title">PowerShell (Admin) · Game DVR Kill</span>
+                            <span class="terminal-title">PowerShell / CMD (Admin) · Game DVR Kill</span>
                         </div>
-                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="reg add &quot;HKCU\\\\System\\\\GameConfigStore&quot; /v GameDVR_Enabled /t REG_DWORD /d 0 /f; reg add &quot;HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\GameDVR&quot; /v AllowGameDVR /t REG_DWORD /d 0 /f">Copy</button>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy='reg add "HKCU\\System\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f; reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f'>Copy</button>
                     </div>
-                    <pre class="terminal-code-body"><code>reg add "HKCU\\\\System\\\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f; reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f</code></pre>
+                    <pre class="terminal-code-body"><code>reg add "HKCU\\System\\\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f; reg add "HKLM\\\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f</code></pre>
                 </div>
                 <div class="revert-box" style="margin-top:6px;">
-                    <div class="code-header-flex">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
                         <span class="revert-title">How to Revert / Undo:</span>
-                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="reg add &quot;HKCU\\\\System\\\\GameConfigStore&quot; /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete &quot;HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\GameDVR&quot; /v AllowGameDVR /f">Copy Revert</button>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy='reg add "HKCU\\System\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR" /v AllowGameDVR /f'>Copy Revert</button>
                     </div>
                     <span class="revert-text">Re-enables Windows background game recording: <code>reg add "HKCU\\\\System\\\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\GameDVR" /v AllowGameDVR /f</code></span>
                 </div>
             </div>
 
-<!-- STEP 6: VISUAL EFFECTS SCRIPT -->
+          <!-- STEP 6: FAST 3-CLICK VISUAL EFFECTS -->
             <div class="step-content-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                    <strong style="color:var(--text-primary)">Step 6: Responsive Visual Effects (Zero Lag · Keeps Fonts, Drag &amp; Previews):</strong>
-                    <span class="pill-badge" style="font-size:0.65rem">Esports UI</span>
+                    <strong style="color:var(--text-primary)">Step 6: 0ms Visual Effects (The 3-Click Native Method):</strong>
+                    <span class="pill-badge" style="font-size:0.65rem">GUI · 5 Seconds</span>
                 </div>
                 <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
-                    <strong>Why use it:</strong> Strips 14 GPU/CPU composition animations (window zoom, fade effects, tooltip slides). Specifically preserves <strong>Smooth edges of screen fonts (ClearType)</strong>, <strong>Show window contents while dragging</strong>, and <strong>Show thumbnails instead of icons</strong>. Restarts Explorer automatically to apply.
+                    Eliminates all 17 window zooms, taskbar slides, and fade delays without breaking text clarity or file previews.
                 </p>
-                <div class="terminal-code-window" style="margin-top:6px;">
-                    <div class="terminal-bar">
-                        <div class="terminal-badge">
-                            <span class="terminal-dot"></span>
-                            <span class="terminal-title">PowerShell (Admin) · Run Once</span>
-                        </div>
-                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="$D=&quot;HKCU:\\Control Panel\\Desktop&quot;; $E=&quot;HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer&quot;; Set-ItemProperty -Path &quot;$E\\VisualEffects&quot; -Name &quot;VisualFXSetting&quot; -Value 3 -Type DWord; Set-ItemProperty -Path $D -Name &quot;UserPreferencesMask&quot; -Value ([byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00)); Set-ItemProperty -Path &quot;$D\\WindowMetrics&quot; -Name &quot;MinAnimate&quot; -Value &quot;0&quot;; Set-ItemProperty -Path $D -Name &quot;FontSmoothing&quot; -Value &quot;2&quot;; Set-ItemProperty -Path $D -Name &quot;FontSmoothingType&quot; -Value 2; Set-ItemProperty -Path $D -Name &quot;DragFullWindows&quot; -Value &quot;1&quot;; Set-ItemProperty -Path &quot;$E\\Advanced&quot; -Name &quot;IconsOnly&quot; -Value 0 -Type DWord; Stop-Process -Name explorer -Force">Copy</button>
-                    </div>
-                    <pre class="terminal-code-body"><code>$D="HKCU:\\Control Panel\\Desktop"; $E="HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer"; Set-ItemProperty -Path "$E\\VisualEffects" -Name "VisualFXSetting" -Value 3 -Type DWord; Set-ItemProperty -Path $D -Name "UserPreferencesMask" -Value ([byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00)); Set-ItemProperty -Path "$D\\WindowMetrics" -Name "MinAnimate" -Value "0"; Set-ItemProperty -Path $D -Name "FontSmoothing" -Value "2"; Set-ItemProperty -Path $D -Name "FontSmoothingType" -Value 2; Set-ItemProperty -Path $D -Name "DragFullWindows" -Value "1"; Set-ItemProperty -Path "$E\\Advanced" -Name "IconsOnly" -Value 0 -Type DWord; Stop-Process -Name explorer -Force</code></pre>
+
+                <div style="display:flex; align-items:center; gap:8px; margin-top:6px; flex-wrap:wrap;">
+                    <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono)">1. Open dialog:</span>
+                    <span style="font-size:0.75rem; color:var(--text-primary)">Press <kbd>Win</kbd> + <kbd>R</kbd> ➔ type:</span>
+                    <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="SystemPropertiesPerformance" style="font-family:var(--font-mono); font-size:0.72rem;">SystemPropertiesPerformance</button>
                 </div>
-                <div class="revert-box" style="margin-top:6px;">
-                    <div class="code-header-flex">
-                        <span class="revert-title">How to Revert / Undo:</span>
-                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="SystemPropertiesPerformance">Open Visual Dialog</button>
+
+                <div class="latency-grid" style="margin-top:8px;">
+                    <div class="latency-item" style="border-left: 3px solid var(--accent-rose);">
+                        <strong style="color:var(--accent-rose);">A. One-Click Strip:</strong>
+                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                            Select <strong>"Adjust for best performance"</strong> at the top. This immediately unchecks all 17 sluggish animations, tooltip slides, and drop shadows.
+                        </p>
                     </div>
-                    <span class="revert-text">Press <kbd>Win</kbd> + <kbd>R</kbd> ➔ type <code>SystemPropertiesPerformance</code> ➔ select <em>"Let Windows choose what's best for my computer"</em>.</span>
+
+                    <div class="latency-item" style="border-left: 3px solid var(--accent-brand);">
+                        <strong style="color:var(--accent-brand);">B. Re-Check The Essential 3:</strong>
+                        <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                            Scroll down and check <strong>ONLY</strong> these 3 boxes:
+                            <br/>☑ <strong>Smooth edges of screen fonts</strong> <em>(Stops jagged/blurry text)</em>
+                            <br/>☑ <strong>Show thumbnails instead of icons</strong> <em>(Keeps photo/video previews)</em>
+                            <br/>☑ <strong>Show window contents while dragging</strong> <em>(No empty wireframes)</em>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="revert-box" style="margin-top:6px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                        <span class="revert-title">How to Revert:</span>
+                    </div>
+                    <span class="revert-text">
+                        Open <code>SystemPropertiesPerformance</code> again and select <strong>"Let Windows choose what's best for my computer"</strong> ➔ click <strong>Apply</strong>.
+                    </span>
                 </div>
             </div>
 
- <!-- STEP 7: DYNAMIC STATIC PAGEFILE -->
+            <!-- STEP 7: DYNAMIC STATIC PAGEFILE -->
             <div class="step-content-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <strong style="color:var(--text-primary)" id="p6-pagefile-title">Step 7: Automated Static NVMe Pagefile:</strong>
@@ -657,13 +685,14 @@ export const WINDOWS_OPTIMIZER_HTML = `
                     <pre class="terminal-code-body"><code id="p6-pagefile-code">Loading command...</code></pre>
                 </div>
                 <div class="revert-box" style="margin-top:6px;">
-                    <div class="code-header-flex">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
                         <span class="revert-title">How to Revert / Undo:</span>
-                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="Get-CimInstance Win32_ComputerSystem | Set-CimInstance -Property @{AutomaticManagedPagefile=$True}; Remove-ItemProperty -Path &quot;HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management&quot; -Name &quot;PagingFiles&quot; -ErrorAction SilentlyContinue">Restore Automatic Management</button>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="Get-CimInstance Win32_ComputerSystem | Set-CimInstance -Property @{AutomaticManagedPagefile=$True}; Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management' -Name 'PagingFiles' -ErrorAction SilentlyContinue">Restore Automatic Management</button>
                     </div>
                     <span class="revert-text">Restores default Windows dynamic pagefile sizing: <code>Get-CimInstance Win32_ComputerSystem | Set-CimInstance -Property @{AutomaticManagedPagefile=$True}</code></span>
                 </div>
             </div>
+
             <!-- STEP 8: CORE ISOLATION / HVCI AUDIT -->
             <div class="step-content-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -671,7 +700,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                     <span class="pill-badge" style="font-size:0.65rem">1% Low Latency</span>
                 </div>
                 <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
-                    <strong>Why check it:</strong> Hypervisor-Protected Code Integrity (HVCI) isolates the kernel inside a virtualized hypervisor container. On gaming rigs, it can impose a 3–8% CPU overhead on 1% lows. On Windows 10, it is usually OFF by default (and hidden if CPU virtualization is disabled in BIOS). Use this diagnostic to verify its state:
+                    <strong>Why check it:</strong> Hypervisor-Protected Code Integrity (HVCI) isolates the kernel inside a virtualized hypervisor container. On gaming rigs, it can impose a 3–8% CPU overhead on 1% lows. On Windows 10, it is usually OFF by default. Use this diagnostic to verify its state:
                 </p>
                 <div class="terminal-code-window" style="margin-top:6px;">
                     <div class="terminal-bar">
@@ -679,44 +708,44 @@ export const WINDOWS_OPTIMIZER_HTML = `
                             <span class="terminal-dot"></span>
                             <span class="terminal-title">PowerShell (Admin) · Audit &amp; Disable HVCI</span>
                         </div>
-                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="$k=&quot;HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity&quot;; $hv=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).Enabled; if($hv -eq 1){ Set-ItemProperty -Path $k -Name &quot;Enabled&quot; -Value 0 -Type DWord; Write-Host &quot;HVCI was ENABLED. Disabled for bare-metal gaming latency. Restart PC to apply.&quot; -ForegroundColor Yellow } else { Write-Host &quot;HVCI is already OFF. Maximum bare-metal performance active.&quot; -ForegroundColor Green }">Audit &amp; Disable</button>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy='$k="HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity"; $hv=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).Enabled; if($hv -eq 1){ Set-ItemProperty -Path $k -Name "Enabled" -Value 0 -Type DWord; Write-Host "HVCI was ENABLED. Disabled for bare-metal gaming latency. Restart PC to apply." -ForegroundColor Yellow } else { Write-Host "HVCI is already OFF. Maximum bare-metal performance active." -ForegroundColor Green }'>Audit &amp; Disable</button>
                     </div>
                     <pre class="terminal-code-body"><code>Check HypervisorEnforcedCodeIntegrity ➔ Set Enabled=0 for bare-metal CPU execution</code></pre>
                 </div>
                 <div class="revert-box" style="margin-top:6px;">
-                    <div class="code-header-flex">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
                         <span class="revert-title">How to Revert / Undo:</span>
-                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy="Set-ItemProperty -Path &quot;HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity&quot; -Name &quot;Enabled&quot; -Value 1 -Type DWord">Enable HVCI</button>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy='Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Value 1 -Type DWord'>Enable HVCI</button>
                     </div>
-                    <span class="revert-text">Re-enables hypervisor memory integrity: <code>Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Value 1 -Type DWord</code></span>
+                    <span class="revert-text">Re-enables hypervisor memory integrity: <code>Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Value 1 -Type DWord</code></span>
                 </div>
             </div>
 
-            <!-- STEP 9: SUBSYSTEM & AUDIO POLISH (CLEAN GRID) -->
+            <!-- STEP 9: SUBSYSTEM & AUDIO POLISH -->
             <div class="step-content-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <strong style="color:var(--text-primary)">Step 9: Targeted Subsystem &amp; Audio Latency Polish:</strong>
                     <span class="pill-badge" style="font-size:0.65rem">Fine-Tuning Grid</span>
                 </div>
                 <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
-                    Quick finishing adjustments for desktop responsiveness, direct audio hardware alignment, and storage index hygiene:
+                    Quick adjustments for desktop responsiveness, direct audio hardware alignment, and storage index hygiene:
                 </p>
 
                 <div class="latency-grid" style="margin-top:8px;">
                     <div class="latency-item">
                         <strong style="color:var(--text-primary)">Desktop Menu Delay (10ms):</strong>
                         <p style="font-size:0.73rem; margin:4px 0 6px 0; color:var(--text-secondary);">
-                            Eliminates the sluggish 400ms delay before submenus expand.
+                            Eliminates the sluggish 400ms delay before context submenus expand.
                         </p>
                         <div class="terminal-code-window">
                             <div class="terminal-bar">
                                 <div class="terminal-badge"><span class="terminal-dot"></span><span>10ms Delay</span></div>
-                                <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="reg add &quot;HKCU\\Control Panel\\Desktop&quot; /v MenuShowDelay /t REG_SZ /d 10 /f">Copy</button>
+                                <button type="button" class="btn-action-pill copy-btn-trigger" data-copy='reg add "HKCU\\Control Panel\\Desktop" /v MenuShowDelay /t REG_SZ /d 10 /f''>Copy</button>
                             </div>
-                            <pre class="terminal-code-body"><code>reg add "HKCU\\Control Panel\\Desktop" /v MenuShowDelay /t REG_SZ /d 10 /f</code></pre>
+                            <pre class="terminal-code-body"><code>reg add "HKCU\Control Panel\Desktop" /v MenuShowDelay /t REG_SZ /d 10 /f</code></pre>
                         </div>
                         <div style="margin-top:6px; font-size:0.7rem; color:var(--text-muted)">
-                            <strong>Revert:</strong> <code>reg add "HKCU\\Control Panel\\Desktop" /v MenuShowDelay /t REG_SZ /d 400 /f</code>
+                            <strong>Revert:</strong> <code>reg add "HKCU\Control Panel\Desktop" /v MenuShowDelay /t REG_SZ /d 400 /f</code>
                         </div>
                     </div>
 
@@ -753,26 +782,24 @@ export const WINDOWS_OPTIMIZER_HTML = `
                             2. <strong>De-Index:</strong> In Windows Indexing Options, uncheck game installation drives so search indexing daemons don't scan game folders during gameplay.
                         </p>
                     </div>
-                    
-                    <!-- APP HARDWARE ACCELERATION (DISCORD / CHROME / SPOTIFY) -->
+
                     <div class="latency-item">
                         <strong style="color:var(--text-primary)">App Hardware Acceleration (Discord, Chrome, Spotify):</strong>
                         <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
                             Chromium and Electron apps allocate background Direct3D swapchains. When an intensive game hits 95–99% GPU usage, background video streams drop frames, causing Desktop Window Manager (DWM) stuttering on your primary monitor.
                             <br/><br/>
                             • <strong>Discord:</strong> User Settings ➔ Advanced ➔ Toggle <strong>Hardware Acceleration OFF</strong>.<br/>
-                            • <strong>Chrome / Brave / Edge:</strong> Settings ➔ System ➔ Toggle <em>"Use graphics acceleration when available"</em> <strong>OFF</strong> if gaming on mismatched refresh monitors (e.g. 144Hz + 60Hz).<br/>
+                            • <strong>Chrome / Brave / Edge:</strong> Settings ➔ System ➔ Toggle <em>"Use graphics acceleration when available"</em> <strong>OFF</strong> if gaming on mismatched refresh monitors.<br/>
                             • <strong>Spotify:</strong> Click ••• Menu ➔ View ➔ Toggle <strong>Hardware Acceleration OFF</strong>.
                         </p>
                     </div>
 
-                    <!-- MOUSE POLLING RATE (1,000 Hz vs 4,000 / 8,000 Hz) -->
                     <div class="latency-item">
                         <strong style="color:var(--text-primary)">Mouse Polling Rate (1,000 Hz vs. 4,000 / 8,000 Hz):</strong>
                         <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
-                            Polling rate is the update frequency of your sensor, not cursor speed (DPI). High polling rates (4K / 8K) send 4,000–8,000 hardware interrupts per second to CPU Core 0. On 8-thread CPUs (like i7-9700K or Ryzen 3600/5600), fast mouse swipes can consume 25–35% of a CPU core, causing frame drops in <em>League of Legends</em> and <em>Valorant</em>.
+                            Polling rates (4K / 8K) send 4,000–8,000 hardware interrupts per second to CPU Core 0. On 8-thread CPUs (like i7-9700K or Ryzen 3600/5600), fast mouse swipes can consume 25–35% of a CPU core, causing frame drops in <em>League of Legends</em> and <em>Valorant</em>.
                             <br/><br/>
-                            • <strong>Competitive Standard:</strong> Set your mouse software (Corsair iCUE, Razer Synapse, Logitech G HUB) to <strong>1,000 Hz</strong> for rock-solid frame pacing.<br/>
+                            • <strong>Competitive Standard:</strong> Set your mouse software to <strong>1,000 Hz</strong> for rock-solid frame pacing.<br/>
                             • <strong>Live Rate Checker:</strong> Test your actual sensor frequency at <a href="https://cpstest.org/polling-rate-test/" target="_blank" rel="noopener" class="link-chip">Polling Rate Test ↗</a>.
                         </p>
                     </div>
@@ -839,9 +866,9 @@ export const WINDOWS_OPTIMIZER_HTML = `
                     Never delete your entire AppData folder. Safely delete these temporary subdirectories:
                 </p>
                 <ul class="clean-bullet-list" style="margin-top:6px;">
-                    <li><code>%localappdata%\\CrashDumps</code> ➔ Delete all contents (Frees gigabytes of old crash dumps).</li>
-                    <li><code>%temp%</code> and <code>C:\\Windows\\Temp</code> ➔ Delete all contents (Skip files in use).</li>
-                    <li><code>%localappdata%\\D3DSCache</code> ➔ Safe to delete if clearing corrupted game DirectX shader caches.</li>
+                    <li><code>%localappdata%\CrashDumps</code> ➔ Delete all contents (Frees gigabytes of old crash dumps).</li>
+                    <li><code>%temp%</code> and <code>C:\Windows\Temp</code> ➔ Delete all contents (Skip files in use).</li>
+                    <li><code>%localappdata%\D3DSCache</code> ➔ Safe to delete if clearing corrupted game DirectX shader caches.</li>
                 </ul>
             </div>
         </div>

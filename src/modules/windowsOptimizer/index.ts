@@ -27,7 +27,7 @@ function getCpuGuidance(profile: HardwareProfile): string {
         return `
             <div class="hw-block">
                 <div class="hw-block-header">
-                    <span>⚡ AMD CPU Chipset Drivers</span>
+                    <span>AMD CPU Chipset Drivers</span>
                     <a href="https://www.amd.com/en/support/download/drivers.html" target="_blank" rel="noopener" class="link-chip">AMD Official Chipset Setup ↗</a>
                 </div>
                 <ul class="clean-bullet-list">
@@ -41,7 +41,7 @@ function getCpuGuidance(profile: HardwareProfile): string {
         return `
             <div class="hw-block">
                 <div class="hw-block-header">
-                    <span>⚡ Intel 13th/14th Gen Chipset &amp; ME</span>
+                    <span>Intel 13th/14th Gen Chipset &amp; ME</span>
                     <a href="https://www.intel.com/content/www/us/en/download-center/home.html" target="_blank" rel="noopener" class="link-chip">Intel Driver Center ↗</a>
                 </div>
                 <ul class="clean-bullet-list">
@@ -54,11 +54,17 @@ function getCpuGuidance(profile: HardwareProfile): string {
     return `
         <div class="hw-block">
             <div class="hw-block-header">
-                <span>⚡ Intel Monolithic Chipset Drivers (e.g. i7-9700K)</span>
+                <span>Intel Monolithic Chipset &amp; Device Manager Audit (${moboPlatform.name})</span>
                 <a href="${moboPlatform.supportUrl}" target="_blank" rel="noopener" class="link-chip">Official Motherboard Driver Portal ↗</a>
             </div>
             <ul class="clean-bullet-list">
-                <li>Install <strong>Intel INF Chipset Software</strong> and <strong>Intel ME</strong> directly from your ${moboPlatform.name} support portal. Avoid third-party driver-updater utilities.</li>
+                <li><strong>Device Manager Audit First:</strong> Press <kbd>Win</kbd> + <kbd>X</kbd> ➔ <strong>Device Manager</strong> (or run <code>devmgmt.msc</code>). Expand <em>"Other devices"</em> or <em>"System devices"</em>.</li>
+                <li><strong>No yellow exclamation marks (!):</strong> Windows Update has already mapped all chipset INF descriptors. You do <strong>not</strong> need to download or reinstall chipset drivers.</li>
+                <li><strong>Yellow warnings present:</strong> (e.g. on <em>PCI Simple Communications Controller</em> or <em>SM Bus Controller</em>): Download only these two packages from your ${moboPlatform.name} support portal:
+                    <br/>1. <strong>Intel Chipset Device Software (INF Update Utility):</strong> Labels PCIe root ports and SMBus devices.
+                    <br/>2. <strong>Intel Management Engine (ME):</strong> Installs <code>HECI.sys</code> to govern hardware sleep/wake transitions.
+                </li>
+                <li><strong>Zero performance code in INFs:</strong> Chipset INF files only provide text naming definitions for Device Manager. They do not contain executable acceleration code.</li>
             </ul>
         </div>
     `;
@@ -91,7 +97,7 @@ function getGpuGuidance(currentGpu: GpuModelSpec): string {
     return `
         <div class="hw-block" style="margin-top: 10px;">
             <div class="hw-block-header">
-                <span>🎮 Tailored GPU Driver Package (${currentGpu.name})</span>
+                <span>Tailored GPU Driver Package (${currentGpu.name})</span>
                 <a href="${currentGpu.directDownloadUrl}" target="_blank" rel="noopener" class="link-chip">Official Driver Download ↗</a>
             </div>
             <div class="driver-match-box">

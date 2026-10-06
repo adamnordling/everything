@@ -3,10 +3,11 @@
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    max-width: 1200px; /* Constrains the layout on large screens */
-    margin: 0 auto; /* Centers on large monitors */
+    max-width: 1200px;
+    margin: 0 auto;
     min-width: 0;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .winopt-hero {
@@ -17,12 +18,14 @@
     border: 1px solid var(--border-subtle);
     border-radius: var(--card-radius);
     padding: 16px 20px;
+    min-width: 0;
 }
 
 .winopt-hero-left {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
 }
 
 .winopt-brand-icon {
@@ -40,17 +43,17 @@
 
 .winopt-profile-selectors {
     display: grid;
-    /* minmax(0, 1fr) is mandatory in CSS Grid to force children to respect ellipsis */
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
     gap: 10px;
     width: 100%;
+    min-width: 0;
 }
 
 .selector-field {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    min-width: 0 !important;
+    min-width: 0;
     width: 100%;
     overflow: hidden;
 }
@@ -58,7 +61,7 @@
 .select-wrapper {
     position: relative;
     width: 100%;
-    min-width: 0 !important;
+    min-width: 0;
     max-width: 100%;
     overflow: hidden;
 }
@@ -82,6 +85,7 @@
     color: var(--text-muted);
     pointer-events: none;
 }
+
 .winopt-select {
     width: 100% !important;
     max-width: 100% !important;
@@ -101,7 +105,7 @@
     transition: all 0.15s ease;
     white-space: nowrap !important;
     overflow: hidden !important;
-    text-overflow: ellipsis !important; /* Truncates cleanly with dots (...) */
+    text-overflow: ellipsis !important;
     display: block;
     box-sizing: border-box;
 }
@@ -121,6 +125,7 @@
     flex-direction: column;
     gap: 14px;
     width: 100%;
+    min-width: 0;
 }
 
 .winopt-step-card {
@@ -131,12 +136,15 @@
     border: 1px solid var(--border-subtle);
     border-radius: var(--card-radius);
     padding: 18px 20px;
+    min-width: 0;
+    overflow-x: hidden;
 }
 
 .step-badge-row {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .phase-pill {
@@ -150,12 +158,14 @@
     font-size: 0.96rem;
     font-weight: 800;
     color: var(--text-primary);
+    word-break: break-word;
 }
 
 .step-desc {
     font-size: 0.8rem;
     color: var(--text-secondary);
     line-height: 1.5;
+    word-break: break-word;
 }
 
 .links-action-bar {
@@ -196,6 +206,7 @@
     font-weight: 600;
     color: var(--accent-brand);
     text-decoration: none;
+    word-break: break-all;
 }
 
 .link-chip:hover {
@@ -210,14 +221,24 @@
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     padding: 12px 14px;
+    min-width: 0;
+    overflow-x: hidden;
 }
 
 .rufus-setting-row {
     display: grid;
-    grid-template-columns: 140px 1fr;
+    grid-template-columns: minmax(110px, 140px) 1fr;
     gap: 8px;
     font-size: 0.76rem;
     font-family: var(--font-mono);
+    word-break: break-word;
+}
+
+@media (max-width: 480px) {
+    .rufus-setting-row {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
 }
 
 .rufus-param {
@@ -252,6 +273,7 @@
     font-size: 0.76rem;
     line-height: 1.45;
     color: var(--text-secondary);
+    word-break: break-word;
 }
 
 .clean-bullet-list li strong {
@@ -288,12 +310,14 @@
     line-height: 1.45;
     border-left: 3px solid var(--accent-rose);
     padding-left: 10px;
+    word-break: break-word;
 }
 
 .bios-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 16px;
+    min-width: 0;
 }
 
 .bios-guide-col,
@@ -302,19 +326,22 @@
     flex-direction: column;
     gap: 6px;
     font-size: 0.78rem;
+    min-width: 0;
 }
 
-/* COMPACT TERMINAL CODEBLOCK (MARKDOWN STYLE) */
+/* COMPACT TERMINAL CODEBLOCK */
 .terminal-code-window {
     background: var(--bg-card);
     border: 1px solid var(--border-bold);
     border-radius: 6px;
     overflow: hidden;
     width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 html.light-theme .terminal-code-window {
-    background: #f1f0ea; /* Clean markdown code background instead of pure black */
+    background: #f1f0ea;
     border-color: rgba(0, 0, 0, 0.12);
 }
 
@@ -325,7 +352,8 @@ html.light-theme .terminal-code-window {
     background: var(--bg-elevated);
     border-bottom: 1px solid var(--border-subtle);
     padding: 6px 10px;
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .terminal-badge {
@@ -336,6 +364,10 @@ html.light-theme .terminal-code-window {
     font-size: 0.68rem;
     font-weight: 700;
     color: var(--text-secondary);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .terminal-dot {
@@ -343,6 +375,7 @@ html.light-theme .terminal-code-window {
     height: 7px;
     border-radius: 50%;
     background-color: var(--accent-brand);
+    flex-shrink: 0;
 }
 
 .terminal-code-body {
@@ -351,18 +384,18 @@ html.light-theme .terminal-code-window {
     gap: 8px;
     padding: 10px 12px;
     margin: 0;
-    max-height: 80px; /* Compact height */
+    max-height: 85px;
     overflow-x: auto;
     overflow-y: hidden;
     font-family: var(--font-mono);
     font-size: 0.76rem;
     line-height: 1.4;
     color: var(--text-primary);
-    white-space: nowrap; /* Keeps it on 1 clean scrollable line */
+    white-space: nowrap;
     scrollbar-width: thin;
+    box-sizing: border-box;
 }
 
-/* Orange CLI prompt symbol */
 .terminal-code-body::before {
     content: '$';
     color: var(--accent-brand);
@@ -376,6 +409,7 @@ html.light-theme .terminal-code-window {
     user-select: text;
 }
 
+/* CRITICAL REVERT BOX FIX - PREVENTS HORIZONTAL PAGE SCROLL ON MOBILE */
 .revert-box {
     background: rgba(214, 93, 100, 0.05);
     border: 1px solid rgba(214, 93, 100, 0.2);
@@ -384,6 +418,11 @@ html.light-theme .terminal-code-window {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    box-sizing: border-box;
 }
 
 .revert-title {
@@ -397,6 +436,22 @@ html.light-theme .terminal-code-window {
     font-size: 0.72rem;
     color: var(--text-secondary);
     line-height: 1.4;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.revert-text code,
+.step-content-box code,
+.step-desc code {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    padding: 1px 4px;
+    border-radius: 3px;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    white-space: normal;
 }
 
 .btn-text-link {
@@ -407,6 +462,8 @@ html.light-theme .terminal-code-window {
     font-size: 0.68rem;
     cursor: pointer;
     padding: 0;
+    word-break: break-word;
+    text-align: left;
 }
 
 .btn-text-link:hover {
@@ -417,6 +474,7 @@ html.light-theme .terminal-code-window {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 
 .hw-block-header {
@@ -437,13 +495,16 @@ html.light-theme .terminal-code-window {
     border-radius: 5px;
     padding: 8px 12px;
     font-size: 0.76rem;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .latency-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 8px;
     width: 100%;
+    min-width: 0;
 }
 
 .latency-item {
@@ -454,6 +515,9 @@ html.light-theme .terminal-code-window {
     font-size: 0.76rem;
     color: var(--text-secondary);
     line-height: 1.45;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .latency-item strong {
@@ -468,6 +532,7 @@ kbd {
     font-family: var(--font-mono);
     font-size: 0.68rem;
     color: var(--accent-brand);
+    white-space: nowrap;
 }
 
 .spec-scanner-card {
@@ -478,6 +543,7 @@ kbd {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-width: 0;
 }
 
 .spec-scanner-header {
@@ -493,10 +559,13 @@ kbd {
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .spec-paste-field {
-    flex: 1 1 240px;
+    flex: 1 1 200px;
+    width: 100%;
+    min-width: 0;
     background: var(--bg-base);
     border: 1px solid var(--border-bold);
     border-radius: 5px;
@@ -504,6 +573,7 @@ kbd {
     font-family: var(--font-mono);
     font-size: 0.76rem;
     color: var(--text-primary);
+    box-sizing: border-box;
 }
 
 .spec-paste-field:focus {
@@ -515,6 +585,7 @@ kbd {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
 }
 
 .advisory-pill {
@@ -522,6 +593,8 @@ kbd {
     border-radius: 6px;
     font-size: 0.76rem;
     line-height: 1.45;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .advisory-pill.warn {
@@ -561,6 +634,7 @@ kbd {
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     padding: 12px;
+    min-width: 0;
 }
 
 .ctt-section-title {
@@ -574,6 +648,8 @@ kbd {
     border-bottom: 1px solid var(--border-subtle);
     margin-bottom: 6px;
     color: var(--text-primary);
+    flex-wrap: wrap;
+    gap: 4px;
 }
 
 .ctt-accordion {
@@ -581,6 +657,7 @@ kbd {
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     overflow: hidden;
+    min-width: 0;
 }
 
 .ctt-accordion-header {
@@ -598,6 +675,8 @@ kbd {
     font-weight: 700;
     color: var(--text-primary);
     text-align: left;
+    min-width: 0;
+    gap: 6px;
 }
 
 .ctt-accordion-header:hover {
@@ -612,11 +691,14 @@ kbd {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .acc-chevron {
     font-size: 0.8rem;
     color: var(--text-muted);
+    flex-shrink: 0;
 }
 
 .ctt-accordion-body {
@@ -624,6 +706,7 @@ kbd {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 
 .ctt-row-card {
@@ -634,6 +717,8 @@ kbd {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .ctt-row-header {
@@ -647,15 +732,16 @@ kbd {
     font-size: 0.76rem;
     font-weight: 700;
     color: var(--text-primary);
+    word-break: break-word;
 }
 
 .ctt-row-why {
     font-size: 0.72rem;
     color: var(--text-secondary);
     line-height: 1.4;
+    word-break: break-word;
 }
 
-/* GREEN AND RED WORK PERFECTLY FOR STATUS TOGGLES */
 .status-indicator {
     font-family: var(--font-mono);
     font-size: 0.62rem;
@@ -664,6 +750,7 @@ kbd {
     border-radius: 3px;
     letter-spacing: 0.04em;
     user-select: none;
+    flex-shrink: 0;
 }
 
 .status-indicator.on {
@@ -686,8 +773,9 @@ kbd {
 
 .dns-static-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
     gap: 6px;
+    width: 100%;
 }
 
 .dns-static-card {
@@ -695,6 +783,7 @@ kbd {
     border: 1px solid var(--border-subtle);
     border-radius: 5px;
     padding: 8px 10px;
+    min-width: 0;
 }
 
 .dns-tile-top {
@@ -702,6 +791,8 @@ kbd {
     justify-content: space-between;
     align-items: center;
     font-size: 0.74rem;
+    flex-wrap: wrap;
+    gap: 4px;
 }
 
 .mpo-advice-card {
@@ -711,14 +802,18 @@ kbd {
     padding: 8px 10px;
     font-size: 0.74rem;
     line-height: 1.4;
+    word-break: break-word;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 820px) {
     .ctt-workbench-layout {
         grid-template-columns: 1fr;
     }
     .winopt-step-card {
-        padding: 14px;
+        padding: 14px 12px;
+    }
+    .step-content-box {
+        padding: 10px 10px;
     }
 }
 
@@ -729,9 +824,9 @@ ul#p2-bios-settings-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
 }
 
-/* Remove default li::before bullet specifically on the BIOS tree cards */
 ul#p2-bios-settings-list li.bios-setting-tree-item::before {
     display: none !important;
 }
@@ -740,28 +835,14 @@ ul#p2-bios-settings-list li.bios-setting-tree-item::before {
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    padding: 12px 14px !important; /* Generous internal padding */
+    padding: 12px 14px !important;
     margin-bottom: 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
     list-style: none !important;
-}
-
-.bios-breadcrumb-tag {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--accent-brand);
-    background: var(--accent-brand-subtle);
-    border: 1px solid rgba(217, 119, 70, 0.25);
-    padding: 3px 10px;
-    border-radius: 4px;
-    width: fit-content;
-    margin: 0 0 4px 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .bios-breadcrumb-tag {
@@ -771,9 +852,10 @@ ul#p2-bios-settings-list li.bios-setting-tree-item::before {
     color: var(--accent-brand);
     background: var(--accent-brand-subtle);
     border: 1px solid rgba(217, 119, 70, 0.2);
-    padding: 3px 10px; /* Generous breathing room */
+    padding: 3px 8px;
     border-radius: 4px;
     width: fit-content;
+    max-width: 100%;
     margin-bottom: 2px;
     word-break: break-word;
     display: inline-flex;
@@ -785,9 +867,5 @@ ul#p2-bios-settings-list li.bios-setting-tree-item::before {
     font-size: 0.72rem;
     color: var(--text-secondary);
     line-height: 1.4;
-}
-
-.bios-note-highlight {
-    color: var(--text-secondary);
-    font-size: 0.72rem;
+    word-break: break-word;
 }
