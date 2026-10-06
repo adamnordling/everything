@@ -365,7 +365,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
 
             <div class="ctt-workbench-layout">
                 <div class="ctt-column">
-                    <div class="ctt-accordion" id="acc-ctt-essential">
+             <div class="ctt-accordion" id="acc-ctt-essential">
                         <button type="button" class="ctt-accordion-header" data-target="ctt-box-essential">
                             <div class="acc-title-group">
                                 <span class="acc-chevron">▸</span>
@@ -382,7 +382,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                                 <span class="acc-chevron">▸</span>
                                 <span>Advanced Tweaks — CAUTION</span>
                             </div>
-                            <span class="pill-badge" style="font-size:0.65rem">15 Items</span>
+                            <span class="pill-badge" style="font-size:0.65rem">20 Items</span>
                         </button>
                         <div class="ctt-accordion-body" id="ctt-box-advanced" style="display: none;"></div>
                     </div>
@@ -395,7 +395,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                                 <span class="acc-chevron">▸</span>
                                 <span>Customize Preferences (Toggles)</span>
                             </div>
-                            <span class="pill-badge" style="font-size:0.65rem">11 Items</span>
+                            <span class="pill-badge" style="font-size:0.65rem">24 Items</span>
                         </button>
                         <div class="ctt-accordion-body" id="ctt-box-preferences" style="display: none;"></div>
                     </div>
@@ -406,7 +406,7 @@ export const WINDOWS_OPTIMIZER_HTML = `
                                 <span class="acc-chevron">▸</span>
                                 <span>Config Tab ➔ Features (.NET, DirectPlay &amp; WSL)</span>
                             </div>
-                            <span class="pill-badge" style="font-size:0.65rem">6 Items</span>
+                            <span class="pill-badge" style="font-size:0.65rem">9 Items</span>
                         </button>
                         <div class="ctt-accordion-body" id="ctt-box-features" style="display: none;"></div>
                     </div>
