@@ -1,67 +1,127 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>Everything: Developer &amp; Utility Suite</title>
-        <meta name="description" content="Local-first developer utility suite and dashboard." />
-        <meta name="robots" content="index, follow" />
-        <meta name="referrer" content="strict-origin-when-cross-origin" />
-        <link rel="canonical" href="https://everything.adamnordling.se/" />
+    <!-- 1. PRIMARY SEARCH ENGINE & SUBDOMAIN METADATA -->
+    <title>Everything — Local-First Developer & System Suite | Adam Nordling</title>
+    <meta
+        name="description"
+        content="High-density, client-side utility suite for developers and power users. Workstation telemetry, YouTube stream slicing, and Windows optimization playbook with zero tracking."
+    />
+    <meta name="author" content="Adam Nordling" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://everything.adamnordling.se/" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-        <!-- Complete Favicon Matrix (Pointed to /favicons/) -->
-        <link rel="icon" type="image/x-icon" href="/favicons/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
+    <!-- 2. THEME & APP CONFIGURATION -->
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0c0d10" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
 
-        <!-- Open Graph / Discord / Facebook Embeds -->
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://everything.adamnordling.se/" />
-        <meta property="og:title" content="Everything: Developer &amp; Utility Suite" />
-        <meta property="og:description" content="Local-first developer utility suite and mission-control dashboard." />
-        <meta property="og:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
+    <!-- Favicon Matrix -->
+    <link rel="icon" type="image/x-icon" href="/favicons/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
-        <!-- Twitter Card Meta Tags -->
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Everything: Developer &amp; Utility Suite" />
-        <meta name="twitter:description" content="Local-first developer utility suite and mission-control dashboard." />
-        <meta name="twitter:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
+    <!-- 3. OPEN GRAPH (DISCORD, LINKEDIN, FACEBOOK) -->
+    <meta property="og:site_name" content="Everything · Adam Nordling" />
+    <meta property="og:title" content="Everything — Local-First Developer & System Suite" />
+    <meta
+        property="og:description"
+        content="Zero-telemetry client-side dashboard, workstation hardware telemetry, precision stream extraction, and OS tuning."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://everything.adamnordling.se/" />
+    <meta property="og:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
+    <meta property="og:image:secure_url" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Everything Suite App Icon" />
 
-        <!-- Theme Color & Appearance -->
-        <meta name="color-scheme" content="light dark" />
-        <meta name="theme-color" content="#0b0e14" media="(prefers-color-scheme: dark)" />
-        <meta name="theme-color" content="#f1f5f9" media="(prefers-color-scheme: light)" />
+    <!-- 4. TWITTER / X CARD -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@adamnordling" />
+    <meta name="twitter:creator" content="@adamnordling" />
+    <meta name="twitter:title" content="Everything — Local-First Developer & System Suite" />
+    <meta
+        name="twitter:description"
+        content="Zero-telemetry client-side dashboard, workstation hardware telemetry, precision stream extraction, and OS tuning."
+    />
+    <meta name="twitter:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
 
-        <!-- Performance Preconnects -->
-        <link rel="preconnect" href="https://unpkg.com" crossorigin />
-        <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin />
-        <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+    <!-- 5. CRITICAL PRECONNECTS & CDN ASSETS -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin />
+    <link rel="dns-prefetch" href="https://ipwho.is" />
+    <link rel="dns-prefetch" href="https://api64.ipify.org" />
 
-        <link rel="stylesheet" href="./src/styles/main.css" />
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-            crossorigin=""
-        />
-        <script
-            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""
-        ></script>
+    <!-- Stylesheets & Leaflet -->
+    <link rel="stylesheet" href="./src/styles/main.css" />
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""
+    ></script>
 
-        <!-- Anti-FOUC Theme Script -->
-        <script>
-            (function () {
-                const s = localStorage.getItem('app_theme');
-                const dark = s ? s === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (!dark) document.documentElement.classList.add('light-theme');
-            })();
-        </script>
-    </head>
+    <!-- Anti-FOUC Theme Hydration -->
+    <script>
+        (function () {
+            const saved = localStorage.getItem('app_theme');
+            const isDark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (!isDark) document.documentElement.classList.add('light-theme');
+        })();
+    </script>
+
+    <!-- 6. SCHEMA.ORG (WebApplication Linked to Root Domain Entity Graph) -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "WebApplication",
+                    "@id": "https://everything.adamnordling.se/#webapp",
+                    "url": "https://everything.adamnordling.se/",
+                    "name": "Everything: Developer & Utility Suite",
+                    "applicationCategory": "DeveloperApplication, UtilitiesApplication",
+                    "operatingSystem": "All",
+                    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+                    "description": "Local-first developer utility suite featuring hardware telemetry, stream extraction, Swedish almanac intelligence, and Windows playbooks.",
+                    "author": {
+                        "@type": "Person",
+                        "@id": "https://adamnordling.se/#person",
+                        "name": "Adam Nordling",
+                        "url": "https://adamnordling.se/"
+                    },
+                    "publisher": {
+                        "@type": "Organization",
+                        "@id": "https://adamnordling.se/#organization",
+                        "name": "Adam Nordling",
+                        "url": "https://adamnordling.se/"
+                    },
+                    "isPartOf": {
+                        "@type": "WebSite",
+                        "@id": "https://adamnordling.se/#website",
+                        "name": "Adam Nordling",
+                        "url": "https://adamnordling.se/"
+                    }
+                }
+            ]
+        }
+    </script>
+</head>
     <body>
         <div class="app-layout">
             <header class="mobile-top-bar" aria-label="Mobile Navigation Bar">
