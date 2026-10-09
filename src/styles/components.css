@@ -116,7 +116,9 @@
     padding: 7px 11px;
     border-radius: 6px;
     font-size: 0.82rem;
-    transition: border-color 0.15s ease, background 0.15s ease;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
 }
 
 .input-field:focus {
@@ -190,7 +192,9 @@
     line-height: 1.6;
     resize: none;
     outline: none;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
 }
 
 .scratchpad-area:focus {

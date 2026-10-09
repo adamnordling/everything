@@ -10,7 +10,7 @@ import { initWindowsOptimizer } from './modules/windowsOptimizer/index';
 const VIEW_STORAGE_KEY = 'app_active_view';
 
 document.addEventListener('DOMContentLoaded', () => {
-// 1. Theme Toggle (Standard White Mode by default)
+    // 1. Theme Toggle (Standard White Mode by default)
     const toggleTheme = (): void => {
         const isDark = document.documentElement.classList.toggle('dark-theme');
         localStorage.setItem('app_theme', isDark ? 'dark' : 'light');

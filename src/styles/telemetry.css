@@ -181,7 +181,9 @@
 .inline-copy-badge.fade-out {
     opacity: 0;
     transform: translateY(-4px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
 }
 
 .telemetry-label-prefix {

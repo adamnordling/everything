@@ -34,7 +34,10 @@
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://everything.adamnordling.se/" />
         <meta property="og:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
-        <meta property="og:image:secure_url" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
+        <meta
+            property="og:image:secure_url"
+            content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png"
+        />
         <meta property="og:image:type" content="image/png" />
         <meta property="og:image:width" content="512" />
         <meta property="og:image:height" content="512" />
@@ -379,7 +382,12 @@
                             <input type="file" id="backup-file-input" accept=".json" style="display: none" />
                         </div>
                     </div>
-                    <button type="button" class="icon-action-btn footer-theme-toggle" id="theme-btn" aria-label="Toggle theme">
+                    <button
+                        type="button"
+                        class="icon-action-btn footer-theme-toggle"
+                        id="theme-btn"
+                        aria-label="Toggle theme"
+                    >
                         <svg
                             width="15"
                             height="15"
@@ -409,7 +417,9 @@
                         <!-- HEADER WITH ELEGANT DIVIDER -->
                         <header class="dashboard-hero-header">
                             <h1 class="dashboard-headline">Dashboard</h1>
-                            <p class="dashboard-subline">Real-time telemetry, atmospheric data &amp; daily workflow manager</p>
+                            <p class="dashboard-subline">
+                                Real-time telemetry, atmospheric data &amp; daily workflow manager
+                            </p>
                         </header>
 
                         <!-- TIER 1: SYSTEM, CHRONOMETRY & CALENDAR (RAD 1) -->
@@ -440,14 +450,18 @@
                                                 <span class="ambient-label">UNIX EPOCH</span>
                                             </div>
                                             <div class="ambient-row-right">
-                                                <span class="ambient-val font-mono" id="clock-epoch-val">---------</span>
+                                                <span class="ambient-val font-mono" id="clock-epoch-val"
+                                                    >---------</span
+                                                >
                                                 <span class="ambient-action-hint">Copy</span>
                                             </div>
                                         </button>
 
                                         <div class="ambient-row" id="clock-dst-card">
                                             <div class="ambient-row-left">
-                                                <span class="ambient-bullet" style="color: var(--accent-indigo)">◐</span>
+                                                <span class="ambient-bullet" style="color: var(--accent-indigo)"
+                                                    >◐</span
+                                                >
                                                 <span class="ambient-label">DAYLIGHT SAVING</span>
                                             </div>
                                             <div class="ambient-row-right">
@@ -514,11 +528,7 @@
                                             </button>
                                         </div>
                                         <div class="year-progress-bar">
-                                            <div
-                                                class="year-progress-fill"
-                                                id="year-fill-bar"
-                                                style="width: 0%"
-                                            ></div>
+                                            <div class="year-progress-fill" id="year-fill-bar" style="width: 0%"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -640,7 +650,14 @@
                                                 id="cal-prev"
                                                 aria-label="Previous Month"
                                             >
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <svg
+                                                    width="12"
+                                                    height="12"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="2.5"
+                                                >
                                                     <polyline points="15 18 9 12 15 6"></polyline>
                                                 </svg>
                                             </button>
@@ -651,7 +668,14 @@
                                                 id="cal-next"
                                                 aria-label="Next Month"
                                             >
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <svg
+                                                    width="12"
+                                                    height="12"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="2.5"
+                                                >
                                                     <polyline points="9 18 15 12 9 6"></polyline>
                                                 </svg>
                                             </button>
@@ -659,7 +683,8 @@
                                     </div>
 
                                     <div class="calendar-weekdays">
-                                        <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+                                        <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span
+                                        ><span>Sa</span><span>Su</span>
                                     </div>
                                     <div class="calendar-days-grid" id="cal-days-grid"></div>
 
@@ -680,7 +705,10 @@
                         </section>
 
                         <!-- TIER 2: ATMOSPHERE, SCRATCHPAD & TASKS (RAD 2 - DEADLINES PÅ SAMMA RAD SOM SCRATCHPAD) -->
-                        <section class="dashboard-tier tier-bottom" aria-label="Environment, Buffer, Deadlines and Daily Tasks">
+                        <section
+                            class="dashboard-tier tier-bottom"
+                            aria-label="Environment, Buffer, Deadlines and Daily Tasks"
+                        >
                             <!-- VÄNSTER: VÄDER & SCRATCHPAD -->
                             <div class="tier-left-stream middle-split-row">
                                 <!-- A: LIVE ATMOSPHERE -->
@@ -971,7 +999,9 @@
                                 <select id="tz-picker-select" class="input-field" style="width: 100%"></select>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn-action-primary" id="btn-save-tz">Apply Timezone</button>
+                                <button type="button" class="btn-action-primary" id="btn-save-tz">
+                                    Apply Timezone
+                                </button>
                             </div>
                         </div>
                     </div>
