@@ -1,127 +1,119 @@
 <!doctype html>
 <html lang="en">
- <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- 1. PRIMARY SEARCH ENGINE & SUBDOMAIN METADATA -->
-    <title>Everything — Local-First Developer & System Suite | Adam Nordling</title>
-    <meta
-        name="description"
-        content="High-density, client-side utility suite for developers and power users. Workstation telemetry, YouTube stream slicing, and Windows optimization playbook with zero tracking."
-    />
-    <meta name="author" content="Adam Nordling" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <link rel="canonical" href="https://everything.adamnordling.se/" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <title>Everything — Local-First Developer &amp; System Suite | Adam Nordling</title>
+        <meta
+            name="description"
+            content="High-density, local-first utility suite for developers and power users. Workstation telemetry, YouTube stream slicing, Swedish calendar intel, and Windows optimization playbook with zero tracking."
+        />
+        <meta name="author" content="Adam Nordling" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href="https://everything.adamnordling.se/" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-    <!-- 2. THEME & APP CONFIGURATION -->
-    <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" content="#0c0d10" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0c0f17" media="(prefers-color-scheme: dark)" />
 
-    <!-- Favicon Matrix -->
-    <link rel="icon" type="image/x-icon" href="/favicons/favicon.ico" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+        <link rel="icon" type="image/x-icon" href="/favicons/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- 3. OPEN GRAPH (DISCORD, LINKEDIN, FACEBOOK) -->
-    <meta property="og:site_name" content="Everything · Adam Nordling" />
-    <meta property="og:title" content="Everything — Local-First Developer & System Suite" />
-    <meta
-        property="og:description"
-        content="Zero-telemetry client-side dashboard, workstation hardware telemetry, precision stream extraction, and OS tuning."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://everything.adamnordling.se/" />
-    <meta property="og:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
-    <meta property="og:image:secure_url" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content="Everything Suite App Icon" />
+        <meta property="og:site_name" content="Everything · Adam Nordling" />
+        <meta property="og:title" content="Everything — Local-First Developer &amp; System Suite" />
+        <meta
+            property="og:description"
+            content="Zero-telemetry client-side dashboard, workstation hardware telemetry, precision stream extraction, and OS tuning."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://everything.adamnordling.se/" />
+        <meta property="og:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
+        <meta property="og:image:secure_url" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="512" />
+        <meta property="og:image:height" content="512" />
+        <meta property="og:image:alt" content="Everything Suite App Icon" />
 
-    <!-- 4. TWITTER / X CARD -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@adamnordling" />
-    <meta name="twitter:creator" content="@adamnordling" />
-    <meta name="twitter:title" content="Everything — Local-First Developer & System Suite" />
-    <meta
-        name="twitter:description"
-        content="Zero-telemetry client-side dashboard, workstation hardware telemetry, precision stream extraction, and OS tuning."
-    />
-    <meta name="twitter:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@adamnordling" />
+        <meta name="twitter:creator" content="@adamnordling" />
+        <meta name="twitter:title" content="Everything — Local-First Developer &amp; System Suite" />
+        <meta
+            name="twitter:description"
+            content="Zero-telemetry client-side dashboard, workstation hardware telemetry, precision stream extraction, and OS tuning."
+        />
+        <meta name="twitter:image" content="https://everything.adamnordling.se/favicons/android-chrome-512x512.png" />
 
-    <!-- 5. CRITICAL PRECONNECTS & CDN ASSETS -->
-    <link rel="preconnect" href="https://unpkg.com" crossorigin />
-    <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
-    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin />
-    <link rel="dns-prefetch" href="https://ipwho.is" />
-    <link rel="dns-prefetch" href="https://api64.ipify.org" />
+        <link rel="preconnect" href="https://unpkg.com" crossorigin />
+        <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+        <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin />
+        <link rel="dns-prefetch" href="https://ipwho.is" />
+        <link rel="dns-prefetch" href="https://api64.ipify.org" />
 
-    <!-- Stylesheets & Leaflet -->
-    <link rel="stylesheet" href="./src/styles/main.css" />
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""
-    />
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""
-    ></script>
+        <link rel="stylesheet" href="./src/styles/main.css" />
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""
+        />
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""
+        ></script>
 
-    <!-- Anti-FOUC Theme Hydration -->
-    <script>
-        (function () {
-            const saved = localStorage.getItem('app_theme');
-            const isDark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (!isDark) document.documentElement.classList.add('light-theme');
-        })();
-    </script>
-
-    <!-- 6. SCHEMA.ORG (WebApplication Linked to Root Domain Entity Graph) -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@graph": [
-                {
-                    "@type": "WebApplication",
-                    "@id": "https://everything.adamnordling.se/#webapp",
-                    "url": "https://everything.adamnordling.se/",
-                    "name": "Everything: Developer & Utility Suite",
-                    "applicationCategory": "DeveloperApplication, UtilitiesApplication",
-                    "operatingSystem": "All",
-                    "browserRequirements": "Requires JavaScript. Requires HTML5.",
-                    "description": "Local-first developer utility suite featuring hardware telemetry, stream extraction, Swedish almanac intelligence, and Windows playbooks.",
-                    "author": {
-                        "@type": "Person",
-                        "@id": "https://adamnordling.se/#person",
-                        "name": "Adam Nordling",
-                        "url": "https://adamnordling.se/"
-                    },
-                    "publisher": {
-                        "@type": "Organization",
-                        "@id": "https://adamnordling.se/#organization",
-                        "name": "Adam Nordling",
-                        "url": "https://adamnordling.se/"
-                    },
-                    "isPartOf": {
-                        "@type": "WebSite",
-                        "@id": "https://adamnordling.se/#website",
-                        "name": "Adam Nordling",
-                        "url": "https://adamnordling.se/"
-                    }
+        <script>
+            (function () {
+                const s = localStorage.getItem('app_theme');
+                if (s === 'dark') {
+                    document.documentElement.classList.add('dark-theme');
                 }
-            ]
-        }
-    </script>
-</head>
+            })();
+        </script>
+
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@graph": [
+                    {
+                        "@type": "WebApplication",
+                        "@id": "https://everything.adamnordling.se/#webapp",
+                        "url": "https://everything.adamnordling.se/",
+                        "name": "Everything: Developer & Utility Suite",
+                        "applicationCategory": "DeveloperApplication, UtilitiesApplication",
+                        "operatingSystem": "All",
+                        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+                        "description": "Local-first developer utility suite featuring workstation telemetry, stream slicing, Swedish almanac intelligence, and Windows playbooks.",
+                        "author": {
+                            "@type": "Person",
+                            "@id": "https://adamnordling.se/#person",
+                            "name": "Adam Nordling",
+                            "url": "https://adamnordling.se/"
+                        },
+                        "publisher": {
+                            "@type": "Organization",
+                            "@id": "https://adamnordling.se/#organization",
+                            "name": "Adam Nordling",
+                            "url": "https://adamnordling.se/"
+                        },
+                        "isPartOf": {
+                            "@type": "WebSite",
+                            "@id": "https://adamnordling.se/#website",
+                            "name": "Adam Nordling",
+                            "url": "https://adamnordling.se/"
+                        }
+                    }
+                ]
+            }
+        </script>
+    </head>
     <body>
         <div class="app-layout">
             <header class="mobile-top-bar" aria-label="Mobile Navigation Bar">
@@ -132,7 +124,7 @@
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2.2"
+                        stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
                     >
@@ -142,7 +134,7 @@
                     </svg>
                 </button>
                 <div class="mobile-brand">
-                    <div class="brand-icon-box" style="width: 28px; height: 28px; border-radius: 7px">
+                    <div class="brand-icon-box" style="width: 28px; height: 28px; border-radius: 8px">
                         <svg
                             width="15"
                             height="15"
@@ -185,10 +177,9 @@
                 </div>
             </header>
 
-            <!-- DRAWER BACKDROP (Touch overlay on mobile) -->
             <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
-            <!-- LEFT NAVIGATION SIDEBAR -->
-            <aside class="app-sidebar" aria-label="Main Tool Navigation">
+
+            <aside class="app-sidebar" id="app-sidebar" aria-label="Main Tool Navigation">
                 <div class="sidebar-header">
                     <div class="brand-group">
                         <div class="brand-icon-box">
@@ -212,7 +203,6 @@
                             <span class="brand-subtitle">Developer &amp; Utility Suite</span>
                         </div>
                     </div>
-                    <!-- MOBILE CLOSE BUTTON (Hidden on desktop, visible on mobile) -->
                     <button
                         type="button"
                         class="mobile-drawer-close"
@@ -226,7 +216,7 @@
                 <div class="sidebar-nav">
                     <div class="nav-section-title">OVERVIEW</div>
                     <button type="button" class="nav-item active" data-view="dashboard">
-                        <span class="nav-icon-badge icon-dashboard">
+                        <span class="nav-icon-badge">
                             <svg
                                 width="16"
                                 height="16"
@@ -235,8 +225,10 @@
                                 stroke="currentColor"
                                 stroke-width="2"
                             >
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
                             </svg>
                         </span>
                         <span>Dashboard</span>
@@ -244,7 +236,7 @@
 
                     <div class="nav-section-title">UTILITIES &amp; TOOLS</div>
                     <button type="button" class="nav-item" data-view="tool-winopt">
-                        <span class="nav-icon-badge" style="color: var(--accent-brand)">
+                        <span class="nav-icon-badge">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M3 5.479v5.771h7.714V3.125L3 5.479zm0 13.042l7.714 2.354V12.75H3v5.771zM11.857 3v8.25H21V1.75L11.857 3zm0 9.75V21L21 22.25V12.75h-9.143z"
@@ -254,7 +246,7 @@
                         <span>Windows Playbook</span>
                     </button>
                     <button type="button" class="nav-item" data-view="tool-youtube">
-                        <span class="nav-icon-badge icon-youtube">
+                        <span class="nav-icon-badge">
                             <svg
                                 width="16"
                                 height="16"
@@ -273,7 +265,7 @@
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-hasher">
-                        <span class="nav-icon-badge icon-hash">
+                        <span class="nav-icon-badge">
                             <svg
                                 width="16"
                                 height="16"
@@ -285,12 +277,12 @@
                                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                             </svg>
                         </span>
-                        <span>SHA &amp; Hash Calculator</span
-                        ><span class="pill-badge" style="font-size: 0.6rem; opacity: 0.6">Soon</span>
+                        <span>SHA &amp; Hash Calculator</span>
+                        <span class="pill-badge pill-soon">Soon</span>
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-translate">
-                        <span class="nav-icon-badge icon-translate">
+                        <span class="nav-icon-badge">
                             <svg
                                 width="16"
                                 height="16"
@@ -303,12 +295,12 @@
                                 <path d="M7 15h3M8.5 9v6M14 10l3 5 3-5"></path>
                             </svg>
                         </span>
-                        <span>Multi-Translator</span
-                        ><span class="pill-badge" style="font-size: 0.6rem; opacity: 0.6">Soon</span>
+                        <span>Multi-Translator</span>
+                        <span class="pill-badge pill-soon">Soon</span>
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-media">
-                        <span class="nav-icon-badge icon-media">
+                        <span class="nav-icon-badge">
                             <svg
                                 width="16"
                                 height="16"
@@ -322,12 +314,12 @@
                                 <line x1="12" y1="15" x2="12" y2="3"></line>
                             </svg>
                         </span>
-                        <span>Media File Converter</span
-                        ><span class="pill-badge" style="font-size: 0.6rem; opacity: 0.6">Soon</span>
+                        <span>Media File Converter</span>
+                        <span class="pill-badge pill-soon">Soon</span>
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-network">
-                        <span class="nav-icon-badge icon-network">
+                        <span class="nav-icon-badge">
                             <svg
                                 width="16"
                                 height="16"
@@ -341,12 +333,12 @@
                                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
                             </svg>
                         </span>
-                        <span>Subnet &amp; CIDR Engine</span
-                        ><span class="pill-badge" style="font-size: 0.6rem; opacity: 0.6">Soon</span>
+                        <span>Subnet &amp; CIDR Engine</span>
+                        <span class="pill-badge pill-soon">Soon</span>
                     </button>
 
                     <button type="button" class="nav-item" data-view="tool-validator">
-                        <span class="nav-icon-badge icon-validator">
+                        <span class="nav-icon-badge">
                             <svg
                                 width="16"
                                 height="16"
@@ -358,14 +350,14 @@
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                         </span>
-                        <span>Validators &amp; Encoders</span
-                        ><span class="pill-badge" style="font-size: 0.6rem; opacity: 0.6">Soon</span>
+                        <span>Validators &amp; Encoders</span>
+                        <span class="pill-badge pill-soon">Soon</span>
                     </button>
                 </div>
 
                 <div class="sidebar-footer">
                     <div class="footer-client-group">
-                        <span>100% Client-Side</span>
+                        <span class="client-side-tag">100% Client-Side</span>
                         <div class="backup-actions">
                             <button
                                 type="button"
@@ -375,7 +367,7 @@
                             >
                                 Export
                             </button>
-                            <span>·</span>
+                            <span class="footer-dot">·</span>
                             <button
                                 type="button"
                                 class="footer-text-btn"
@@ -387,10 +379,10 @@
                             <input type="file" id="backup-file-input" accept=".json" style="display: none" />
                         </div>
                     </div>
-                    <button type="button" class="icon-action-btn" id="theme-btn" aria-label="Toggle theme">
+                    <button type="button" class="icon-action-btn footer-theme-toggle" id="theme-btn" aria-label="Toggle theme">
                         <svg
-                            width="14"
-                            height="14"
+                            width="15"
+                            height="15"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -408,417 +400,231 @@
                 </div>
             </aside>
 
-            <!-- MAIN STAGE -->
             <main class="app-main" id="main-stage">
                 <div class="stage-content">
                     <!-- =========================================================================
-                         VIEW 1: COMPLETE DASHBOARD
+                         VIEW 1: FRAMELESS DASHBOARD (2 HARMONIZED TIERS WITH DIVIDERS)
                          ========================================================================= -->
                     <div class="view-panel" id="view-dashboard">
-                        <div class="dashboard-grid-layout">
-                            <!-- LEFT COLUMN -->
-                            <div class="dash-left-column">
-                                <!-- TOP HERO ROW: CLOCK (LEFT) + TELEMETRY (RIGHT) -->
-                                <div class="hero-split-row">
-                                    <!-- 1. CLOCK HERO CARD -->
-                                    <div class="card clock-hero-card">
-                                        <!-- Top Row: Clock & Date on Left, Session on Top-Right -->
-                                        <div class="clock-top-bar">
-                                            <div class="clock-primary-stack">
-                                                <div class="time-digits-display" id="clock-large">00:00:00</div>
-                                                <div class="clock-date-line" id="clock-date-sub">Loading date...</div>
-                                            </div>
-                                            <span class="pill-badge session-badge-pill" id="session-counter-badge"
-                                                >Session: 00:00:00</span
-                                            >
+                        <!-- HEADER WITH ELEGANT DIVIDER -->
+                        <header class="dashboard-hero-header">
+                            <h1 class="dashboard-headline">Dashboard</h1>
+                            <p class="dashboard-subline">Real-time telemetry, atmospheric data &amp; daily workflow manager</p>
+                        </header>
+
+                        <!-- TIER 1: SYSTEM, CHRONOMETRY & CALENDAR (RAD 1) -->
+                        <section class="dashboard-tier tier-top" aria-label="System Time, Telemetry and Calendar">
+                            <!-- VÄNSTER: KLOCKA & TELEMETRI -->
+                            <div class="tier-left-stream hero-split-row">
+                                <!-- A: CLOCK & CHRONOMETRY -->
+                                <div class="dash-block clock-hero-block">
+                                    <div class="clock-top-bar">
+                                        <div class="clock-primary-stack">
+                                            <div class="time-digits-display" id="clock-large">00:00:00</div>
+                                            <div class="clock-date-line" id="clock-date-sub">Loading date...</div>
                                         </div>
+                                        <span class="session-badge-text" id="session-counter-badge"
+                                            >Session: 00:00:00</span
+                                        >
+                                    </div>
 
-                                        <!-- MIDDLE: 3 FULL-WIDTH TELEMETRY ROWS -->
-                                        <div class="clock-ambient-stack">
-                                            <button
-                                                type="button"
-                                                class="ambient-row-btn copyable"
-                                                id="clock-epoch-btn"
-                                                title="Click to copy Unix Timestamp"
-                                            >
-                                                <div class="ambient-row-left">
-                                                    <span class="ambient-bullet-1">#</span>
-                                                    <span class="ambient-label">UNIX EPOCH</span>
-                                                </div>
-                                                <div class="ambient-row-right">
-                                                    <span class="ambient-val font-mono" id="clock-epoch-val"
-                                                        >---------</span
-                                                    >
-                                                    <span class="ambient-action-hint">Copy</span>
-                                                </div>
-                                            </button>
-
-                                            <div class="ambient-row" id="clock-dst-card">
-                                                <div class="ambient-row-left">
-                                                    <span class="ambient-bullet" style="color: var(--accent-sky)"
-                                                        >◐</span
-                                                    >
-                                                    <span class="ambient-label">DAYLIGHT SAVING</span>
-                                                </div>
-                                                <div class="ambient-row-right">
-                                                    <span class="ambient-val" id="clock-dst-val">Calculating...</span>
-                                                </div>
+                                    <div class="clock-ambient-stack">
+                                        <button
+                                            type="button"
+                                            class="ambient-row-btn copyable"
+                                            id="clock-epoch-btn"
+                                            title="Click to copy Unix Timestamp"
+                                        >
+                                            <div class="ambient-row-left">
+                                                <span class="ambient-bullet">#</span>
+                                                <span class="ambient-label">UNIX EPOCH</span>
                                             </div>
+                                            <div class="ambient-row-right">
+                                                <span class="ambient-val font-mono" id="clock-epoch-val">---------</span>
+                                                <span class="ambient-action-hint">Copy</span>
+                                            </div>
+                                        </button>
 
-                                            <div class="ambient-row" id="clock-sunset-card">
-                                                <div class="ambient-row-left">
-                                                    <span class="ambient-bullet" style="color: var(--accent-amber)"
-                                                        >☀</span
-                                                    >
-                                                    <span class="ambient-label">SOLAR HORIZON</span>
-                                                </div>
-                                                <div class="ambient-row-right">
-                                                    <span class="ambient-val" id="clock-sunset-val"
-                                                        >Calculating...</span
-                                                    >
-                                                </div>
+                                        <div class="ambient-row" id="clock-dst-card">
+                                            <div class="ambient-row-left">
+                                                <span class="ambient-bullet" style="color: var(--accent-indigo)">◐</span>
+                                                <span class="ambient-label">DAYLIGHT SAVING</span>
+                                            </div>
+                                            <div class="ambient-row-right">
+                                                <span class="ambient-val" id="clock-dst-val">Calculating...</span>
                                             </div>
                                         </div>
 
-                                        <!-- CONVERTER ROW -->
-                                        <div class="converter-stacked-module">
-                                            <div class="converter-inputs-bar">
-                                                <span class="converter-label">Convert Time:</span>
-                                                <input
-                                                    type="number"
-                                                    id="tz-hour-input"
-                                                    min="0"
-                                                    max="23"
-                                                    class="input-mini-time"
-                                                    placeholder="00"
-                                                />
-                                                <span class="converter-colon">:</span>
-                                                <input
-                                                    type="number"
-                                                    id="tz-min-input"
-                                                    min="0"
-                                                    max="59"
-                                                    class="input-mini-time"
-                                                    placeholder="00"
-                                                />
-
-                                                <button
-                                                    type="button"
-                                                    id="tz-format-toggle"
-                                                    class="btn-format-cycle"
-                                                    title="Click to cycle 24H / AM / PM"
-                                                >
-                                                    24H
-                                                </button>
-
-                                                <select id="tz-source-select" class="select-mini-tz"></select>
+                                        <div class="ambient-row" id="clock-sunset-card">
+                                            <div class="ambient-row-left">
+                                                <span class="ambient-bullet" style="color: var(--accent-amber)">☀</span>
+                                                <span class="ambient-label">SOLAR HORIZON</span>
                                             </div>
-
-                                            <div id="tz-converted-output" class="converter-result-under">
-                                                Calculating...
-                                            </div>
-                                        </div>
-
-                                        <!-- BOTTOM: DAY PROGRESS & TIMEZONE BUTTON -->
-                                        <div class="year-progress-module">
-                                            <div class="year-stats-line">
-                                                <span id="year-stats-text">DAY ---/--- · Q- · --.-%</span>
-                                                <button
-                                                    type="button"
-                                                    class="btn-tz-badge"
-                                                    id="active-tz-btn"
-                                                    title="Click to change timezone"
-                                                >
-                                                    <span id="active-tz-display">Europe/Stockholm</span> ▾
-                                                </button>
-                                            </div>
-                                            <div class="year-progress-bar">
-                                                <div
-                                                    class="year-progress-fill"
-                                                    id="year-fill-bar"
-                                                    style="width: 0%"
-                                                ></div>
+                                            <div class="ambient-row-right">
+                                                <span class="ambient-val" id="clock-sunset-val">Calculating...</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- 2. WORKSTATION TELEMETRY -->
-                                    <div class="card sys-telemetry-card">
-                                        <div class="telemetry-top-bar">
-                                            <div class="telemetry-network-block">
-                                                <div class="ping-pulse-indicator">
-                                                    <span class="telemetry-label-prefix">IP:</span>
-                                                    <span class="live-ping-dot good" id="sys-ping-dot"></span>
-
-                                                    <span
-                                                        class="telemetry-ip privacy-blur copyable"
-                                                        id="sys-ip"
-                                                        title="Click to copy IP"
-                                                        >---.---.---.---</span
-                                                    >
-                                                    <span class="telemetry-ping" id="sys-ping-val">-- ms</span>
-                                                </div>
-                                                <div class="telemetry-isp-row">
-                                                    <span class="telemetry-label-prefix">ISP:</span>
-                                                    <span
-                                                        class="telemetry-isp privacy-blur copyable"
-                                                        id="sys-isp"
-                                                        title="Click to copy ISP & Location"
-                                                    >
-                                                        Resolving ISP &amp; ASN...
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="telemetry-quick-tags">
-                                                <span class="sys-chip-tag" id="sys-shield-tag">Shield: Checking</span>
-                                                <span class="sys-chip-tag" id="sys-os">Windows</span>
-                                            </div>
+                                    <div class="converter-stacked-module">
+                                        <div class="converter-inputs-bar">
+                                            <span class="converter-label">Convert:</span>
+                                            <input
+                                                type="number"
+                                                id="tz-hour-input"
+                                                min="0"
+                                                max="23"
+                                                class="input-mini-time"
+                                                placeholder="00"
+                                            />
+                                            <span class="converter-colon">:</span>
+                                            <input
+                                                type="number"
+                                                id="tz-min-input"
+                                                min="0"
+                                                max="59"
+                                                class="input-mini-time"
+                                                placeholder="00"
+                                            />
+                                            <button
+                                                type="button"
+                                                id="tz-format-toggle"
+                                                class="btn-format-cycle"
+                                                title="Click to cycle 24H / AM / PM"
+                                            >
+                                                24H
+                                            </button>
+                                            <select id="tz-source-select" class="select-mini-tz"></select>
                                         </div>
+                                        <div id="tz-converted-output" class="converter-result-under">
+                                            Calculating...
+                                        </div>
+                                    </div>
 
-                                        <div class="telemetry-vertical-hud">
-                                            <div class="hud-col">
-                                                <div class="hud-row">
-                                                    <span class="hud-k">PHYSICAL DISPLAY:</span>
-                                                    <span class="hud-v" id="sys-physical-res">--- × ---</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">VIEWPORT:</span>
-                                                    <span class="hud-v" id="sys-viewport">--- × ---</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">REFRESH RATE:</span>
-                                                    <span class="hud-v" id="sys-hz">Measuring...</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">DISPLAYS SETUP:</span>
-                                                    <span class="hud-v" id="sys-monitors">Multi-Screen Ready</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">CPU CONCURRENCY:</span>
-                                                    <span class="hud-v" id="sys-cpu">-- Cores</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">CPU BENCHMARK:</span>
-                                                    <span class="hud-v" id="sys-cpu-bench">Benchmarking...</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="hud-col">
-                                                <div class="hud-row">
-                                                    <span class="hud-k">DNS &amp; TLS WATERFALL:</span>
-                                                    <span class="hud-v" id="sys-tls-dns">Measuring...</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">IPV6 CONNECTIVITY:</span>
-                                                    <span class="hud-v" id="sys-ipv6">Probing IPv6...</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">POWER &amp; EFFICIENCY:</span>
-                                                    <span class="hud-v" id="sys-power-profile">Detecting...</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">ACTIVE JS HEAP:</span>
-                                                    <span class="hud-v" id="sys-memory">-- MB</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">AUDIO SUBSYSTEM:</span>
-                                                    <span class="hud-v" id="sys-audio">48.0 kHz · Stereo</span>
-                                                </div>
-                                                <div class="hud-row">
-                                                    <span class="hud-k">GRAPHICS ACCELERATOR:</span>
-                                                    <span class="hud-v" id="sys-gpu">Reading GPU...</span>
-                                                </div>
-                                            </div>
+                                    <div class="year-progress-module">
+                                        <div class="year-stats-line">
+                                            <span id="year-stats-text">DAY ---/--- · Q- · --.-%</span>
+                                            <button
+                                                type="button"
+                                                class="btn-tz-badge"
+                                                id="active-tz-btn"
+                                                title="Click to change timezone"
+                                            >
+                                                <span id="active-tz-display">Europe/Stockholm</span> ▾
+                                            </button>
+                                        </div>
+                                        <div class="year-progress-bar">
+                                            <div
+                                                class="year-progress-fill"
+                                                id="year-fill-bar"
+                                                style="width: 0%"
+                                            ></div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- MIDDLE SPLIT ROW: 65% ATMOSPHERE + 35% SCRATCHPAD & BUFFER -->
-                                <div class="middle-split-row">
-                                    <!-- 3. LIVE ATMOSPHERE -->
-                                    <div class="card weather-expanded-card">
-                                        <div class="weather-card-header">
-                                            <div class="weather-title-group">
-                                                <span class="weather-header-label">Live Atmosphere</span>
-                                                <span class="pill-badge" id="wx-location-pill">Stockholm, SE</span>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                class="btn-location-picker"
-                                                id="wx-open-loc-btn"
-                                                title="Click anywhere on Earth to set coordinates"
-                                            >
-                                                <svg
-                                                    width="12"
-                                                    height="12"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2.5"
+                                <!-- B: WORKSTATION TELEMETRY -->
+                                <div class="dash-block telemetry-block">
+                                    <div class="telemetry-top-bar">
+                                        <div class="telemetry-network-block">
+                                            <div class="ping-pulse-indicator">
+                                                <span class="telemetry-label-prefix">IP:</span>
+                                                <span class="live-ping-dot good" id="sys-ping-dot"></span>
+                                                <span
+                                                    class="telemetry-ip privacy-blur copyable"
+                                                    id="sys-ip"
+                                                    title="Click to copy IP"
+                                                    >---.---.---.---</span
                                                 >
-                                                    <circle cx="12" cy="12" r="10"></circle>
-                                                    <line x1="2" y1="12" x2="22" y2="12"></line>
-                                                    <path
-                                                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"
-                                                    ></path>
-                                                </svg>
-                                                <span>Coordinates</span>
-                                            </button>
-                                        </div>
-
-                                        <div class="weather-top-split">
-                                            <div class="weather-reading-block">
-                                                <div>
-                                                    <span class="weather-degrees" id="wx-temp">--</span>
-                                                    <span style="font-size: 1.4rem; color: var(--text-muted)">°C</span>
-                                                </div>
-                                                <div
-                                                    id="wx-condition-pill"
-                                                    style="display: flex; align-items: center; gap: 8px"
+                                                <span class="telemetry-ping" id="sys-ping-val">-- ms</span>
+                                            </div>
+                                            <div class="telemetry-isp-row">
+                                                <span class="telemetry-label-prefix">ISP:</span>
+                                                <span
+                                                    class="telemetry-isp privacy-blur copyable"
+                                                    id="sys-isp"
+                                                    title="Click to copy ISP & Location"
                                                 >
-                                                    <span
-                                                        id="wx-condition-label"
-                                                        style="font-weight: 600; font-size: 0.9rem"
-                                                        >Fetching forecast...</span
-                                                    >
-                                                </div>
-                                            </div>
-
-                                            <!-- Solar Arc Curve -->
-                                            <div class="sun-arc-box">
-                                                <svg class="sun-svg-canvas" viewBox="0 0 180 90">
-                                                    <path
-                                                        class="sun-arc-curve"
-                                                        d="M 20 85 A 70 70 0 0 1 160 85"
-                                                        fill="none"
-                                                        stroke-width="2"
-                                                        stroke-dasharray="4 4"
-                                                    ></path>
-                                                    <line
-                                                        class="sun-horizon-line"
-                                                        x1="12"
-                                                        y1="85"
-                                                        x2="168"
-                                                        y2="85"
-                                                        stroke-width="1.5"
-                                                    ></line>
-                                                    <circle
-                                                        id="solar-sun-dot"
-                                                        cx="20"
-                                                        cy="85"
-                                                        r="7"
-                                                        fill="#f59e0b"
-                                                        style="filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.9))"
-                                                    ></circle>
-                                                </svg>
+                                                    Resolving ISP &amp; ASN...
+                                                </span>
                                             </div>
                                         </div>
-
-                                        <div class="metrics-quad">
-                                            <div class="metric-box">
-                                                <div class="metric-sub-label">UV INDEX</div>
-                                                <div class="metric-main-val" id="wx-uv">-- (Low)</div>
-                                            </div>
-                                            <div class="metric-box">
-                                                <div class="metric-sub-label">HUMIDITY</div>
-                                                <div class="metric-main-val" id="wx-humidity">--%</div>
-                                            </div>
-                                            <div class="metric-box">
-                                                <div class="metric-sub-label">WIND</div>
-                                                <div class="metric-main-val" id="wx-wind">-- m/s</div>
-                                            </div>
-                                            <div class="metric-box">
-                                                <div class="metric-sub-label">BAROMETER</div>
-                                                <div class="metric-main-val" id="wx-barometer">-- hPa</div>
-                                            </div>
-                                        </div>
-
-                                        <div class="five-day-strip" id="five-day-strip"></div>
-
-                                        <div>
-                                            <span
-                                                style="
-                                                    font-size: 0.72rem;
-                                                    font-family: var(--font-mono);
-                                                    color: var(--text-muted);
-                                                "
-                                                >24-Hour Trajectory</span
-                                            >
-                                            <div class="hourly-strip" id="hourly-strip" style="margin-top: 6px"></div>
+                                        <div class="telemetry-quick-tags">
+                                            <span class="sys-chip-tag" id="sys-shield-tag">Shield: Checking</span>
+                                            <span class="sys-chip-tag" id="sys-os">Windows</span>
                                         </div>
                                     </div>
 
-                                    <!-- 4. WORKSTATION SCRATCHPAD & CLIPBOARD BUFFER -->
-                                    <div class="card scratchpad-card">
-                                        <div class="card-header-flex">
-                                            <div class="card-title-group" style="color: var(--accent-mint)">
-                                                <svg
-                                                    width="15"
-                                                    height="15"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2.5"
-                                                >
-                                                    <path
-                                                        d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                                    ></path>
-                                                    <path
-                                                        d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                                    ></path>
-                                                </svg>
-                                                <span>Scratchpad &amp; Buffer</span>
+                                    <div class="telemetry-vertical-hud">
+                                        <div class="hud-col">
+                                            <div class="hud-row">
+                                                <span class="hud-k">PHYSICAL DISPLAY</span>
+                                                <span class="hud-v" id="sys-physical-res">--- × ---</span>
                                             </div>
-                                            <div class="scratchpad-actions">
-                                                <span class="scratchpad-counter" id="scratch-counter">0 chars</span>
-                                                <button
-                                                    type="button"
-                                                    class="btn-action-pill"
-                                                    id="scratch-paste-btn"
-                                                    style="padding: 2px 7px; font-size: 0.7rem"
-                                                >
-                                                    Paste
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="btn-action-pill"
-                                                    id="scratch-copy-btn"
-                                                    style="padding: 2px 7px; font-size: 0.7rem"
-                                                >
-                                                    Copy All
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="icon-action-btn btn-delete"
-                                                    id="scratch-clear-btn"
-                                                    title="Clear buffer"
-                                                >
-                                                    &times;
-                                                </button>
+                                            <div class="hud-row">
+                                                <span class="hud-k">VIEWPORT</span>
+                                                <span class="hud-v" id="sys-viewport">--- × ---</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">REFRESH RATE</span>
+                                                <span class="hud-v" id="sys-hz">Measuring...</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">DISPLAYS SETUP</span>
+                                                <span class="hud-v" id="sys-monitors">Multi-Screen Ready</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">CPU CONCURRENCY</span>
+                                                <span class="hud-v" id="sys-cpu">-- Cores</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">CPU BENCHMARK</span>
+                                                <span class="hud-v" id="sys-cpu-bench">Benchmarking...</span>
                                             </div>
                                         </div>
-                                        <textarea
-                                            id="scratchpad-textarea"
-                                            class="scratchpad-area"
-                                            placeholder="Quickly paste terminal outputs, JSON, API keys, or temporary notes... (Auto-saved)"
-                                        ></textarea>
+
+                                        <div class="hud-col">
+                                            <div class="hud-row">
+                                                <span class="hud-k">DNS &amp; TLS WATERFALL</span>
+                                                <span class="hud-v" id="sys-tls-dns">Measuring...</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">IPV6 CONNECTIVITY</span>
+                                                <span class="hud-v" id="sys-ipv6">Probing IPv6...</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">POWER PROFILE</span>
+                                                <span class="hud-v" id="sys-power-profile">Detecting...</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">ACTIVE JS HEAP</span>
+                                                <span class="hud-v" id="sys-memory">-- MB</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">AUDIO SUBSYSTEM</span>
+                                                <span class="hud-v" id="sys-audio">48.0 kHz · Stereo</span>
+                                            </div>
+                                            <div class="hud-row">
+                                                <span class="hud-k">GRAPHICS ACCELERATOR</span>
+                                                <span class="hud-v" id="sys-gpu">Reading GPU...</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- RIGHT COLUMN -->
-                            <div class="dash-right-column">
-                                <!-- 1. CALENDAR CONTAINER -->
-                                <div class="card calendar-compact-card">
-                                    <div class="card-header-flex">
-                                        <div class="card-title-group" style="color: var(--accent-mint)">
+                            <!-- HÖGER: KOMPAKT KALENDER (SLUTAR PRECIS VID DELNINGSLINJEN) -->
+                            <div class="tier-right-stream">
+                                <div class="calendar-agenda-item">
+                                    <div class="dash-block-header">
+                                        <div class="dash-header-title">
                                             <svg
                                                 width="16"
                                                 height="16"
                                                 viewBox="0 0 24 24"
                                                 fill="none"
                                                 stroke="currentColor"
-                                                stroke-width="2.2"
+                                                stroke-width="2"
                                             >
                                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                                 <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -827,49 +633,25 @@
                                             </svg>
                                             <span>Calendar</span>
                                         </div>
-                                        <div style="display: flex; align-items: center; gap: 6px">
+                                        <div class="cal-nav-bar">
                                             <button
                                                 type="button"
-                                                class="icon-action-btn"
+                                                class="cal-arrow-btn"
                                                 id="cal-prev"
-                                                style="background: var(--bg-elevated); padding: 5px; border-radius: 5px"
                                                 aria-label="Previous Month"
                                             >
-                                                <svg
-                                                    width="12"
-                                                    height="12"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2.5"
-                                                >
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                                     <polyline points="15 18 9 12 15 6"></polyline>
                                                 </svg>
                                             </button>
-                                            <span
-                                                id="cal-header-title"
-                                                style="
-                                                    font-size: 0.82rem;
-                                                    font-weight: 700;
-                                                    font-family: var(--font-mono);
-                                                "
-                                                >Month Year</span
-                                            >
+                                            <span id="cal-header-title">Month Year</span>
                                             <button
                                                 type="button"
-                                                class="icon-action-btn"
+                                                class="cal-arrow-btn"
                                                 id="cal-next"
-                                                style="background: var(--bg-elevated); padding: 5px; border-radius: 5px"
                                                 aria-label="Next Month"
                                             >
-                                                <svg
-                                                    width="12"
-                                                    height="12"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2.5"
-                                                >
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                                     <polyline points="9 18 15 12 9 6"></polyline>
                                                 </svg>
                                             </button>
@@ -877,48 +659,192 @@
                                     </div>
 
                                     <div class="calendar-weekdays">
-                                        <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span
-                                        ><span>Sa</span><span>Su</span>
+                                        <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
                                     </div>
                                     <div class="calendar-days-grid" id="cal-days-grid"></div>
 
                                     <div class="cal-footer-meta">
-                                        <span class="cal-info-left">Selected Date:</span>
-                                        <span class="cal-info-right" id="cal-selected-label">Today</span>
+                                        <span>Selected:</span>
+                                        <span id="cal-selected-label">Today</span>
                                     </div>
 
-                                    <!-- DATE INTEL INTEGRATED SMOOTHLY INSIDE -->
                                     <div class="date-intel-card" id="date-intel-card">
                                         <div>
-                                            <span
-                                                id="intel-holiday-name"
-                                                style="font-weight: 700; color: var(--text-primary)"
-                                            ></span>
-                                            <span
-                                                id="intel-nameday-text"
-                                                style="color: var(--text-muted); font-size: 0.75rem"
-                                            ></span>
+                                            <span id="intel-holiday-name"></span>
+                                            <span id="intel-nameday-text"></span>
                                         </div>
                                         <span id="intel-countdown-badge" class="pill-badge">Today</span>
                                     </div>
                                 </div>
+                            </div>
+                        </section>
 
-                                <!-- 2. EXPANDED DEADLINES & MILESTONES -->
-                                <div class="card deadlines-expanded-card">
-                                    <div class="card-header-flex">
-                                        <div class="card-title-group" style="color: var(--accent-amber)">
+                        <!-- TIER 2: ATMOSPHERE, SCRATCHPAD & TASKS (RAD 2 - DEADLINES PÅ SAMMA RAD SOM SCRATCHPAD) -->
+                        <section class="dashboard-tier tier-bottom" aria-label="Environment, Buffer, Deadlines and Daily Tasks">
+                            <!-- VÄNSTER: VÄDER & SCRATCHPAD -->
+                            <div class="tier-left-stream middle-split-row">
+                                <!-- A: LIVE ATMOSPHERE -->
+                                <div class="dash-block weather-block">
+                                    <div class="weather-card-header">
+                                        <div class="weather-title-group">
+                                            <span class="weather-header-label">Live Atmosphere</span>
+                                            <span class="pill-badge" id="wx-location-pill">Stockholm, SE</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="btn-text-link"
+                                            id="wx-open-loc-btn"
+                                            title="Click anywhere on Earth to set coordinates"
+                                        >
                                             <svg
-                                                width="15"
-                                                height="15"
+                                                width="12"
+                                                height="12"
                                                 viewBox="0 0 24 24"
                                                 fill="none"
                                                 stroke="currentColor"
-                                                stroke-width="2.5"
+                                                stroke-width="2.2"
+                                            >
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                                <path
+                                                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"
+                                                ></path>
+                                            </svg>
+                                            <span>Coordinates</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="weather-top-split">
+                                        <div class="weather-reading-block">
+                                            <div class="weather-reading-row">
+                                                <span class="weather-degrees" id="wx-temp">--</span>
+                                                <span class="weather-deg-symbol">°C</span>
+                                            </div>
+                                            <div id="wx-condition-pill" class="wx-condition-container">
+                                                <span id="wx-condition-label">Fetching forecast...</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="sun-arc-box">
+                                            <svg class="sun-svg-canvas" viewBox="0 0 180 90">
+                                                <path
+                                                    class="sun-arc-curve"
+                                                    d="M 20 85 A 70 70 0 0 1 160 85"
+                                                    fill="none"
+                                                    stroke-width="2"
+                                                    stroke-dasharray="4 4"
+                                                ></path>
+                                                <line
+                                                    class="sun-horizon-line"
+                                                    x1="12"
+                                                    y1="85"
+                                                    x2="168"
+                                                    y2="85"
+                                                    stroke-width="1.5"
+                                                ></line>
+                                                <circle
+                                                    id="solar-sun-dot"
+                                                    cx="20"
+                                                    cy="85"
+                                                    r="7"
+                                                    fill="#f59e0b"
+                                                ></circle>
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <div class="metrics-quad">
+                                        <div class="metric-box">
+                                            <div class="metric-sub-label">UV INDEX</div>
+                                            <div class="metric-main-val" id="wx-uv">-- (Low)</div>
+                                        </div>
+                                        <div class="metric-box">
+                                            <div class="metric-sub-label">HUMIDITY</div>
+                                            <div class="metric-main-val" id="wx-humidity">--%</div>
+                                        </div>
+                                        <div class="metric-box">
+                                            <div class="metric-sub-label">WIND</div>
+                                            <div class="metric-main-val" id="wx-wind">-- m/s</div>
+                                        </div>
+                                        <div class="metric-box">
+                                            <div class="metric-sub-label">BAROMETER</div>
+                                            <div class="metric-main-val" id="wx-barometer">-- hPa</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="five-day-strip" id="five-day-strip"></div>
+
+                                    <div>
+                                        <span class="strip-section-title">24-Hour Trajectory</span>
+                                        <div class="hourly-strip" id="hourly-strip"></div>
+                                    </div>
+                                </div>
+
+                                <!-- B: SCRATCHPAD & BUFFER -->
+                                <div class="dash-block scratchpad-block">
+                                    <div class="dash-block-header">
+                                        <div class="dash-header-title">
+                                            <svg
+                                                width="16"
+                                                height="16"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                            >
+                                                <path
+                                                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                                                ></path>
+                                                <path
+                                                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                                                ></path>
+                                            </svg>
+                                            <span>Scratchpad &amp; Buffer</span>
+                                        </div>
+                                        <div class="scratchpad-actions">
+                                            <span class="scratchpad-counter" id="scratch-counter">0 chars</span>
+                                            <button type="button" class="btn-text-link" id="scratch-paste-btn">
+                                                Paste
+                                            </button>
+                                            <button type="button" class="btn-text-link highlight" id="scratch-copy-btn">
+                                                Copy
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="icon-action-btn btn-delete"
+                                                id="scratch-clear-btn"
+                                                title="Clear buffer"
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <textarea
+                                        id="scratchpad-textarea"
+                                        class="scratchpad-area"
+                                        placeholder="Paste terminal outputs, snippets, JSON, or quick notes... (Auto-saved)"
+                                    ></textarea>
+                                </div>
+                            </div>
+
+                            <!-- HÖGER: DEADLINES, DAILY TASKS & MORNING ROUTINE -->
+                            <div class="tier-right-stream dash-seamless-agenda">
+                                <!-- DEADLINES (STARTAR DIREKT PÅ SAMMA HORISONTELLA RAD SOM SCRATCHPAD) -->
+                                <div class="agenda-item deadlines-agenda-item">
+                                    <div class="dash-block-header">
+                                        <div class="dash-header-title">
+                                            <svg
+                                                width="16"
+                                                height="16"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
                                             >
                                                 <circle cx="12" cy="12" r="10"></circle>
                                                 <polyline points="12 6 12 12 16 14"></polyline>
                                             </svg>
-                                            <span>Deadlines:</span>
+                                            <span>Deadlines</span>
                                         </div>
                                     </div>
 
@@ -927,12 +853,11 @@
                                             type="text"
                                             id="deadline-input-title"
                                             class="input-field"
-                                            style="flex: 1"
                                             placeholder="New deadline task..."
                                             required
                                         />
                                         <input type="date" id="deadline-input-date" class="input-field" required />
-                                        <button type="submit" class="btn-action-pill">Add</button>
+                                        <button type="submit" class="btn-action-primary">Add</button>
                                     </form>
 
                                     <div class="deadlines-stream" id="deadlines-stream">
@@ -942,25 +867,16 @@
                                     </div>
                                 </div>
 
-                                <!-- 3. DAILY TASKS -->
-                                <div class="card daily-tasks-card">
-                                    <div class="card-header-flex">
-                                        <span
-                                            style="
-                                                font-weight: 700;
-                                                font-size: 0.8rem;
-                                                font-family: var(--font-mono);
-                                                letter-spacing: 0.05em;
-                                            "
-                                            >DAILY TASKS</span
-                                        >
+                                <!-- DAILY TASKS -->
+                                <div class="agenda-item tasks-agenda-item">
+                                    <div class="dash-block-header">
+                                        <span class="agenda-section-title">DAILY TASKS</span>
                                     </div>
                                     <form id="daily-task-form">
                                         <input
                                             type="text"
                                             id="daily-task-input"
                                             class="input-field"
-                                            style="width: 100%"
                                             placeholder="Enter a task and press Enter..."
                                             required
                                         />
@@ -968,758 +884,42 @@
                                     <div class="task-rows-stream" id="daily-task-stream"></div>
                                 </div>
 
-                                <!-- 4. MORNING ROUTINES -->
-                                <div class="card habits-card">
-                                    <div class="card-header-flex">
-                                        <span
-                                            style="
-                                                font-weight: 700;
-                                                font-size: 0.8rem;
-                                                font-family: var(--font-mono);
-                                                letter-spacing: 0.05em;
-                                            "
-                                            >MORNING ROUTINE</span
-                                        >
+                                <!-- MORNING ROUTINE -->
+                                <div class="agenda-item habits-agenda-item">
+                                    <div class="dash-block-header">
+                                        <span class="agenda-section-title">MORNING ROUTINE</span>
                                     </div>
-                                    <form id="habit-add-form" style="display: flex; gap: 6px; margin-bottom: 10px">
+                                    <form id="habit-add-form" class="habit-input-form">
                                         <input
                                             type="text"
                                             id="habit-add-input"
                                             class="input-field"
-                                            style="flex: 1"
-                                            placeholder="Add new morning habit..."
+                                            placeholder="Add routine habit..."
                                             required
                                         />
-                                        <button type="submit" class="btn-action-pill">+ Habit</button>
+                                        <button type="submit" class="btn-action-primary">+ Habit</button>
                                     </form>
                                     <div class="habits-container" id="habits-stream"></div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
 
-                    <!-- =========================================================================
-                         VIEW 2: YOUTUBE PRECISION STUDIO & DOWNLOADER
-                         ========================================================================= -->
-                    <div class="view-panel" id="view-tool-youtube" style="display: none">
-                        <div class="youtube-studio-container">
-                            <!-- TOP HERO CARD & QUICK PRESETS -->
-                            <div class="studio-hero-card">
-                                <div class="studio-hero-top">
-                                    <div class="studio-title-badge">
-                                        <div class="studio-icon-box">
-                                            <svg
-                                                width="18"
-                                                height="18"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2.2"
-                                            >
-                                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h1
-                                                style="
-                                                    font-size: 1.15rem;
-                                                    font-weight: 800;
-                                                    margin: 0;
-                                                    line-height: 1.2;
-                                                "
-                                            >
-                                                YouTube Extractor
-                                            </h1>
-                                            <p
-                                                style="
-                                                    font-size: 0.75rem;
-                                                    color: var(--text-secondary);
-                                                    margin: 0;
-                                                    font-family: var(--font-mono);
-                                                "
-                                            >
-                                                Direct stream slicing, time-section cutting, volume gain &amp; safe
-                                                playlist extractor
-                                            </p>
-                                        </div>
-                                    </div>
+                    <!-- VIEW 2: YOUTUBE STUDIO -->
+                    <div class="view-panel" id="view-tool-youtube" style="display: none"></div>
 
-                                    <!-- One-Click Preset Buttons -->
-                                    <div class="studio-preset-bar">
-                                        <span
-                                            style="
-                                                font-size: 0.7rem;
-                                                font-family: var(--font-mono);
-                                                color: var(--text-muted);
-                                            "
-                                            >PRESETS:</span
-                                        >
-                                        <button type="button" class="preset-chip-btn highlight" id="yt-preset-binaural">
-                                            5% Volume WAV
-                                        </button>
-                                        <button type="button" class="preset-chip-btn" id="yt-preset-cutter">
-                                            12h &rarr; 6h Cutter
-                                        </button>
-                                        <button type="button" class="preset-chip-btn" id="yt-preset-4k">
-                                            4K Video (MP4)
-                                        </button>
-                                        <button type="button" class="preset-chip-btn" id="yt-preset-playlist">
-                                            Playlist (Skip Dead)
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- VIEW 3: WINDOWS PLAYBOOK -->
+                    <div class="view-panel" id="view-tool-winopt" style="display: none"></div>
 
-                            <!-- 2-COLUMN WORKBENCH -->
-                            <div class="studio-workbench-grid">
-                                <!-- LEFT COLUMN: CONFIGURATION -->
-                                <div class="studio-config-column">
-                                    <!-- 1. URL & MODE INPUT -->
-                                    <div class="card">
-                                        <div class="card-header-flex">
-                                            <span class="card-title-group" style="color: var(--accent-rose)">
-                                                <svg
-                                                    width="15"
-                                                    height="15"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2.5"
-                                                >
-                                                    <path
-                                                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-                                                    ></path>
-                                                    <path
-                                                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-                                                    ></path>
-                                                </svg>
-                                                <span>Stream URL &amp; Target</span>
-                                            </span>
-                                            <div style="display: flex; gap: 6px">
-                                                <button type="button" class="btn-action-pill" id="yt-paste-btn">
-                                                    Paste
-                                                </button>
-                                                <button type="button" class="btn-action-pill" id="yt-fetch-btn">
-                                                    Fetch Info
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <!-- URL Input -->
-                                        <div class="url-input-group">
-                                            <input
-                                                type="text"
-                                                id="yt-url-input"
-                                                class="url-input-field"
-                                                placeholder="Paste YouTube video or playlist URL (auto-detects instantly)"
-                                                value=""
-                                            />
-                                        </div>
-
-                                        <div class="mode-switch-card" style="margin-top: 10px">
-                                            <span>Detected Mode:</span>
-                                            <label class="mode-radio-label">
-                                                <input type="radio" name="yt-mode" id="yt-mode-single" checked />
-                                                Single Item
-                                            </label>
-                                            <label class="mode-radio-label">
-                                                <input type="radio" name="yt-mode" id="yt-mode-playlist" /> Playlist
-                                                Mode
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- 2. FORMAT & MEDIA TYPE -->
-                                    <div class="card">
-                                        <div class="card-header-flex">
-                                            <span class="card-title-group" style="color: var(--accent-mint)">
-                                                <svg
-                                                    width="15"
-                                                    height="15"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2.5"
-                                                >
-                                                    <path
-                                                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                                                    ></path>
-                                                    <polyline points="14 2 14 8 20 8"></polyline>
-                                                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                                                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                                                    <polyline points="10 9 9 9 8 9"></polyline>
-                                                </svg>
-                                                <span>Format &amp; Quality</span>
-                                            </span>
-                                        </div>
-
-                                        <div class="format-selectors-grid">
-                                            <div class="format-box">
-                                                <label for="yt-media-type">Media Channel</label>
-                                                <select id="yt-media-type" class="select-studio">
-                                                    <option value="audio" selected>
-                                                        Audio Only (Extract &amp; Convert)
-                                                    </option>
-                                                    <option value="video">Video + Audio (Full Media)</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="format-box" id="yt-audio-options-group">
-                                                <label for="yt-audio-format">Audio Codec / Filetype</label>
-                                                <select id="yt-audio-format" class="select-studio">
-                                                    <option value="wav" selected>
-                                                        .wav (Uncompressed PCM 1411k - No Gen Loss)
-                                                    </option>
-                                                    <option value="flac">.flac (Lossless Compressed)</option>
-                                                    <option value="mp3">.mp3 (320kbps Universal)</option>
-                                                    <option value="opus">.opus (Native YouTube Fidelity)</option>
-                                                    <option value="m4a">.m4a / .aac (Apple Standard)</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="format-box" id="yt-video-options-group" style="display: none">
-                                                <label for="yt-video-format">Container &amp; Resolution</label>
-                                                <div style="display: flex; gap: 6px">
-                                                    <select id="yt-video-format" class="select-studio" style="flex: 1">
-                                                        <option value="mp4" selected>.mp4 (H.264/AAC)</option>
-                                                        <option value="mkv">.mkv (Matroska)</option>
-                                                        <option value="webm">.webm (VP9/Opus)</option>
-                                                    </select>
-                                                    <select id="yt-video-quality" class="select-studio" style="flex: 1">
-                                                        <option value="best" selected>Best Available</option>
-                                                        <option value="2160">4K (2160p)</option>
-                                                        <option value="1440">1440p (QHD)</option>
-                                                        <option value="1080">1080p (FHD)</option>
-                                                        <option value="720">720p (HD)</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- 3. PRECISION TIME SLICER -->
-                                    <div class="card slicer-card">
-                                        <div class="slicer-header-line">
-                                            <label
-                                                style="
-                                                    display: flex;
-                                                    align-items: center;
-                                                    gap: 8px;
-                                                    cursor: pointer;
-                                                    font-weight: 700;
-                                                    font-size: 0.85rem;
-                                                    color: var(--accent-amber);
-                                                "
-                                            >
-                                                <input type="checkbox" id="yt-trim-toggle" class="task-check-custom" />
-                                                <span>Precision Time Trimming (Direct Fragment Slicing)</span>
-                                            </label>
-                                            <span class="pill-badge" style="font-size: 0.65rem"
-                                                >Direct Byte Slicing</span
-                                            >
-                                        </div>
-
-                                        <div class="slicer-inputs-grid" id="yt-trim-inputs" style="display: none">
-                                            <div class="slicer-field">
-                                                <label for="yt-trim-start">Start Time (HH:MM:SS):</label>
-                                                <input
-                                                    type="text"
-                                                    id="yt-trim-start"
-                                                    class="url-input-field"
-                                                    value="00:00:00"
-                                                />
-                                            </div>
-                                            <div class="slicer-field">
-                                                <label for="yt-trim-end">End Time (HH:MM:SS):</label>
-                                                <input
-                                                    type="text"
-                                                    id="yt-trim-end"
-                                                    class="url-input-field"
-                                                    value="06:00:00"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div
-                                            style="
-                                                display: flex;
-                                                justify-content: space-between;
-                                                align-items: center;
-                                                flex-wrap: wrap;
-                                                gap: 8px;
-                                            "
-                                        >
-                                            <div class="slicer-duration-status" id="yt-trim-duration">
-                                                Trim Inactive (Full stream will download)
-                                            </div>
-                                            <div style="display: flex; gap: 6px">
-                                                <button type="button" class="btn-action-pill" id="yt-trim-6h-btn">
-                                                    6h Slice
-                                                </button>
-                                                <button type="button" class="btn-action-pill" id="yt-trim-1h-btn">
-                                                    1h Slice
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="icon-action-btn btn-delete"
-                                                    id="yt-trim-reset-btn"
-                                                    title="Reset Times"
-                                                >
-                                                    &times;
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <span
-                                            style="
-                                                font-size: 0.7rem;
-                                                color: var(--text-muted);
-                                                font-family: var(--font-mono);
-                                            "
-                                        >
-                                            &bull; Slices exact byte ranges without downloading the rest of the 12-hour
-                                            file.
-                                        </span>
-                                    </div>
-
-                                    <!-- 4. VOLUME ATTENUATION -->
-                                    <div class="card volume-control-box">
-                                        <div class="card-header-flex" style="margin-bottom: 4px">
-                                            <span class="card-title-group" style="color: var(--accent-sky)">
-                                                <svg
-                                                    width="15"
-                                                    height="15"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2.5"
-                                                >
-                                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                                    <path
-                                                        d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"
-                                                    ></path>
-                                                </svg>
-                                                <span>Audio Gain &amp; Volume Scaling</span>
-                                            </span>
-                                            <span class="pill-badge" id="yt-volume-db">5% &middot; -26.0 dB</span>
-                                        </div>
-
-                                        <div class="volume-slider-row">
-                                            <input
-                                                type="range"
-                                                id="yt-volume-slider"
-                                                class="volume-slider-custom"
-                                                min="0"
-                                                max="150"
-                                                value="5"
-                                            />
-                                            <input
-                                                type="number"
-                                                id="yt-volume-number"
-                                                class="volume-input-number"
-                                                min="0"
-                                                max="150"
-                                                value="5"
-                                            />
-                                            <span
-                                                style="
-                                                    font-family: var(--font-mono);
-                                                    font-size: 0.8rem;
-                                                    font-weight: 700;
-                                                "
-                                                >%</span
-                                            >
-                                        </div>
-
-                                        <div class="volume-presets-row">
-                                            <span
-                                                style="
-                                                    font-size: 0.7rem;
-                                                    font-family: var(--font-mono);
-                                                    color: var(--text-muted);
-                                                "
-                                                >PRESETS:</span
-                                            >
-                                            <button type="button" class="preset-chip-btn highlight" id="yt-vol-5-btn">
-                                                5%
-                                            </button>
-                                            <button type="button" class="preset-chip-btn" id="yt-vol-25-btn">
-                                                25%
-                                            </button>
-                                            <button type="button" class="preset-chip-btn" id="yt-vol-50-btn">
-                                                50%
-                                            </button>
-                                            <button type="button" class="preset-chip-btn" id="yt-vol-100-btn">
-                                                100%
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- 5. PLAYLIST OPTIONS -->
-                                    <div class="card" id="yt-playlist-options" style="display: none">
-                                        <div class="card-header-flex">
-                                            <span class="card-title-group" style="color: var(--accent-rose)">
-                                                <svg
-                                                    width="15"
-                                                    height="15"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2.5"
-                                                >
-                                                    <line x1="8" y1="6" x2="21" y2="6"></line>
-                                                    <line x1="8" y1="12" x2="21" y2="12"></line>
-                                                    <line x1="8" y1="18" x2="21" y2="18"></line>
-                                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                                                </svg>
-                                                <span>Playlist Shield (Skip Deleted / Dead Videos)</span>
-                                            </span>
-                                        </div>
-
-                                        <div style="display: flex; flex-direction: column; gap: 8px">
-                                            <label
-                                                style="
-                                                    display: flex;
-                                                    align-items: center;
-                                                    gap: 8px;
-                                                    cursor: pointer;
-                                                    font-size: 0.82rem;
-                                                    font-weight: 600;
-                                                "
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    id="yt-pl-ignore-errors"
-                                                    class="task-check-custom"
-                                                    checked
-                                                />
-                                                <span
-                                                    >Ignore Taken Down / Private / Geo-Blocked Videos
-                                                    (--ignore-errors)</span
-                                                >
-                                            </label>
-
-                                            <div
-                                                style="
-                                                    display: grid;
-                                                    grid-template-columns: 1fr 1fr;
-                                                    gap: 10px;
-                                                    margin-top: 4px;
-                                                "
-                                            >
-                                                <div class="slicer-field">
-                                                    <label for="yt-pl-start">Start Index:</label>
-                                                    <input
-                                                        type="number"
-                                                        id="yt-pl-start"
-                                                        class="url-input-field"
-                                                        value="1"
-                                                        min="1"
-                                                    />
-                                                </div>
-                                                <div class="slicer-field">
-                                                    <label for="yt-pl-end">End Index (0 = All):</label>
-                                                    <input
-                                                        type="number"
-                                                        id="yt-pl-end"
-                                                        class="url-input-field"
-                                                        value="50"
-                                                        min="0"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- RIGHT COLUMN: DOWNLOAD ACTION HUB & COMMAND -->
-                                <div class="studio-terminal-column">
-                                    <!-- 1. VIDEO PREVIEW TILE -->
-                                    <!-- Video Preview Tile -->
-                                    <div class="card" id="yt-preview-card">
-                                        <div class="video-preview-tile">
-                                            <img
-                                                id="yt-preview-thumb"
-                                                class="video-preview-thumb"
-                                                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%23000000'/%3E%3C/svg%3E"
-                                                alt=""
-                                            />
-                                            <div class="video-preview-details">
-                                                <span
-                                                    class="pill-badge"
-                                                    id="yt-preview-badge"
-                                                    style="width: fit-content; font-size: 0.65rem"
-                                                    >No Stream</span
-                                                >
-                                                <div class="video-preview-title" id="yt-preview-title">
-                                                    No stream selected
-                                                </div>
-                                                <div class="video-preview-author" id="yt-preview-author">
-                                                    Channel: —
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- 2. GENERATED DOWNLOAD COMMAND -->
-                                    <div class="command-console-card">
-                                        <div class="console-tab-bar">
-                                            <div class="console-tabs-left">
-                                                <button type="button" class="cmd-tab-btn active" data-platform="ytdlp">
-                                                    CMD / PowerShell
-                                                </button>
-                                                <button type="button" class="cmd-tab-btn" data-platform="bash">
-                                                    Bash / macOS / Linux
-                                                </button>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                class="btn-action-pill"
-                                                id="yt-copy-cmd-btn"
-                                                style="
-                                                    padding: 5px 12px;
-                                                    font-weight: 700;
-                                                    background: var(--accent-mint);
-                                                    color: #0b0e14;
-                                                "
-                                            >
-                                                Copy Download Command
-                                            </button>
-                                        </div>
-                                        <textarea
-                                            id="yt-command-output"
-                                            class="command-code-area"
-                                            readonly
-                                            spellcheck="false"
-                                            style="min-height: 110px"
-                                        ></textarea>
-                                    </div>
-
-                                    <!-- 3. 1-CLICK ENVIRONMENT SETUP MATRIX -->
-                                    <div class="card setup-matrix-card">
-                                        <div class="card-header-flex" style="margin-bottom: 8px">
-                                            <div style="display: flex; align-items: center; gap: 8px">
-                                                <span
-                                                    style="
-                                                        font-family: var(--font-mono);
-                                                        font-size: 0.78rem;
-                                                        font-weight: 800;
-                                                        color: var(--accent-sky);
-                                                        text-transform: uppercase;
-                                                    "
-                                                >
-                                                    First Time Setup (yt-dlp + FFmpeg)
-                                                </span>
-                                                <span class="pill-badge" style="font-size: 0.65rem"
-                                                    >1-Click Install</span
-                                                >
-                                            </div>
-                                        </div>
-                                        <p
-                                            style="
-                                                font-size: 0.76rem;
-                                                color: var(--text-secondary);
-                                                margin: 0;
-                                                line-height: 1.45;
-                                            "
-                                        >
-                                            To slice videos without downloading the whole file and to scale volume to
-                                            5%, your system needs <code>yt-dlp</code> and <code>ffmpeg</code>. Choose
-                                            your operating system and click copy:
-                                        </p>
-
-                                        <!-- OS Selector Tabs -->
-                                        <div class="os-tab-bar">
-                                            <button type="button" class="os-pill-btn active" data-os="windows-winget">
-                                                Windows (Winget)
-                                            </button>
-                                            <button type="button" class="os-pill-btn" data-os="windows-scoop">
-                                                Scoop / Choco
-                                            </button>
-                                            <button type="button" class="os-pill-btn" data-os="macos">
-                                                macOS (Homebrew)
-                                            </button>
-                                            <button type="button" class="os-pill-btn" data-os="linux">
-                                                Linux (Debian/Ubuntu)
-                                            </button>
-                                            <button type="button" class="os-pill-btn" data-os="python">
-                                                Python (Pip)
-                                            </button>
-                                        </div>
-
-                                        <!-- Dynamic Install Command Box with 1-Click Copy -->
-                                        <div class="setup-code-container">
-                                            <div class="setup-code-row">
-                                                <span class="setup-prompt-symbol">$</span>
-                                                <code class="setup-code-text" id="setup-code-display"
-                                                    >winget install yt-dlp ffmpeg deno</code
-                                                >
-                                                <button
-                                                    type="button"
-                                                    class="btn-action-pill"
-                                                    id="setup-copy-btn"
-                                                    style="flex-shrink: 0; padding: 3px 8px; font-size: 0.7rem"
-                                                >
-                                                    Copy
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <!-- Dependency Explanations -->
-                                        <div class="deps-summary-grid">
-                                            <div class="dep-item">
-                                                <span class="dep-bullet" style="color: var(--accent-mint)"
-                                                    >&check;</span
-                                                >
-                                                <div>
-                                                    <strong style="color: var(--text-primary); font-size: 0.75rem"
-                                                        >yt-dlp:</strong
-                                                    >
-                                                    <span style="color: var(--text-muted); font-size: 0.72rem">
-                                                        Core high-speed YouTube stream extractor.</span
-                                                    >
-                                                </div>
-                                            </div>
-                                            <div class="dep-item">
-                                                <span class="dep-bullet" style="color: var(--accent-amber)"
-                                                    >&check;</span
-                                                >
-                                                <div>
-                                                    <strong style="color: var(--text-primary); font-size: 0.75rem"
-                                                        >ffmpeg:</strong
-                                                    >
-                                                    <span style="color: var(--text-muted); font-size: 0.72rem">
-                                                        Required for exact time-section cutting &amp; 5% audio
-                                                        gain.</span
-                                                    >
-                                                </div>
-                                            </div>
-                                            <div class="dep-item">
-                                                <span class="dep-bullet" style="color: var(--accent-sky)">&check;</span>
-                                                <div>
-                                                    <strong style="color: var(--text-primary); font-size: 0.75rem"
-                                                        >deno:</strong
-                                                    >
-                                                    <span style="color: var(--text-muted); font-size: 0.72rem">
-                                                        JavaScript runtime to bypass YouTube's signature cipher
-                                                        warnings.</span
-                                                    >
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Update Helper Footer -->
-                                        <div class="setup-update-footer">
-                                            <span style="font-size: 0.72rem; color: var(--text-muted)"
-                                                >Already installed? Update anytime:</span
-                                            >
-                                            <button
-                                                type="button"
-                                                class="copyable-chip"
-                                                id="setup-update-btn"
-                                                title="Click to copy update command"
-                                            >
-                                                yt-dlp -U
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- TECHNICAL MASTERCLASS: WHY COMMANDS BEAT WEB DOWNLOADERS -->
-                            <div class="technical-masterclass-card">
-                                <div style="display: flex; align-items: center; gap: 8px">
-                                    <span
-                                        style="
-                                            font-size: 0.95rem;
-                                            font-weight: 800;
-                                            font-family: var(--font-mono);
-                                            color: var(--accent-mint);
-                                        "
-                                    >
-                                        WHY TERMINAL COMMANDS BEAT WEB DOWNLOAD BUTTONS
-                                    </span>
-                                    <span class="pill-badge" style="font-size: 0.68rem">Architectural Advantage</span>
-                                </div>
-
-                                <div class="deep-dive-grid">
-                                    <!-- TILE 1: LOCAL GIGABIT SPEED VS SERVER QUEUES -->
-                                    <div class="deep-dive-tile">
-                                        <span class="tile-badge" style="color: var(--accent-sky)"
-                                            >DIRECT CDN PIPELINE</span
-                                        >
-                                        <div class="tile-title">Zero Server Queues &amp; Full Gigabit Speed</div>
-                                        <div class="tile-text">
-                                            Traditional web download buttons route your request through a slow
-                                            intermediary proxy server that throttles bandwidth, queues your download
-                                            behind hundreds of users, or limits file size.
-                                            <br /><br />
-                                            Running the generated command locally connects your computer
-                                            <strong>directly to YouTube's edge CDN</strong> at your full home connection
-                                            speed, with zero third-party telemetry, ads, or artificial size caps.
-                                        </div>
-                                    </div>
-
-                                    <!-- TILE 2: 12H TO 6H RANGE SLICING -->
-                                    <div class="deep-dive-tile">
-                                        <span class="tile-badge" style="color: var(--accent-amber)"
-                                            >HTTP RANGE REQUESTS</span
-                                        >
-                                        <div class="tile-title">Slicing 12h &rarr; 6h Without Downloading 12h</div>
-                                        <div class="tile-text">
-                                            Web downloaders force their servers to download all 15–30 GB of a 12-hour
-                                            video before cutting it, causing long wait times and frequent timeouts.
-                                            <br /><br />
-                                            Our command uses <code>--download-sections</code> with HTTP Range requests.
-                                            Your system streams <strong>only the exact byte packets</strong> between
-                                            your start and end times (e.g. 00:00:00 to 06:00:00). You get a 6-hour clip
-                                            in minutes without touching the rest of the file.
-                                        </div>
-                                    </div>
-
-                                    <!-- TILE 3: CUSTOM DSP & 5% VOLUME GAIN -->
-                                    <div class="deep-dive-tile">
-                                        <span class="tile-badge" style="color: var(--accent-rose)"
-                                            >DSP &amp; NO GENERATION LOSS</span
-                                        >
-                                        <div class="tile-title">Custom 5% Volume &amp; Bit-Exact Audio</div>
-                                        <div class="tile-text">
-                                            No web downloader allows custom digital signal processing (DSP) filters like
-                                            lowering volume to exactly <strong>5% (-26.0 dB)</strong> for ambient study
-                                            or binaural sleep loops. <br /><br />
-                                            By executing FFmpeg locally, you apply volume attenuation directly to raw
-                                            PCM samples. Exporting to <code>.wav</code> avoids secondary lossy
-                                            re-encoding (generation loss), giving you clean, bit-exact audio.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- =========================================================================
-                         VIEW 3: WINDOWS & HARDWARE OPTIMIZATION PLAYBOOK
-                         ========================================================================= -->
-                    <!-- =========================================================================
-                         VIEW 3: WINDOWS & HARDWARE OPTIMIZATION PLAYBOOK
-                         ========================================================================= -->
-                    <div class="view-panel" id="view-tool-winopt" style="display: none">
-                        <!-- Populated by src/modules/windowsOptimizer/index.ts with 0ms input lag -->
-                    </div>
-
-                    <!-- =========================================================================
-                         MODAL: REAL INTERACTIVE WORLD MAP
-                         ========================================================================= -->
+                    <!-- MODAL: WORLD MAP -->
                     <div class="modal-backdrop" id="modal-weather-loc" style="display: none">
-                        <div class="modal-dialog" style="max-width: 580px; width: 100%">
+                        <div class="modal-dialog">
                             <div class="modal-header">
                                 <span class="modal-title">Interactive World Map</span>
                                 <button type="button" class="icon-action-btn" id="modal-loc-close">&times;</button>
                             </div>
                             <div class="modal-body">
                                 <div id="real-weather-map" class="real-map-container"></div>
-
                                 <div class="coord-input-row" style="margin-top: 10px">
                                     <div class="coord-field">
                                         <label for="coord-lat-input">Latitude:</label>
@@ -1753,16 +953,14 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn-action-pill" id="btn-save-coords">
+                                <button type="button" class="btn-action-primary" id="btn-save-coords">
                                     Apply Coordinates
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- =========================================================================
-                         MODAL: CHANGE ACTIVE TIMEZONE
-                         ========================================================================= -->
+                    <!-- MODAL: TIMEZONE PICKER -->
                     <div class="modal-backdrop" id="modal-tz-picker" style="display: none">
                         <div class="modal-dialog">
                             <div class="modal-header">
@@ -1770,14 +968,10 @@
                                 <button type="button" class="icon-action-btn" id="modal-tz-close">&times;</button>
                             </div>
                             <div class="modal-body">
-                                <select
-                                    id="tz-picker-select"
-                                    class="input-field"
-                                    style="width: 100%; height: 36px"
-                                ></select>
+                                <select id="tz-picker-select" class="input-field" style="width: 100%"></select>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn-action-pill" id="btn-save-tz">Apply Timezone</button>
+                                <button type="button" class="btn-action-primary" id="btn-save-tz">Apply Timezone</button>
                             </div>
                         </div>
                     </div>

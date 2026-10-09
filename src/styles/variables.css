@@ -1,63 +1,77 @@
 :root {
-    /* Base Dark Canvas (Warm Obsidian / Graphite) */
-    --bg-base: #0c0d10;
-    --bg-surface: #121317;
-    --bg-card: #16181e;
-    --bg-elevated: #1d1f26;
+    /* Pure, seamless canvas - Inga grå bakgrundsblock */
+    --bg-base: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --bg-elevated: #f4f6fb;
+    --bg-subtle: #f9fafd;
+    --bg-hover: #f3f5fd;
 
-    /* Subtle Hairline Borders - Easy on the eyes */
-    --border-subtle: rgba(255, 255, 255, 0.06);
-    --border-bold: rgba(255, 255, 255, 0.12);
+    /* Subtila, nästan osynliga hairlines */
+    --border-subtle: #edf0f5;
+    --border-bold: #e0e4ed;
 
-    /* High-legibility Warm Typography */
-    --text-primary: #f3f1ec;
-    --text-secondary: #9ea0a8;
-    --text-muted: #64666e;
+    /* Typografi med ren kontrast */
+    --text-primary: #151928;
+    --text-secondary: #56607a;
+    --text-muted: #8b95ac;
 
-    /* Option 1: Terracotta / Rust Ochre Accent */
-    --accent-brand: #d97746;
-    --accent-brand-glow: rgba(217, 119, 70, 0.14);
-    --accent-brand-subtle: rgba(217, 119, 70, 0.08);
+    /* Royal Indigo Accent */
+    --accent-brand: #4f5dfa;
+    --accent-brand-hover: #3d4be4;
+    --accent-brand-glow: rgba(79, 93, 250, 0.14);
+    --accent-brand-subtle: #eff2fe;
 
-    /* Unified Theme Anchors (Mapped for visual calm) */
-    --accent-mint: #d97746; /* Re-anchors primary highlights to Terracotta */
-    --accent-mint-glow: rgba(217, 119, 70, 0.14);
-    --accent-sky: #e08b5f; /* Soft ochre highlight */
-    --accent-amber: #e59850; /* Warm solar amber */
-    --accent-rose: #d65d64; /* Muted red for errors/overdue */
-    --accent-emerald: #4ade80; /* Reserved strictly for live ping/healthy indicators */
-    --accent-violet: #d97746;
-    --accent-indigo: #c86b3c;
+    /* Secondary Accents */
+    --accent-indigo: #4f5dfa;
+    --accent-periwinkle: #7b79ff;
+    --accent-mint: #10b981;
+    --accent-emerald: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-sky: #06b6d4;
+    --accent-rose: #f43f5e;
+    --accent-violet: #8b5cf6;
 
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    /* Snabb systemfont-stack */
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+
+    /* Inga lådor eller skuggor */
     --card-radius: 8px;
+    --card-shadow: none;
+    --card-shadow-hover: none;
 }
 
-html.light-theme {
-    /* Warm Alabaster & Editorial Paper */
-    --bg-base: #f7f6f2;
-    --bg-surface: #ffffff;
-    --bg-card: #fdfdfc;
-    --bg-elevated: #efede7;
+/* Sömlös Dark Mode */
+html.dark-theme {
+    --bg-base: #0c0f17;
+    --bg-surface: #0c0f17;
+    --bg-card: #0c0f17;
+    --bg-elevated: #161a26;
+    --bg-subtle: #111420;
+    --bg-hover: #181d2c;
 
-    --border-subtle: rgba(0, 0, 0, 0.06);
-    --border-bold: rgba(0, 0, 0, 0.12);
+    --border-subtle: rgba(255, 255, 255, 0.07);
+    --border-bold: rgba(255, 255, 255, 0.12);
 
-    --text-primary: #1e1e22;
-    --text-secondary: #575961;
-    --text-muted: #8c8e96;
+    --text-primary: #f2f4f8;
+    --text-secondary: #98a1b6;
+    --text-muted: #616a82;
 
-    /* Deep Warm Sienna Terracotta */
-    --accent-brand: #c4582c;
-    --accent-brand-glow: rgba(196, 88, 44, 0.12);
-    --accent-brand-subtle: rgba(196, 88, 44, 0.06);
+    --accent-brand: #6366f1;
+    --accent-brand-hover: #4f5dfa;
+    --accent-brand-glow: rgba(99, 102, 241, 0.2);
+    --accent-brand-subtle: rgba(99, 102, 241, 0.12);
 
-    --accent-mint: #c4582c;
-    --accent-mint-glow: rgba(196, 88, 44, 0.12);
-    --accent-sky: #a84b25;
-    --accent-amber: #b86221;
-    --accent-rose: #be3b45;
-    --accent-emerald: #16a34a;
-    --accent-violet: #c4582c;
-    --accent-indigo: #a84b25;
+    --accent-indigo: #6366f1;
+    --accent-periwinkle: #918eff;
+    --accent-mint: #34d399;
+    --accent-emerald: #34d399;
+    --accent-amber: #fbbf24;
+    --accent-sky: #22d3ee;
+    --accent-rose: #fb7185;
+    --accent-violet: #a78bfa;
+
+    --card-shadow: none;
+    --card-shadow-hover: none;
 }

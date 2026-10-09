@@ -1,165 +1,122 @@
-.clock-hero-card,
-.clock-compact-card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    padding: 16px 18px;
-    min-width: 0;
-    width: 100%;
+.clock-hero-block {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
 }
 
 .clock-top-bar {
-    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     width: 100%;
 }
 
 .clock-primary-stack {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    flex: 1;
 }
 
 .time-digits-display {
-    font-family: var(--font-mono);
-    font-size: clamp(2.1rem, 7vw, 2.7rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-size: 2.85rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
     line-height: 1;
     color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
 }
 
 .clock-date-line {
-    font-family: var(--font-mono);
-    font-size: clamp(0.72rem, 2.2vw, 0.8rem);
+    font-size: 0.85rem;
     color: var(--text-secondary);
     font-weight: 500;
-    margin-top: 4px;
+    margin-top: 6px;
 }
 
-.session-badge-pill {
-    position: absolute;
-    top: 2px;
-    right: 0;
-    color: var(--text-secondary);
-    border-color: var(--border-subtle);
+.session-badge-text {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
 }
 
-/* AMBIENT TELEMETRY ROWS */
+/* SÖMLÖS AMBIENT-LISTA UTAN LÅDOR */
 .clock-ambient-stack {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    gap: 2px;
     width: 100%;
 }
 
 .ambient-row,
 .ambient-row-btn {
-    background: var(--bg-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: 5px;
-    padding: 7px 12px;
-    min-height: 34px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 6px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    line-height: 1.2;
+    transition: background 0.15s ease;
     font-family: inherit;
-    font-size: inherit;
     box-sizing: border-box;
-    transition: all 0.15s ease;
-    margin: 0;
+    text-align: left;
+}
+
+.ambient-row:hover,
+.ambient-row-btn:hover {
+    background: var(--bg-hover);
 }
 
 .ambient-row-btn {
     cursor: pointer;
-    text-align: left;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-.ambient-row-btn:hover {
-    border-color: var(--accent-brand);
-    background: var(--accent-brand-subtle);
 }
 
 .ambient-row-left {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-shrink: 0;
 }
 
-.ambient-bullet,
-.ambient-bullet-1 {
-    width: 18px;
-    min-width: 18px;
-    height: 18px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    color: var(--accent-brand) !important;
+.ambient-bullet {
+    font-size: 0.85rem;
     line-height: 1;
     font-weight: 700;
-    flex-shrink: 0;
-}
-
-.ambient-bullet-1 {
-    padding-left: 4px;
 }
 
 .ambient-label {
-    font-family: var(--font-mono);
-    font-size: 0.64rem;
-    font-weight: 700;
+    font-size: 0.67rem;
+    font-weight: 600;
     color: var(--text-muted);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
 .ambient-row-right {
     display: flex;
     align-items: center;
-    gap: 6px;
-    min-width: 0;
-    flex-shrink: 1;
-    justify-content: flex-end;
+    gap: 8px;
 }
 
 .ambient-val {
-    font-family: var(--font-mono);
-    font-size: clamp(0.68rem, 2.2vw, 0.76rem);
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
 }
 
 .ambient-action-hint {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
+    font-size: 0.65rem;
     color: var(--accent-brand);
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-bold);
+    background: var(--accent-brand-subtle);
     padding: 1px 6px;
-    border-radius: 3px;
+    border-radius: 4px;
     font-weight: 600;
 }
 
-/* CONVERTER MODULE */
+/* MINIMALISTISK KONVERTERARE */
 .converter-stacked-module {
-    background: var(--bg-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: 5px;
-    padding: 8px 12px;
+    padding: 4px 0;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -175,63 +132,56 @@
 .converter-label {
     font-size: 0.74rem;
     color: var(--text-muted);
-    font-family: var(--font-mono);
     font-weight: 600;
 }
 
 .converter-colon {
-    font-family: var(--font-mono);
     font-weight: 700;
     color: var(--text-muted);
 }
 
 .input-mini-time {
-    background: var(--bg-card);
-    border: 1px solid var(--border-bold);
+    background: var(--bg-elevated);
+    border: none;
     color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    font-weight: 700;
-    width: 38px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    width: 36px;
     height: 28px;
     text-align: center;
     border-radius: 4px;
 }
 
 .input-mini-time:focus {
-    border-color: var(--accent-brand);
-    outline: none;
+    background: var(--bg-surface);
+    outline: 1px solid var(--accent-brand);
 }
 
 .btn-format-cycle {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-bold);
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
+    background: var(--accent-brand-subtle);
+    border: none;
+    color: var(--accent-brand);
+    font-size: 0.72rem;
     font-weight: 700;
     height: 28px;
     width: 42px;
-    text-align: center;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.15s ease;
 }
 
 .btn-format-cycle:hover {
-    border-color: var(--accent-brand);
-    color: var(--accent-brand);
+    background: var(--accent-brand);
+    color: #ffffff;
 }
 
 .select-mini-tz {
-    background: var(--bg-card);
-    border: 1px solid var(--border-bold);
+    background: var(--bg-elevated);
+    border: none;
     color: var(--text-primary);
-    font-family: var(--font-mono);
     font-size: 0.74rem;
-    font-weight: 600;
+    font-weight: 500;
     height: 28px;
-    padding: 0 8px;
+    padding: 0 6px;
     border-radius: 4px;
     flex: 1;
     min-width: 0;
@@ -239,26 +189,15 @@
     outline: none;
 }
 
-.select-mini-tz:focus {
-    border-color: var(--accent-brand);
-}
-
 .converter-result-under {
-    display: flex;
-    align-items: center;
-    padding-top: 5px;
-    border-top: 1px dashed var(--border-subtle);
-    font-family: var(--font-mono);
     font-size: 0.76rem;
-    min-height: 22px;
-    width: 100%;
+    padding-top: 2px;
 }
 
 .converter-result-box {
     display: flex;
     align-items: center;
     gap: 6px;
-    width: 100%;
 }
 
 .converter-result-label {
@@ -267,35 +206,34 @@
 
 .converter-result-value {
     color: var(--accent-brand);
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .converter-result-secondary {
     color: var(--text-secondary);
 }
 
-/* YEAR PROGRESS & FOOTER */
+/* YEAR PROGRESS */
 .year-progress-module {
     margin-top: auto;
-    padding-top: 6px;
+    padding-top: 4px;
 }
 
 .year-stats-line {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     color: var(--text-muted);
-    margin-bottom: 4px;
+    font-weight: 500;
+    margin-bottom: 6px;
 }
 
 .btn-tz-badge {
     background: transparent;
     border: none;
     color: var(--accent-brand);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     font-weight: 600;
     cursor: pointer;
 }
@@ -305,17 +243,16 @@
 }
 
 .year-progress-bar {
-    height: 4px;
-    background: var(--bg-base);
-    border-radius: 2px;
+    height: 5px;
+    background: var(--border-subtle);
+    border-radius: 999px;
     overflow: hidden;
-    border: 1px solid var(--border-subtle);
 }
 
 .year-progress-fill {
     height: 100%;
     background: var(--accent-brand);
-    border-radius: 2px;
+    border-radius: 999px;
     transition: width 0.3s ease;
 }
 
@@ -324,7 +261,6 @@
         display: grid;
         grid-template-columns: auto auto auto auto 1fr;
         gap: 6px;
-        align-items: center;
     }
     .converter-label {
         grid-column: 1 / -1;

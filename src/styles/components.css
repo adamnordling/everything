@@ -1,80 +1,126 @@
+/* =============================================================================
+   FRAMELESS INTERFACE COMPONENTS (NO CONTAINERS)
+   ============================================================================= */
+
+/* Kort är nu helt ramlösa och smälter in direkt i sidan */
 .card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--card-radius);
-    padding: 16px 18px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-    transition: border-color 0.2s ease;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
 }
 
-.card:hover {
-    border-color: var(--border-bold);
-}
-
+.dash-block-header,
 .card-header-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
+    gap: 8px;
 }
 
+.dash-header-title,
 .card-title-group {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.86rem;
+    font-size: 0.94rem;
     font-weight: 700;
-    color: var(--text-primary) !important;
+    color: var(--text-primary);
+    white-space: nowrap;
 }
 
+.dash-header-title svg,
 .card-title-group svg {
     color: var(--accent-brand);
 }
 
+.agenda-section-title,
+.section-card-title {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+/* Diskreta länkliknande knappar istället för tjocka boxar */
+.btn-text-link {
+    background: transparent;
+    border: none;
+    color: var(--accent-brand);
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.btn-text-link:hover {
+    background: var(--accent-brand-subtle);
+}
+
+.btn-text-link.highlight {
+    color: var(--accent-brand);
+    font-weight: 700;
+}
+
+/* Primär subtil knapp */
+.btn-action-primary {
+    background: var(--accent-brand);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+}
+
+.btn-action-primary:hover {
+    background: var(--accent-brand-hover);
+}
+
 .pill-badge {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-family: var(--font-mono);
+    background: var(--accent-brand-subtle);
+    border: none;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem;
     font-weight: 600;
     color: var(--accent-brand);
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
 }
 
-.btn-action-pill {
+.pill-soon {
     background: var(--bg-elevated);
-    border: 1px solid var(--border-bold);
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 0.78rem;
-    font-family: var(--font-mono);
-    padding: 3px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    padding: 2px 7px;
 }
 
-.btn-action-pill:hover {
-    background: var(--accent-brand);
-    border-color: var(--accent-brand);
-    color: #ffffff;
-}
-
+/* Subtila, nästan osynliga inmatningsfält */
 .input-field {
-    background: var(--bg-card);
-    border: 1px solid var(--border-bold);
+    background: var(--bg-elevated);
+    border: 1px solid transparent;
     color: var(--text-primary);
-    padding: 7px 10px;
-    border-radius: 5px;
+    padding: 7px 11px;
+    border-radius: 6px;
     font-size: 0.82rem;
-    transition: border-color 0.15s ease;
+    transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .input-field:focus {
+    background: var(--bg-surface);
     border-color: var(--accent-brand);
     outline: none;
 }
@@ -84,76 +130,75 @@
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 2px;
-    border-radius: 4px;
+    padding: 4px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.15s ease;
+    transition: all 0.15s ease;
 }
 
 .icon-action-btn:hover {
     color: var(--text-primary);
+    background: var(--bg-hover);
 }
 
 .icon-action-btn.btn-delete:hover {
     color: var(--accent-rose);
+    background: rgba(244, 63, 94, 0.08);
 }
 
 .empty-state-notice {
-    background: var(--bg-card);
-    border: 1px dashed var(--border-bold);
-    border-radius: 6px;
-    padding: 16px;
-    text-align: center;
+    padding: 12px 0;
     color: var(--text-muted);
     font-size: 0.78rem;
-    font-family: var(--font-mono);
 }
 
-/* WORKSTATION SCRATCHPAD & CLIPBOARD BUFFER */
-.scratchpad-card {
+/* RAMLÖS SCRATCHPAD */
+.scratchpad-block {
     display: flex;
     flex-direction: column;
     height: 100%;
-    min-height: 340px;
+    min-height: 330px;
     gap: 8px;
 }
 
 .scratchpad-actions {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
 .scratchpad-counter {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     color: var(--text-muted);
     margin-right: 4px;
+    white-space: nowrap;
 }
 
 .scratchpad-area {
     flex: 1;
     width: 100%;
-    background: var(--bg-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: 6px;
-    padding: 10px 12px;
+    background: var(--bg-elevated);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 12px 14px;
     color: var(--text-primary);
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    line-height: 1.5;
+    font-size: 0.82rem;
+    line-height: 1.6;
     resize: none;
     outline: none;
-    transition: border-color 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .scratchpad-area:focus {
-    border-color: var(--accent-brand);
+    background: var(--bg-surface);
+    border-color: var(--border-bold);
 }
 
 .scratchpad-area::placeholder {
     color: var(--text-muted);
-    opacity: 0.5;
+    opacity: 0.6;
 }

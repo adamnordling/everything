@@ -10,11 +10,14 @@ import { initWindowsOptimizer } from './modules/windowsOptimizer/index';
 const VIEW_STORAGE_KEY = 'app_active_view';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Theme Toggle
-    document.getElementById('theme-btn')?.addEventListener('click', () => {
-        const isLight = document.documentElement.classList.toggle('light-theme');
-        localStorage.setItem('app_theme', isLight ? 'light' : 'dark');
-    });
+// 1. Theme Toggle (Standard White Mode by default)
+    const toggleTheme = (): void => {
+        const isDark = document.documentElement.classList.toggle('dark-theme');
+        localStorage.setItem('app_theme', isDark ? 'dark' : 'light');
+    };
+
+    document.getElementById('theme-btn')?.addEventListener('click', toggleTheme);
+    document.getElementById('mobile-theme-btn')?.addEventListener('click', toggleTheme);
 
     // 2. View Switching Router with Full Refresh Persistence
     const navButtons = document.querySelectorAll<HTMLButtonElement>('.sidebar-nav .nav-item');

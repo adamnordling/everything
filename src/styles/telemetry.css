@@ -1,10 +1,7 @@
-.sys-telemetry-card {
+.telemetry-block {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 16px 18px;
-    background: var(--bg-surface);
-    height: 100%;
+    gap: 14px;
 }
 
 .telemetry-top-bar {
@@ -12,8 +9,8 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
-    padding-bottom: 8px;
+    gap: 8px;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -27,12 +24,11 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: var(--font-mono);
 }
 
 .live-ping-dot {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
 }
@@ -51,54 +47,50 @@
 }
 
 .telemetry-ip {
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
 }
 
 .telemetry-ping {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
+    font-size: 0.72rem;
+    color: var(--accent-emerald);
+    background: rgba(16, 185, 129, 0.1);
     padding: 1px 6px;
-    border-radius: 3px;
+    border-radius: 4px;
     font-weight: 600;
 }
 
 .telemetry-isp {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     color: var(--text-secondary);
-    font-family: var(--font-mono);
 }
 
 .telemetry-quick-tags {
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
 }
 
 .sys-chip-tag {
-    background: var(--bg-card);
-    border: 1px solid var(--border-bold);
-    padding: 2px 7px;
+    background: var(--bg-elevated);
+    border: none;
+    padding: 3px 8px;
     border-radius: 4px;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     color: var(--text-secondary);
     font-weight: 600;
 }
 
-/* VERTICAL 2-COLUMN HUD */
+/* 2-KOLUMNS SPEC-LISTA */
 .telemetry-vertical-hud {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 4px;
+    gap: 4px 20px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
     .telemetry-vertical-hud {
         grid-template-columns: 1fr;
     }
@@ -107,39 +99,44 @@
 .hud-col {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 2px;
 }
 
 .hud-row {
     display: flex;
-    flex-direction: column;
-    background: var(--bg-base);
-    border: 1px solid var(--border-subtle);
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 4px 4px;
     border-radius: 4px;
-    padding: 5px 8px;
-    gap: 2px;
+    transition: background 0.12s ease;
+    gap: 8px;
+}
+
+.hud-row:hover {
+    background: var(--bg-hover);
 }
 
 .hud-k {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    font-weight: 700;
+    font-size: 0.67rem;
+    font-weight: 600;
     color: var(--text-muted);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .hud-v {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--text-primary);
+    font-family: var(--font-mono);
+    text-align: right;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* PRIVACY BLUR & TOAST */
 .privacy-blur {
     filter: blur(5px);
     user-select: none;
@@ -157,9 +154,7 @@
 
 .copyable {
     cursor: pointer;
-    transition:
-        background-color 0.15s ease,
-        color 0.15s ease;
+    transition: all 0.15s ease;
     border-radius: 3px;
     padding: 1px 4px;
 }
@@ -171,15 +166,13 @@
 
 .inline-copy-badge {
     position: fixed;
-    background: var(--bg-elevated);
-    border: 1px solid var(--accent-brand);
-    color: var(--accent-brand);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 4px;
+    background: var(--text-primary);
+    color: var(--bg-surface);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
     pointer-events: none;
     z-index: 9999;
     animation: badgePop 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -188,15 +181,12 @@
 .inline-copy-badge.fade-out {
     opacity: 0;
     transform: translateY(-4px);
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .telemetry-label-prefix {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.72rem;
+    font-weight: 600;
     color: var(--text-muted);
 }
 
@@ -204,7 +194,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: 2px;
 }
 
 @keyframes badgePop {
