@@ -1,9 +1,9 @@
-import { defineConfig, type Plugin } from 'vite';
-import { minify } from 'html-minifier-terser';
+import {defineConfig, type Plugin} from 'vite';
+import {minify} from 'html-minifier-terser';
 
-function inlineCssAndMinifyHtml(): Plugin {
+function inlineAndMinifyHtml(): Plugin {
     return {
-        name: 'inline-css-and-minify-html',
+        name: 'inline-and-minify-html',
         apply: 'build',
         enforce: 'post',
         async transformIndexHtml(html, ctx) {
@@ -13,10 +13,13 @@ function inlineCssAndMinifyHtml(): Plugin {
             for (const [fileName, asset] of Object.entries(ctx.bundle)) {
                 if (fileName.endsWith('.css') && asset.type === 'asset') {
                     const cssContent = typeof asset.source === 'string' ? asset.source : asset.source.toString();
-                    // Match ONLY the local bundled CSS asset chunk, never CDN links like Leaflet
-                    const escaped = fileName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const linkRegex = new RegExp(`<link[^>]*href=["'][^"']*${escaped}["'][^>]*>`, 'i');
-                    inlinedHtml = inlinedHtml.replace(linkRegex, `<style>${cssContent}</style>`);
+
+                    inlinedHtml = inlinedHtml.replace(
+                        new RegExp(`<link[^>]*href="[^"]*${fileName}"[^>]*>`, 'i'),
+                        `<style>${cssContent}</style>`
+                    );
+
+                    delete ctx.bundle[fileName];
                 }
             }
 
@@ -35,13 +38,11 @@ export default defineConfig({
     base: './',
     root: './',
     publicDir: 'public',
-    plugins: [inlineCssAndMinifyHtml()],
-    worker: {
-        format: 'es'
-    },
+    plugins: [inlineAndMinifyHtml()],
     build: {
         outDir: 'dist',
         emptyOutDir: true,
-        target: 'es2022'
+        target: 'es2022',
+        cssCodeSplit: false
     }
 });
