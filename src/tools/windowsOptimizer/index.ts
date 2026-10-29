@@ -114,8 +114,37 @@ function getGpuGuidance(currentGpu: GpuModelSpec): string {
 
 export function initWindowsOptimizer(): void {
     const viewPanel = document.getElementById('view-tool-winopt');
-    if (viewPanel && !viewPanel.hasChildNodes()) {
+    if (!viewPanel) return;
+
+    // 1. Only inject HTML if it hasn't been injected yet
+    if (!viewPanel.querySelector('.winopt-container')) {
         viewPanel.innerHTML = template;
+
+        // 2. Event delegation for CTT Accordions (100% reliable)
+        viewPanel.addEventListener('click', (e: MouseEvent) => {
+            const header = (e.target as HTMLElement | null)?.closest<HTMLButtonElement>('.ctt-accordion-header');
+            if (!header) return;
+
+            const targetId = header.getAttribute('data-target');
+            if (!targetId) return;
+
+            const body = document.getElementById(targetId);
+            const chevron = header.querySelector('.acc-chevron');
+            if (!body) return;
+
+            // Toggle open state
+            const isCurrentlyOpen = header.classList.contains('open') || body.style.display === 'flex';
+
+            if (isCurrentlyOpen) {
+                body.style.display = 'none';
+                header.classList.remove('open');
+                if (chevron) chevron.textContent = '▸';
+            } else {
+                body.style.display = 'flex';
+                header.classList.add('open');
+                if (chevron) chevron.textContent = '▾';
+            }
+        });
     }
 
     const osSelect = document.getElementById('winopt-os-select') as HTMLSelectElement | null;
@@ -954,28 +983,6 @@ export function initWindowsOptimizer(): void {
         preferencesBox.innerHTML = CTT_PREFERENCE_ITEMS.map(renderRow).join('');
         featuresBox.innerHTML = CTT_FEATURE_ITEMS.map(renderRow).join('');
     }
-
-    document.querySelectorAll('.ctt-accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const targetId = header.getAttribute('data-target');
-            if (!targetId) return;
-            const body = document.getElementById(targetId);
-            const chevron = header.querySelector('.acc-chevron');
-
-            if (!body) return;
-            const isOpen = body.style.display !== 'none';
-
-            if (isOpen) {
-                body.style.display = 'none';
-                if (chevron) chevron.textContent = '▸';
-                header.classList.remove('open');
-            } else {
-                body.style.display = 'flex';
-                if (chevron) chevron.textContent = '▾';
-                header.classList.add('open');
-            }
-        });
-    });
 
     function setupCopyButtons(): void {
         document.querySelectorAll('.copy-btn-trigger').forEach(btn => {
