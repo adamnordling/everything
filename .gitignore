@@ -4,6 +4,7 @@
 
 pack-project.sh
 project-bundle.txt
+get-csp-hashes.js
 
 # Logs
 *.log

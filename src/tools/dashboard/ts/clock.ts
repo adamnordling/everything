@@ -22,6 +22,8 @@ export const TIMEZONES: TimezoneOption[] = [
     { label: 'New Zealand (NZST / NZDT)', shortLabel: 'NZST / NZDT (Auckland)', zone: 'Pacific/Auckland' }
 ];
 
+const US_12H_ZONES = new Set(['America/Los_Angeles', 'America/Denver', 'America/Chicago', 'America/New_York']);
+
 export function initClockAndConverter(): void {
     const clockDisplay = document.getElementById('clock-large');
     const dateSubEl = document.getElementById('clock-date-sub');
@@ -41,7 +43,6 @@ export function initClockAndConverter(): void {
     const tzSelect = document.getElementById('tz-picker-select') as HTMLSelectElement | null;
     const tzSaveBtn = document.getElementById('btn-save-tz');
 
-    // CONVERTER DOM ELEMENTS (Must be declared before calling populateSourceSelect)
     const hourInput = document.getElementById('tz-hour-input') as HTMLInputElement | null;
     const minInput = document.getElementById('tz-min-input') as HTMLInputElement | null;
     const formatBtn = document.getElementById('tz-format-toggle') as HTMLButtonElement | null;
@@ -53,7 +54,7 @@ export function initClockAndConverter(): void {
 
     if (activeTzDisplay) activeTzDisplay.textContent = activeTz;
 
-    // 1. One-click copy epoch
+    // 1. Copy epoch
     epochBtn?.addEventListener('click', () => {
         const currentSec = String(Math.floor(Date.now() / 1000));
         void navigator.clipboard.writeText(currentSec);
@@ -79,7 +80,7 @@ export function initClockAndConverter(): void {
         }, 1200);
     });
 
-    // 2. DST Calculation (Compact text for mobile)
+    // 2. DST Calculation
     function calculateDstHorizon(tz: string): string {
         const now = new Date();
         const year = now.getFullYear();
@@ -121,14 +122,7 @@ export function initClockAndConverter(): void {
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const dateStr = `${monthNames[foundDate.getMonth()]} ${foundDate.getDate()}`;
 
-        // Shorter format to fit narrow cards without wrapping
-        const isMobile = window.innerWidth <= 480;
-        if (isMobile) {
-            return isDst ? `Ends in ${daysUntil}d (${dateStr})` : `Starts in ${daysUntil}d (${dateStr})`;
-        }
-        return isDst
-            ? `DST Active · Ends in ${daysUntil}d (${dateStr})`
-            : `Standard · Starts in ${daysUntil}d (${dateStr})`;
+        return isDst ? `Ends in ${daysUntil}d (${dateStr})` : `Starts in ${daysUntil}d (${dateStr})`;
     }
 
     function updateSunsetDisplay(): void {
@@ -162,9 +156,7 @@ export function initClockAndConverter(): void {
     window.addEventListener('sunset-updated', updateSunsetDisplay);
 
     function updateDstDisplay(): void {
-        if (dstVal) {
-            dstVal.textContent = calculateDstHorizon(activeTz);
-        }
+        if (dstVal) dstVal.textContent = calculateDstHorizon(activeTz);
     }
 
     // Modal populate
@@ -259,7 +251,7 @@ export function initClockAndConverter(): void {
     setInterval(tick, 1000);
 
     // =========================================================================
-    // RESPONSIVE CONVERTER DROPDOWN POPULATOR
+    // CONVERTER LOGIC & AUTO 12H/24H SWITCHING
     // =========================================================================
     if (!hourInput || !minInput || !formatBtn || !sourceSelect || !outputBadge) return;
 
@@ -282,51 +274,99 @@ export function initClockAndConverter(): void {
         updateDstDisplay();
     });
 
+    hourInput.addEventListener('focus', () => {
+        hourInput.select();
+    });
+    minInput.addEventListener('focus', () => {
+        minInput.select();
+    });
+
+    function updateFormatModeUI(): void {
+        if (!formatBtn || !hourInput) return;
+        formatBtn.textContent = currentMode;
+        if (currentMode === '24H') {
+            hourInput.min = '0';
+            hourInput.max = '23';
+        } else {
+            hourInput.min = '1';
+            hourInput.max = '12';
+        }
+    }
+
+    function checkTimezoneAutoFormat(zone: string): void {
+        const isUsZone = US_12H_ZONES.has(zone);
+        let h = parseInt(hourInput?.value || '12', 10);
+        if (isNaN(h)) h = 12;
+
+        if (isUsZone && currentMode === '24H') {
+            if (h >= 12) {
+                currentMode = 'PM';
+                h = h === 12 ? 12 : h - 12;
+            } else {
+                currentMode = 'AM';
+                h = h === 0 ? 12 : h;
+            }
+            if (hourInput) hourInput.value = String(h).padStart(2, '0');
+            updateFormatModeUI();
+        } else if (!isUsZone && currentMode !== '24H') {
+            if (currentMode === 'PM' && h < 12) h += 12;
+            if (currentMode === 'AM' && h === 12) h = 0;
+            currentMode = '24H';
+            if (hourInput) hourInput.value = String(h).padStart(2, '0');
+            updateFormatModeUI();
+        }
+    }
+
     const nowInSource = new Date(new Date().toLocaleString('en-US', { timeZone: sourceSelect.value }));
-    hourInput.value = String(nowInSource.getHours()).padStart(2, '0');
+    let initialH = nowInSource.getHours();
     minInput.value = String(nowInSource.getMinutes()).padStart(2, '0');
 
-    hourInput.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            e.preventDefault();
-            let val = parseInt(hourInput.value, 10);
-            if (isNaN(val)) val = currentMode === '24H' ? 0 : 12;
-            val = e.key === 'ArrowUp' ? val + 1 : val - 1;
+    if (US_12H_ZONES.has(sourceSelect.value)) {
+        currentMode = initialH >= 12 ? 'PM' : 'AM';
+        initialH = initialH % 12 || 12;
+    } else {
+        currentMode = '24H';
+    }
+    hourInput.value = String(initialH).padStart(2, '0');
+    updateFormatModeUI();
+
+    hourInput.addEventListener('input', () => {
+        const raw = hourInput.value.replace(/\D/g, '');
+
+        if (raw.length >= 3) {
+            const hStr = raw.length === 4 ? raw.slice(0, 2) : raw.slice(0, 1);
+            const mStr = raw.length === 4 ? raw.slice(2, 4) : raw.slice(1, 3);
+            let hVal = parseInt(hStr, 10);
+            let mVal = parseInt(mStr, 10);
 
             if (currentMode === '24H') {
-                if (val > 23) val = 0;
-                if (val < 0) val = 23;
+                if (hVal > 23) hVal = 23;
             } else {
-                if (val > 12) val = 1;
-                if (val < 1) val = 12;
+                if (hVal > 12) hVal = 12;
+                if (hVal < 1) hVal = 1;
             }
-            hourInput.value = String(val).padStart(2, '0');
-            calculateConversion();
-        }
-    });
+            if (mVal > 59) mVal = 59;
 
-    minInput.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            e.preventDefault();
-            let val = parseInt(minInput.value, 10);
-            if (isNaN(val)) val = 0;
-            val = e.key === 'ArrowUp' ? (val + 1) % 60 : (val - 1 + 60) % 60;
-            minInput.value = String(val).padStart(2, '0');
+            hourInput.value = String(hVal).padStart(2, '0');
+            minInput.value = String(mVal).padStart(2, '0');
+            minInput.focus();
+            minInput.select();
             calculateConversion();
+            return;
         }
-    });
 
-    hourInput.addEventListener('input', (e: Event) => {
-        const val = parseInt(hourInput.value, 10);
-        if (!isNaN(val)) {
-            if (currentMode === '24H' && val > 23) hourInput.value = '23';
-            else if (currentMode !== '24H' && val > 12) hourInput.value = '12';
-        }
-        const inputEvent = e as InputEvent;
-        if (inputEvent.inputType === 'insertText' && hourInput.value.length >= 2) {
+        if (raw.length === 2) {
+            let hVal = parseInt(raw, 10);
+            if (currentMode === '24H') {
+                if (hVal > 23) hVal = 23;
+            } else {
+                if (hVal > 12) hVal = 12;
+            }
+            hourInput.value = String(hVal).padStart(2, '0');
             minInput.focus();
             minInput.select();
         }
+
         calculateConversion();
     });
 
@@ -336,22 +376,10 @@ export function initClockAndConverter(): void {
         calculateConversion();
     });
 
-    hourInput.addEventListener('blur', () => {
-        let val = parseInt(hourInput.value, 10);
-        if (isNaN(val)) val = currentMode === '24H' ? 0 : 12;
-        hourInput.value = String(val).padStart(2, '0');
+    sourceSelect.addEventListener('change', () => {
+        checkTimezoneAutoFormat(sourceSelect.value);
         calculateConversion();
     });
-
-    minInput.addEventListener('blur', () => {
-        let val = parseInt(minInput.value, 10);
-        if (isNaN(val) || val < 0) val = 0;
-        if (val > 59) val = 59;
-        minInput.value = String(val).padStart(2, '0');
-        calculateConversion();
-    });
-
-    sourceSelect.addEventListener('change', calculateConversion);
 
     formatBtn.addEventListener('click', () => {
         let h = parseInt(hourInput.value, 10);
@@ -360,23 +388,26 @@ export function initClockAndConverter(): void {
         if (currentMode === '24H') {
             currentMode = 'AM';
             h = h % 12 || 12;
-            hourInput.min = '1';
-            hourInput.max = '12';
         } else if (currentMode === 'AM') {
             currentMode = 'PM';
-            hourInput.min = '1';
-            hourInput.max = '12';
+            h = h % 12 || 12;
         } else {
             currentMode = '24H';
             if (h < 12) h += 12;
-            hourInput.min = '0';
-            hourInput.max = '23';
         }
 
         hourInput.value = String(h).padStart(2, '0');
-        formatBtn.textContent = currentMode;
+        updateFormatModeUI();
         calculateConversion();
     });
+
+    // Fix 407:16 - strictly use template literals instead of number + string
+    function getOrdinal(n: number): string {
+        const s = ['th', 'st', 'nd', 'rd'];
+        const v = n % 100;
+        const suffix = s[(v - 20) % 10] || s[v] || s[0] || 'th';
+        return `${n}${suffix}`;
+    }
 
     function calculateConversion(): void {
         if (!hourInput || !minInput || !sourceSelect || !outputBadge) return;
@@ -406,10 +437,23 @@ export function initClockAndConverter(): void {
         const sourceZone = sourceSelect.value;
         const now = new Date();
 
+        const sourceDateParts = new Intl.DateTimeFormat('en-US', {
+            timeZone: sourceZone,
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric'
+        }).formatToParts(now);
+
+        // Fix 452-454: explicitly allow undefined so ?? is recognized as necessary
+        const partMap: Record<string, number | undefined> = {};
+        sourceDateParts.forEach(p => {
+            if (p.type !== 'literal') partMap[p.type] = parseInt(p.value, 10);
+        });
+
         const targetUtcDate = convertWallTimeToUTC(
-            now.getFullYear(),
-            now.getMonth() + 1,
-            now.getDate(),
+            partMap.year ?? now.getFullYear(),
+            partMap.month ?? now.getMonth() + 1,
+            partMap.day ?? now.getDate(),
             rawH,
             m,
             sourceZone
@@ -432,18 +476,51 @@ export function initClockAndConverter(): void {
         const time24 = localFormatter24.format(targetUtcDate);
         const time12 = localFormatter12.format(targetUtcDate);
 
-        const sourceDay = now.getDate();
-        const localDay = new Date(targetUtcDate.toLocaleString('en-US', { timeZone: activeTz })).getDate();
-        let dayNote = 'Same Day';
-        if (localDay > sourceDay) dayNote = '+1 Day';
-        if (localDay < sourceDay) dayNote = '-1 Day';
+        const localMonthName = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: activeTz }).format(
+            targetUtcDate
+        );
+        const localDayNum = parseInt(
+            new Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: activeTz }).format(targetUtcDate),
+            10
+        );
+        const ordinalDate = `${localMonthName} ${getOrdinal(localDayNum)}`;
+
+        const nowDayNum = parseInt(
+            new Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: activeTz }).format(now),
+            10
+        );
+        let dayNote = 'Today';
+        if (localDayNum > nowDayNum) dayNote = 'Tomorrow';
+        else if (localDayNum < nowDayNum) dayNote = 'Yesterday';
+
+        const diffMs = targetUtcDate.getTime() - now.getTime();
+        // Fix 491: declare without unused default assignment
+        let relativeText: string;
+        if (Math.abs(diffMs) < 60000) {
+            relativeText = 'Right now';
+        } else if (diffMs > 0) {
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffMins = Math.floor((diffMs % 3600000) / 60000);
+            if (diffHours > 0 && diffMins > 0) relativeText = `in ${diffHours}h ${diffMins}m`;
+            else if (diffHours > 0) relativeText = `in ${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+            else relativeText = `in ${diffMins} min${diffMins > 1 ? 's' : ''}`;
+        } else {
+            const pastMs = Math.abs(diffMs);
+            const pastHours = Math.floor(pastMs / 3600000);
+            const pastMins = Math.floor((pastMs % 3600000) / 60000);
+            if (pastHours > 0) relativeText = `${pastHours}h ${pastMins}m ago`;
+            else relativeText = `${pastMins} min${pastMins > 1 ? 's' : ''} ago`;
+        }
 
         outputBadge.innerHTML = `
-            <div class="converter-result-box">
+            <div class="converter-result-box" style="flex-wrap: wrap; gap: 6px;">
                 <span class="converter-result-label">Local:</span>
                 <span class="converter-result-value">${time24}</span>
                 <span class="converter-result-secondary">(${time12})</span>
-                <span class="pill-badge">${dayNote}</span>
+                <span style="font-weight: 600; color: var(--text-primary); margin-left: 2px;">${ordinalDate}</span>
+                <span class="pill-badge" style="background: var(--accent-brand-subtle); color: var(--accent-brand);">
+                    ${dayNote} · ${relativeText}
+                </span>
             </div>
         `;
     }

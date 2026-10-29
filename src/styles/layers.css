@@ -1,0 +1,6 @@
+/* =============================================================================
+   MASTER CSS LAYER CASCADE
+   Precedence runs strictly from lowest to highest specificity:
+   reset < base < layout < components < utilities
+   ============================================================================= */
+@layer reset, base, layout, components, utilities;

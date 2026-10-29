@@ -17,7 +17,7 @@ import {
     CTT_PREFERENCE_ITEMS,
     CTT_FEATURE_ITEMS
 } from './cttBlueprint';
-import { WINDOWS_OPTIMIZER_HTML } from './template';
+import template from './windowsView.html?raw';
 
 const STORAGE_KEY = 'everything_winopt_profile_v10';
 
@@ -114,8 +114,8 @@ function getGpuGuidance(currentGpu: GpuModelSpec): string {
 
 export function initWindowsOptimizer(): void {
     const viewPanel = document.getElementById('view-tool-winopt');
-    if (viewPanel) {
-        viewPanel.innerHTML = WINDOWS_OPTIMIZER_HTML;
+    if (viewPanel && !viewPanel.hasChildNodes()) {
+        viewPanel.innerHTML = template;
     }
 
     const osSelect = document.getElementById('winopt-os-select') as HTMLSelectElement | null;

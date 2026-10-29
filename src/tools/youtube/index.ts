@@ -1,6 +1,8 @@
 // =============================================================================
 // YOUTUBE PRECISION STUDIO & DOWNLOAD ENGINE
 // =============================================================================
+import { req } from '../../core/dom';
+import template from './youtubeView.html?raw';
 
 export interface YtStudioState {
     url: string;
@@ -45,6 +47,11 @@ const DEFAULT_STATE: YtStudioState = {
 
 export function initYoutube(): void {
     // Load persisted state or fallback
+    const stage = req('#view-tool-youtube');
+    if (!stage.hasChildNodes()) {
+        stage.innerHTML = template;
+    }
+
     let state: YtStudioState = { ...DEFAULT_STATE };
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {

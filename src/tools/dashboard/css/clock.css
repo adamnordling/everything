@@ -78,10 +78,20 @@
     gap: 8px;
 }
 
+/* Fix .copyable padding override */
+.ambient-row-btn.copyable {
+    padding: 5px 6px !important;
+}
+
 .ambient-bullet {
     font-size: 0.85rem;
     line-height: 1;
     font-weight: 700;
+    width: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .ambient-label {

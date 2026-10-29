@@ -72,15 +72,6 @@
             crossorigin=""
         ></script>
 
-        <script>
-            (function () {
-                const s = localStorage.getItem('app_theme');
-                if (s === 'dark') {
-                    document.documentElement.classList.add('dark-theme');
-                }
-            })();
-        </script>
-
         <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
@@ -137,7 +128,7 @@
                     </svg>
                 </button>
                 <div class="mobile-brand">
-                    <div class="brand-icon-box" style="width: 28px; height: 28px; border-radius: 8px">
+                    <div class="brand-icon-box sm">
                         <svg
                             width="15"
                             height="15"
@@ -151,9 +142,9 @@
                             <polyline points="2 12 12 17 22 12"></polyline>
                         </svg>
                     </div>
-                    <span class="brand-title" style="font-size: 0.95rem">Everything</span>
+                    <span class="brand-title">Everything</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px">
+                <div class="mobile-actions">
                     <button
                         type="button"
                         class="icon-action-btn mobile-theme-btn"
@@ -379,7 +370,7 @@
                             >
                                 Import
                             </button>
-                            <input type="file" id="backup-file-input" accept=".json" style="display: none" />
+                            <input type="file" id="backup-file-input" accept=".json" class="visually-hidden" />
                         </div>
                     </div>
                     <button
@@ -414,9 +405,6 @@
                          VIEW 1: FRAMELESS DASHBOARD (2 HARMONIZED TIERS WITH DIVIDERS)
                          ========================================================================= -->
                     <div class="view-panel" id="view-dashboard">
-                        <!-- HEADER WITH ELEGANT DIVIDER -->
-
-
                         <!-- TIER 1: SYSTEM, CHRONOMETRY & CALENDAR (RAD 1) -->
                         <section class="dashboard-tier tier-top" aria-label="System Time, Telemetry and Calendar">
                             <!-- VÄNSTER: KLOCKA & TELEMETRI -->
@@ -441,7 +429,7 @@
                                             title="Click to copy Unix Timestamp"
                                         >
                                             <div class="ambient-row-left">
-                                                <span class="ambient-bullet">#</span>
+                                                <span class="ambient-bullet text-mint">#</span>
                                                 <span class="ambient-label">UNIX EPOCH</span>
                                             </div>
                                             <div class="ambient-row-right">
@@ -454,9 +442,7 @@
 
                                         <div class="ambient-row" id="clock-dst-card">
                                             <div class="ambient-row-left">
-                                                <span class="ambient-bullet" style="color: var(--accent-indigo)"
-                                                    >◐</span
-                                                >
+                                                <span class="ambient-bullet text-indigo">◐</span>
                                                 <span class="ambient-label">DAYLIGHT SAVING</span>
                                             </div>
                                             <div class="ambient-row-right">
@@ -466,7 +452,7 @@
 
                                         <div class="ambient-row" id="clock-sunset-card">
                                             <div class="ambient-row-left">
-                                                <span class="ambient-bullet" style="color: var(--accent-amber)">☀</span>
+                                                <span class="ambient-bullet text-amber">☀</span>
                                                 <span class="ambient-label">SOLAR HORIZON</span>
                                             </div>
                                             <div class="ambient-row-right">
@@ -523,7 +509,7 @@
                                             </button>
                                         </div>
                                         <div class="year-progress-bar">
-                                            <div class="year-progress-fill" id="year-fill-bar" style="width: 0%"></div>
+                                            <div class="year-progress-fill" id="year-fill-bar"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -618,7 +604,7 @@
                                 </div>
                             </div>
 
-                            <!-- HÖGER: KOMPAKT KALENDER (SLUTAR PRECIS VID DELNINGSLINJEN) -->
+                            <!-- HÖGER: KOMPAKT KALENDER -->
                             <div class="tier-right-stream">
                                 <div class="calendar-agenda-item">
                                     <div class="dash-block-header">
@@ -699,7 +685,7 @@
                             </div>
                         </section>
 
-                        <!-- TIER 2: ATMOSPHERE, SCRATCHPAD & TASKS (RAD 2 - DEADLINES PÅ SAMMA RAD SOM SCRATCHPAD) -->
+                        <!-- TIER 2: ATMOSPHERE, SCRATCHPAD & TASKS (RAD 2) -->
                         <section
                             class="dashboard-tier tier-bottom"
                             aria-label="Environment, Buffer, Deadlines and Daily Tasks"
@@ -852,7 +838,7 @@
 
                             <!-- HÖGER: DEADLINES, DAILY TASKS & MORNING ROUTINE -->
                             <div class="tier-right-stream dash-seamless-agenda">
-                                <!-- DEADLINES (STARTAR DIREKT PÅ SAMMA HORISONTELLA RAD SOM SCRATCHPAD) -->
+                                <!-- DEADLINES -->
                                 <div class="agenda-item deadlines-agenda-item">
                                     <div class="dash-block-header">
                                         <div class="dash-header-title">
@@ -928,10 +914,10 @@
                         </section>
                     </div>
 
-                    <!-- VIEW 2: YOUTUBE STUDIO -->
+                    <!-- VIEW 2: YOUTUBE STUDIO (Loaded dynamically via router) -->
                     <div class="view-panel" id="view-tool-youtube" style="display: none"></div>
 
-                    <!-- VIEW 3: WINDOWS PLAYBOOK -->
+                    <!-- VIEW 3: WINDOWS PLAYBOOK (Loaded dynamically via router) -->
                     <div class="view-panel" id="view-tool-winopt" style="display: none"></div>
 
                     <!-- MODAL: WORLD MAP -->
@@ -943,7 +929,7 @@
                             </div>
                             <div class="modal-body">
                                 <div id="real-weather-map" class="real-map-container"></div>
-                                <div class="coord-input-row" style="margin-top: 10px">
+                                <div class="coord-input-row">
                                     <div class="coord-field">
                                         <label for="coord-lat-input">Latitude:</label>
                                         <input
@@ -965,7 +951,7 @@
                                         />
                                     </div>
                                 </div>
-                                <div class="coord-field" style="margin-top: 8px">
+                                <div class="coord-field spaced">
                                     <label for="coord-name-input">Location Name:</label>
                                     <input
                                         type="text"
@@ -991,7 +977,7 @@
                                 <button type="button" class="icon-action-btn" id="modal-tz-close">&times;</button>
                             </div>
                             <div class="modal-body">
-                                <select id="tz-picker-select" class="input-field" style="width: 100%"></select>
+                                <select id="tz-picker-select" class="input-field"></select>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn-action-primary" id="btn-save-tz">

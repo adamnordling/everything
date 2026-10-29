@@ -1,16 +1,19 @@
-/* Establish layer precedence from lowest to highest specificity */
-@layer reset, base, layout, components;
+/* 1. Define Layer Precedence */
+@import './layers.css';
 
-/* Import each modular file into its designated CSS layer */
-@import './reset.css' layer(reset);
-@import './variables.css' layer(base);
-@import './layout.css' layer(layout);
+/* 2. Global Design System */
+@import './variables.css';
+@import './reset.css';
+@import './layout.css';
+@import './components.css';
 
-@import './components.css' layer(components);
-@import './clock.css' layer(components);
-@import './telemetry.css' layer(components);
-@import './weather.css' layer(components);
-@import './calendar.css' layer(components);
-@import './tasks.css' layer(components);
-@import './youtube.css' layer(components);
-@import './windowsOptimizer/index.css' layer(components);
+/* 3. Dashboard Tool Styles */
+@import '../tools/dashboard/css/clock.css';
+@import '../tools/dashboard/css/telemetry.css';
+@import '../tools/dashboard/css/weather.css';
+@import '../tools/dashboard/css/calendar.css';
+@import '../tools/dashboard/css/tasks.css';
+
+/* 4. Standalone Tool Styles */
+@import '../tools/youtube/youtube.css';
+@import '../tools/windowsOptimizer/windows.css';

@@ -1,77 +1,78 @@
-:root {
-    /* Pure, seamless canvas - Inga grå bakgrundsblock */
-    --bg-base: #ffffff;
-    --bg-surface: #ffffff;
-    --bg-card: #ffffff;
-    --bg-elevated: #f4f6fb;
-    --bg-subtle: #f9fafd;
-    --bg-hover: #f3f5fd;
+@layer base {
+    :root {
+        /* Canvas Surfaces */
+        --bg-base: #ffffff;
+        --bg-surface: #ffffff;
+        --bg-card: #ffffff;
+        --bg-elevated: #f4f6fb;
+        --bg-subtle: #f9fafd;
+        --bg-hover: #f3f5fd;
 
-    /* Subtila, nästan osynliga hairlines */
-    --border-subtle: #edf0f5;
-    --border-bold: #e0e4ed;
+        /* Hairlines */
+        --border-subtle: #edf0f5;
+        --border-bold: #e0e4ed;
 
-    /* Typografi med ren kontrast */
-    --text-primary: #151928;
-    --text-secondary: #56607a;
-    --text-muted: #8b95ac;
+        /* Typography */
+        --text-primary: #151928;
+        --text-secondary: #56607a;
+        --text-muted: #8b95ac;
 
-    /* Royal Indigo Accent */
-    --accent-brand: #4f5dfa;
-    --accent-brand-hover: #3d4be4;
-    --accent-brand-glow: rgba(79, 93, 250, 0.14);
-    --accent-brand-subtle: #eff2fe;
+        /* Accents */
+        --accent-brand: #4f5dfa;
+        --accent-brand-hover: #3d4be4;
+        --accent-brand-glow: rgba(79, 93, 250, 0.14);
+        --accent-brand-subtle: #eff2fe;
 
-    /* Secondary Accents */
-    --accent-indigo: #4f5dfa;
-    --accent-periwinkle: #7b79ff;
-    --accent-mint: #10b981;
-    --accent-emerald: #10b981;
-    --accent-amber: #f59e0b;
-    --accent-sky: #06b6d4;
-    --accent-rose: #f43f5e;
-    --accent-violet: #8b5cf6;
+        --accent-indigo: #4f5dfa;
+        --accent-periwinkle: #7b79ff;
+        --accent-mint: #10b981;
+        --accent-emerald: #10b981;
+        --accent-amber: #f59e0b;
+        --accent-sky: #06b6d4;
+        --accent-rose: #f43f5e;
+        --accent-violet: #8b5cf6;
 
-    /* Snabb systemfont-stack */
-    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+        /* Fonts */
+        --font-sans:
+            system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
 
-    /* Inga lådor eller skuggor */
-    --card-radius: 8px;
-    --card-shadow: none;
-    --card-shadow-hover: none;
-}
+        --card-radius: 8px;
+        --card-shadow: none;
+        --card-shadow-hover: none;
+    }
 
-/* Sömlös Dark Mode */
-html.dark-theme {
-    --bg-base: #0c0f17;
-    --bg-surface: #0c0f17;
-    --bg-card: #0c0f17;
-    --bg-elevated: #161a26;
-    --bg-subtle: #111420;
-    --bg-hover: #181d2c;
+    /* Dark Mode */
+    html.dark-theme {
+        --bg-base: #0c0f17;
+        --bg-surface: #0c0f17;
+        --bg-card: #0c0f17;
+        --bg-elevated: #161a26;
+        --bg-subtle: #111420;
+        --bg-hover: #181d2c;
 
-    --border-subtle: rgba(255, 255, 255, 0.07);
-    --border-bold: rgba(255, 255, 255, 0.12);
+        --border-subtle: rgba(255, 255, 255, 0.07);
+        --border-bold: rgba(255, 255, 255, 0.12);
 
-    --text-primary: #f2f4f8;
-    --text-secondary: #98a1b6;
-    --text-muted: #616a82;
+        --text-primary: #f2f4f8;
+        --text-secondary: #98a1b6;
+        --text-muted: #616a82;
 
-    --accent-brand: #6366f1;
-    --accent-brand-hover: #4f5dfa;
-    --accent-brand-glow: rgba(99, 102, 241, 0.2);
-    --accent-brand-subtle: rgba(99, 102, 241, 0.12);
+        --accent-brand: #6366f1;
+        --accent-brand-hover: #4f5dfa;
+        --accent-brand-glow: rgba(99, 102, 241, 0.2);
+        --accent-brand-subtle: rgba(99, 102, 241, 0.12);
 
-    --accent-indigo: #6366f1;
-    --accent-periwinkle: #918eff;
-    --accent-mint: #34d399;
-    --accent-emerald: #34d399;
-    --accent-amber: #fbbf24;
-    --accent-sky: #22d3ee;
-    --accent-rose: #fb7185;
-    --accent-violet: #a78bfa;
+        --accent-indigo: #6366f1;
+        --accent-periwinkle: #918eff;
+        --accent-mint: #34d399;
+        --accent-emerald: #34d399;
+        --accent-amber: #fbbf24;
+        --accent-sky: #22d3ee;
+        --accent-rose: #fb7185;
+        --accent-violet: #a78bfa;
 
-    --card-shadow: none;
-    --card-shadow-hover: none;
+        --card-shadow: none;
+        --card-shadow-hover: none;
+    }
 }

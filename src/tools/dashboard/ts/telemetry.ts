@@ -62,7 +62,7 @@ export function initSystemIntel(): void {
     // -------------------------------------------------------------------------
     // 1. ONE-CLICK CLIPBOARD COPY WITH TOAST NOTIFICATION
     // -------------------------------------------------------------------------
-    // IN src/modules/systemIntel.ts (Section 1: Clipboard Copy):
+    // IN src/modules/telemetry.ts (Section 1: Clipboard Copy):
 
     function showCopyPopup(target: HTMLElement): void {
         document.querySelectorAll('.inline-copy-badge').forEach(el => {
