@@ -93,7 +93,6 @@
     filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
 }
 
-/* SÖMLÖS 4-METRICS RAD */
 .metrics-quad {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -124,7 +123,6 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* 5-DAY STRIP */
 .five-day-strip {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -154,7 +152,6 @@
     letter-spacing: 0.04em;
 }
 
-/* 24-HOUR TRAJECTORY */
 .hourly-strip {
     display: flex;
     gap: 8px;
@@ -197,15 +194,107 @@
     overflow: hidden;
 }
 
-@media (max-width: 600px) {
+/* =============================================================================
+   MOBILE COMPACT WEATHER (<= 768px)
+   ============================================================================= */
+@media (max-width: 768px) {
+    /* Hide sun arc curve and 5-day strip to save vertical space */
+    .sun-arc-box,
+    .five-day-strip {
+        display: none !important;
+    }
+
+    /* Convert weather reading to a clean two-column grid on mobile */
+    .weather-block {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-areas:
+            'header header'
+            'temp-row uv-box'
+            'trajectory trajectory' !important;
+        row-gap: 8px !important;
+        column-gap: 12px !important;
+    }
+
+    .weather-card-header {
+        grid-area: header !important;
+        margin: 0 !important;
+    }
+
+    /* Left: Temperature + Condition on one line */
     .weather-top-split {
-        grid-template-columns: 1fr;
-        text-align: center;
+        grid-area: temp-row !important;
+        display: flex !important;
+        align-items: center !important;
+        margin: 0 !important;
     }
+
     .weather-reading-block {
-        align-items: center;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: baseline !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
     }
+
+    .weather-degrees {
+        font-size: 1.35rem !important;
+        font-weight: 700 !important;
+    }
+
+    .weather-deg-symbol {
+        font-size: 0.9rem !important;
+    }
+
+    .wx-condition-container {
+        font-size: 0.76rem !important;
+    }
+
+    .wx-condition-container svg {
+        width: 15px !important;
+        height: 15px !important;
+    }
+
+    /* Right: UV Index on the EXACT same row */
     .metrics-quad {
-        grid-template-columns: 1fr 1fr;
+        grid-area: uv-box !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 !important;
+        border: none !important;
+        margin: 0 !important;
+        align-self: center !important;
+    }
+
+    .metrics-quad .metric-box:nth-child(n + 2) {
+        display: none !important;
+    }
+
+    .metrics-quad .metric-box:first-child {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 5px !important;
+        background: var(--bg-elevated) !important;
+        padding: 4px 8px !important;
+        border-radius: 6px !important;
+        border: 1px solid var(--border-subtle) !important;
+    }
+
+    .metric-sub-label {
+        font-size: 0.62rem !important;
+        color: var(--text-muted) !important;
+        margin: 0 !important;
+    }
+
+    .metric-main-val {
+        font-size: 0.74rem !important;
+        color: var(--accent-amber) !important;
+        font-weight: 700 !important;
+    }
+
+    /* Bottom: Full-width 24-Hour Trajectory */
+    .weather-block > div:last-child {
+        grid-area: trajectory !important;
     }
 }

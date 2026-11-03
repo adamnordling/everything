@@ -17,7 +17,7 @@
 }
 
 .time-digits-display {
-    font-size: 2.85rem;
+    font-size: clamp(2rem, 6.5vw, 2.85rem);
     font-weight: 700;
     letter-spacing: -0.025em;
     line-height: 1;
@@ -39,7 +39,7 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* SÖMLÖS AMBIENT-LISTA UTAN LÅDOR */
+/* SÖMLÖS AMBIENT-LISTA */
 .clock-ambient-stack {
     display: flex;
     flex-direction: column;
@@ -78,7 +78,6 @@
     gap: 8px;
 }
 
-/* Fix .copyable padding override */
 .ambient-row-btn.copyable {
     padding: 5px 6px !important;
 }
@@ -124,7 +123,7 @@
     font-weight: 600;
 }
 
-/* MINIMALISTISK KONVERTERARE */
+/* KONVERTERARE */
 .converter-stacked-module {
     padding: 4px 0;
     display: flex;
@@ -266,16 +265,17 @@
     transition: width 0.3s ease;
 }
 
+/* RESPONSIVE INPUTS FOR MOBILE */
 @media (max-width: 600px) {
     .converter-inputs-bar {
-        display: grid;
-        grid-template-columns: auto auto auto auto 1fr;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
         gap: 6px;
     }
-    .converter-label {
-        grid-column: 1 / -1;
-    }
     .select-mini-tz {
-        grid-column: 5;
+        width: 100%;
+        flex: 1 1 100%;
+        margin-top: 4px;
     }
 }
