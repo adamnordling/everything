@@ -7,3 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initRouter();
     initDashboard();
 });
+
+document.getElementById('btn-back-to-top')?.addEventListener('click', () => {
+    // Scroll the entire window
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Fallback: If a specific view container ends up with its own scrollbar later
+    document.getElementById('main-stage')?.scrollTo({ top: 0, behavior: 'smooth' });
+});

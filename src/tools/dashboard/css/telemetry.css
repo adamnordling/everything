@@ -55,11 +55,16 @@
 
 .telemetry-ping {
     font-size: 0.75rem;
-    color: var(--accent-emerald);
-    background: rgba(16, 185, 129, 0.1);
+    color: #047857; /* 5.2:1 contrast ratio on light mode (Passes WCAG AA!) */
+    background: rgba(4, 120, 87, 0.1);
     padding: 1px 6px;
     border-radius: 4px;
-    font-weight: 600;
+    font-weight: 700;
+}
+
+html.dark-theme .telemetry-ping {
+    color: #34d399; /* 10.5:1 contrast ratio on dark mode */
+    background: rgba(52, 211, 153, 0.12);
 }
 
 .telemetry-isp {

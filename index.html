@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>Everything — Local-First Developer &amp; System Suite | Adam Nordling</title>
+        <title>Everything: Developer &amp; Utility Suite</title>
         <meta
             name="description"
             content="High-density, local-first utility suite for developers and power users. Workstation telemetry, YouTube stream slicing, Swedish calendar intel, and Windows optimization playbook with zero tracking."
@@ -26,7 +26,7 @@
         <link rel="manifest" href="/manifest.webmanifest" />
 
         <meta property="og:site_name" content="Everything · Adam Nordling" />
-        <meta property="og:title" content="Everything — Local-First Developer &amp; System Suite" />
+        <meta property="og:title" content="Everything: Developer &amp; Utility Suite" />
         <meta
             property="og:description"
             content="Zero-telemetry client-side dashboard, workstation hardware telemetry, precision stream extraction, and OS tuning."
@@ -46,7 +46,7 @@
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@adamnordling" />
         <meta name="twitter:creator" content="@adamnordling" />
-        <meta name="twitter:title" content="Everything — Local-First Developer &amp; System Suite" />
+        <meta name="twitter:title" content="Everything: Developer &amp; Utility Suite" />
         <meta
             name="twitter:description"
             content="Zero-telemetry client-side dashboard, workstation hardware telemetry, precision stream extraction, and OS tuning."
@@ -352,61 +352,6 @@
                         </span>
                         <span>Validators &amp; Encoders</span>
                         <span class="pill-badge pill-soon">Soon</span>
-                    </button>
-                </div>
-
-                <div class="sidebar-footer">
-                    <div class="footer-client-group">
-                        <span class="client-side-tag">100% Client-Side</span>
-                        <div class="backup-actions">
-                            <button
-                                type="button"
-                                class="footer-text-btn"
-                                id="btn-export-data"
-                                title="Export all dashboard data to JSON"
-                            >
-                                Export
-                            </button>
-                            <span class="footer-dot">·</span>
-                            <button
-                                type="button"
-                                class="footer-text-btn"
-                                id="btn-import-data"
-                                title="Import data from JSON backup"
-                            >
-                                Import
-                            </button>
-                            <input
-                                type="file"
-                                id="backup-file-input"
-                                accept=".json"
-                                class="visually-hidden"
-                                aria-label="Upload JSON backup file to restore"
-                            />
-                        </div>
-                    </div>
-                    <button
-                        type="button"
-                        class="icon-action-btn footer-theme-toggle"
-                        id="theme-btn"
-                        aria-label="Toggle theme"
-                    >
-                        <svg
-                            width="15"
-                            height="15"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                        </svg>
                     </button>
                 </div>
             </aside>
@@ -1029,6 +974,261 @@
             </main>
         </div>
 
+        <footer class="app-workstation-footer">
+            <div class="footer-content-wrapper">
+                <div class="footer-primary-row">
+                    <!-- Left: Brand & Local-First Philosophy -->
+                    <div class="footer-brand-info">
+                        <div class="footer-title-line">
+                            <div class="brand-icon-box sm">
+                                <svg
+                                    width="15"
+                                    height="15"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2.5"
+                                >
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                            </div>
+                            <span class="footer-app-title">Everything</span>
+                            <span class="pill-badge">100% Client-Side</span>
+                            <span
+                                class="pill-badge"
+                                style="
+                                    background: transparent;
+                                    border: 1px solid var(--border-subtle);
+                                    color: var(--text-muted);
+                                "
+                                >v1.0.0</span
+                            >
+                            <span
+                                class="pill-badge"
+                                style="
+                                    background: transparent;
+                                    border: 1px dashed var(--border-bold);
+                                    color: var(--text-muted);
+                                "
+                                >Built with Vite + TS</span
+                            >
+                        </div>
+                        <p class="footer-tagline">
+                            Zero analytics, zero tracking cookies, zero remote data harvesting. All state persists
+                            strictly inside your browser sandbox.
+                        </p>
+
+                        <!-- Theme Toggle & Status Indicator -->
+                        <div style="margin-top: 10px; display: flex; align-items: center; gap: 12px">
+                            <button
+                                type="button"
+                                class="btn-action-pill"
+                                id="theme-btn"
+                                aria-label="Toggle theme"
+                                title="Toggle Dark/Light Mode"
+                            >
+                                <svg
+                                    width="13"
+                                    height="13"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <circle cx="12" cy="12" r="5"></circle>
+                                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                                </svg>
+                                <span>Toggle Theme</span>
+                            </button>
+                            <span
+                                style="
+                                    font-family: var(--font-mono);
+                                    font-size: 0.72rem;
+                                    color: var(--text-muted);
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 6px;
+                                "
+                            >
+                                <span
+                                    style="
+                                        display: inline-block;
+                                        width: 6px;
+                                        height: 6px;
+                                        background-color: var(--accent-mint);
+                                        border-radius: 50%;
+                                        box-shadow: 0 0 6px var(--accent-mint);
+                                    "
+                                ></span>
+                                Local Operations Ready
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Middle: Data Backup Hub -->
+                    <div class="footer-data-hub">
+                        <span class="footer-hub-label">LOCAL DATA STORAGE</span>
+                        <div class="backup-actions-bar">
+                            <button
+                                type="button"
+                                class="btn-action-pill"
+                                id="btn-export-data"
+                                title="Export all dashboard data to JSON"
+                            >
+                                <svg
+                                    width="13"
+                                    height="13"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span>Export JSON</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="btn-action-pill"
+                                id="btn-import-data"
+                                title="Import data from JSON backup"
+                            >
+                                <svg
+                                    width="13"
+                                    height="13"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <span>Import JSON</span>
+                            </button>
+                            <input
+                                type="file"
+                                id="backup-file-input"
+                                accept=".json"
+                                class="visually-hidden"
+                                aria-label="Upload JSON backup file to restore"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Right: Navigation & External Links -->
+                    <div class="footer-links-col">
+                        <span class="footer-hub-label">CONNECTIONS &amp; DOCS</span>
+                        <div class="footer-icons-list">
+                            <a href="https://adamnordling.se/" target="_blank" rel="noopener" class="footer-icon-link">
+                                <svg
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                                <span>Portfolio</span>
+                            </a>
+                            <a
+                                href="https://github.com/adamnordling/everything"
+                                target="_blank"
+                                rel="noopener"
+                                class="footer-icon-link"
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                                    ></path>
+                                </svg>
+                                <span>GitHub</span>
+                            </a>
+                            <a
+                                href="https://www.linkedin.com/in/adamnordling"
+                                target="_blank"
+                                rel="noopener"
+                                class="footer-icon-link"
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                                    />
+                                </svg>
+                                <span>LinkedIn</span>
+                            </a>
+                            <!-- Restored GDPR/Privacy Link -->
+                            <a href="/privacy.html" class="footer-icon-link">
+                                <svg
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                                <span>Privacy &amp; GDPR</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Row: Copyright & Top action -->
+                <div class="footer-secondary-row">
+                    <div class="footer-copy-left">
+                        <span
+                            >&copy; 2026
+                            <a href="https://adamnordling.se/" target="_blank" rel="noopener">Adam Nordling</a></span
+                        >
+                        <span class="footer-dot">·</span>
+                        <span
+                            >Released under the
+                            <a
+                                href="https://github.com/adamnordling/everything/blob/main/LICENSE"
+                                target="_blank"
+                                rel="noopener"
+                                >MIT License</a
+                            ></span
+                        >
+                        <span class="footer-dot">·</span>
+                        <span>No cookies or remote logging</span>
+                    </div>
+
+                    <div class="footer-actions-right">
+                        <button type="button" class="btn-action-pill" id="btn-back-to-top" title="Scroll to top">
+                            <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.5"
+                            >
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            <span>Back to Top</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </footer>
         <script type="module" src="./src/main.ts"></script>
     </body>
 </html>

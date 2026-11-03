@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Privacy Policy, Terms & Accessibility — Everything</title>
+        <meta
+            name="description"
+            content="Privacy policy, terms of service, acceptable use, refund policy, GDPR Article 13 disclosures, and accessibility statement for Everything website."
+        />
+        <meta name="author" content="Adam Nordling" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://everything.adamnordling.se/privacy.html" />
+        <meta name="theme-color" content="#131418" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+        <style>
+            :root {
+                --bg: #131418;
+                --card: #1c1d23;
+                --text: #f8fafc;
+                --text-muted: #94a3b8;
+                --accent: #60a5fa;
+                --border: #2e303b;
+                --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--bg);
+                color: var(--text);
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                line-height: 1.6;
+                padding: 16px;
+            }
+
+            .policy-modal-card {
+                background-color: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                max-width: 760px;
+                width: 100%;
+                height: calc(100vh - 32px);
+                height: calc(100dvh - 32px);
+                max-height: 820px;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+                overflow: hidden;
+            }
+
+            /* 1. FIXED HEADER */
+            .policy-header {
+                padding: 18px 24px;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-shrink: 0;
+                background: var(--card);
+            }
+
+            .header-info h1 {
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: var(--text);
+                letter-spacing: -0.02em;
+                line-height: 1.3;
+            }
+
+            .header-info p {
+                font-size: 0.76rem;
+                color: var(--text-muted);
+                font-family: var(--font-mono);
+                margin-top: 2px;
+            }
+
+            .header-close-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                background: transparent;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                color: var(--text-muted);
+                text-decoration: none;
+                font-size: 1rem;
+                transition: all 0.15s ease;
+            }
+
+            .header-close-btn:hover {
+                color: var(--text);
+                border-color: var(--accent);
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            /* 2. SCROLLABLE POLICY BODY */
+            /* Ensure policy-body does not animate or smooth-scroll down */
+            .policy-body {
+                flex: 1;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                padding: 24px;
+                scrollbar-width: thin;
+                scrollbar-color: var(--border) transparent;
+            }
+
+            .policy-body::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .policy-body::-webkit-scrollbar-thumb {
+                background: var(--border);
+                border-radius: 3px;
+            }
+
+            .policy-section {
+                margin-bottom: 24px;
+                padding-bottom: 16px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                scroll-margin-top: 12px;
+            }
+
+            .policy-section:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            h2 {
+                font-size: 0.96rem;
+                font-weight: 600;
+                color: var(--accent);
+                margin-bottom: 8px;
+                letter-spacing: 0.01em;
+            }
+
+            p,
+            li {
+                color: var(--text-muted);
+                font-size: 0.88rem;
+                margin-bottom: 8px;
+                line-height: 1.55;
+            }
+
+            /* 3. PINNED BOTTOM FOOTER */
+            .policy-footer {
+                padding: 14px 24px;
+                border-top: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-shrink: 0;
+                background: var(--card);
+            }
+
+            .back-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background-color: #27272a;
+                border: 1px solid #3f3f46;
+                color: #f4f4f5;
+                font-size: 0.84rem;
+                font-weight: 600;
+                text-decoration: none;
+                padding: 8px 16px;
+                border-radius: 6px;
+                transition: all 0.15s ease;
+            }
+
+            .back-btn:hover {
+                background-color: #3f3f46;
+                border-color: #52525b;
+                color: #ffffff;
+            }
+
+            .footer-meta {
+                font-family: var(--font-mono);
+                font-size: 0.72rem;
+                color: var(--text-muted);
+            }
+
+            @media (max-width: 540px) {
+                body {
+                    padding: 8px;
+                }
+
+                .policy-modal-card {
+                    height: calc(100vh - 16px);
+                    height: calc(100dvh - 16px);
+                    border-radius: 8px;
+                }
+
+                .policy-header {
+                    padding: 14px 16px;
+                }
+
+                .header-info h1 {
+                    font-size: 1.05rem;
+                }
+
+                .policy-body {
+                    padding: 16px;
+                }
+
+                .policy-footer {
+                    padding: 12px 16px;
+                }
+
+                .footer-meta {
+                    display: none;
+                }
+
+                .back-btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="policy-modal-card">
+            <header class="policy-header">
+                <div class="header-info">
+                    <h1>Privacy Policy &amp; Terms</h1>
+                    <p>GDPR · Article 13 · WCAG 2.1 Level AA</p>
+                </div>
+                <a href="/" class="header-close-btn" aria-label="Close and return to portfolio">✕</a>
+            </header>
+
+            <div class="policy-body" id="policy-scroll-container">
+                <!-- 1. DATA CONTROLLER -->
+                <section class="policy-section">
+                    <h2>1. Data Controller Identity &amp; Contact Details</h2>
+                    <p>
+                        The Data Controller responsible for this personal portfolio website is Adam Nordling. Inquiries
+                        regarding data privacy can be directed via GitHub security advisory or LinkedIn.
+                    </p>
+                </section>
+
+                <!-- 2. DPO CONTACT -->
+                <section class="policy-section">
+                    <h2>2. Data Protection Officer (DPO) Contact</h2>
+                    <p>
+                        Given the personal nature of this portfolio and absence of large-scale processing under Article
+                        37 GDPR, a designated Data Protection Officer is not required. All inquiries are handled
+                        directly by the Data Controller.
+                    </p>
+                </section>
+
+                <!-- 3. LEGAL BASIS & RETENTION -->
+                <section class="policy-section" id="gdpr">
+                    <h2>3. Legal Basis for Processing &amp; Data Retention Period</h2>
+                    <p>
+                        This website processes minimal technical log data strictly under legitimate interests (Article
+                        6(1)(f) GDPR). The data retention period is strictly ephemeral: connection logs are retained
+                        only for real-time edge routing and discarded immediately.
+                    </p>
+                </section>
+
+                <!-- 4. COOKIE POLICY -->
+                <section class="policy-section" id="cookies">
+                    <h2>4. Cookie Policy &amp; Tracking Technologies</h2>
+                    <p>
+                        This website employs zero cookies, zero local storage tracking, and zero advertising or
+                        analytics tracking pixels. All digital tools execute 100% client-side inside the visitor's local
+                        browser sandbox.
+                    </p>
+                </section>
+
+                <!-- 5. DATA SUBJECT RIGHTS -->
+                <section class="policy-section">
+                    <h2>5. Data Subject Rights</h2>
+                    <p>
+                        Under GDPR, visitors hold data subject rights including the right of access, rectification,
+                        erasure, restriction of processing, data portability, and the right to object.
+                    </p>
+                </section>
+
+                <!-- 6. RECIPIENTS & TRANSFERS -->
+                <section class="policy-section" id="recipients">
+                    <h2>6. Recipients of Personal Data &amp; International Data Transfers</h2>
+                    <p>
+                        <strong>Recipients of personal data:</strong> There are no third-party recipients or categories
+                        of recipients of personal data. Personal data is never sold, leased, or transferred. Technical
+                        network routing and edge caching are handled via Cloudflare Edge servers acting as data
+                        processors under Standard Contractual Clauses (SCCs).
+                    </p>
+                </section>
+
+                <!-- 7. SUPERVISORY AUTHORITY -->
+                <section class="policy-section">
+                    <h2>7. Supervisory Authority</h2>
+                    <p>
+                        Visitors have the right to lodge a complaint with their supervisory authority, such as the
+                        Swedish Authority for Privacy Protection (Integritetsskyddsmyndigheten — IMY).
+                    </p>
+                </section>
+
+                <!-- 8. TERMS OF SERVICE -->
+                <section class="policy-section" id="terms">
+                    <h2>8. Terms of Service</h2>
+                    <p>
+                        All open-source source code repositories, research papers, and applications presented on this
+                        portfolio are provided for educational demonstration under the MIT License.
+                    </p>
+                </section>
+
+                <!-- 9. ACCEPTABLE USE -->
+                <section class="policy-section" id="acceptable-use">
+                    <h2>9. Acceptable Use Policy</h2>
+                    <p>
+                        Visitors may view, inspect, and fork open-source demo projects in accordance with their
+                        respective open-source licenses. Automated crawling that causes denial of service or network
+                        degradation is strictly prohibited.
+                    </p>
+                </section>
+
+                <!-- 10. DMCA & COPYRIGHT -->
+                <section class="policy-section" id="copyright">
+                    <h2>10. DMCA &amp; Copyright Notice</h2>
+                    <p>
+                        Original content, vector graphics, and designs are &copy; 2026 Adam Nordling. Open-source source
+                        code is subject to respective software repository licenses.
+                    </p>
+                </section>
+
+                <!-- 11. REFUND & RETURNS -->
+                <section class="policy-section" id="refunds">
+                    <h2>11. Refund &amp; Returns Policy</h2>
+                    <p>
+                        This portfolio is a personal engineering showcase and does not sell goods, commercial services,
+                        or paid subscriptions. Because no financial transactions occur on this site, no refund or
+                        returns policies are applicable.
+                    </p>
+                </section>
+
+                <!-- 12. ACCESSIBILITY -->
+                <section class="policy-section" id="accessibility">
+                    <h2>12. Accessibility Statement</h2>
+                    <p>
+                        This website is committed to ensuring digital accessibility in accordance with the
+                        <strong>Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</strong> standard (WCAG 2.1 AA
+                        conformance) and the EU Web Accessibility Directive (Directive 2016/2102).
+                    </p>
+                </section>
+            </div>
+
+            <footer class="policy-footer">
+                <a href="/" class="back-btn">&larr; Back to Portfolio</a>
+                <span class="footer-meta">Zero Cookies · Edge Routed</span>
+            </footer>
+        </main>
+
+        <script>
+            // 1. Disable browser automatic scroll restoration
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+
+            function lockToTop() {
+                var container = document.getElementById('policy-scroll-container');
+                if (container) {
+                    container.scrollTop = 0;
+                }
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+            }
+
+            // 2. Strip any anchor hash so the browser never auto-jumps to the bottom
+            if (window.location.hash) {
+                try {
+                    history.replaceState(null, '', window.location.pathname + window.location.search);
+                } catch (err) {}
+            }
+
+            // 3. Unconditionally lock to top across all lifecycle events
+            lockToTop();
+            window.addEventListener('DOMContentLoaded', lockToTop);
+            window.addEventListener('load', lockToTop);
+            window.addEventListener('pageshow', lockToTop);
+
+            // 4. Escape key returns to portfolio
+            window.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    window.location.href = '/';
+                }
+            });
+        </script>
+    </body>
+</html>

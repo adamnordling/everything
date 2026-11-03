@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="The requested page could not be found. Return to Everything's homepage."
+        />
+        <meta name="theme-color" content="#131418" />
+        <title>404 — Page Not Found | Everything</title>
+        <link rel="icon" type="image/x-icon" href="./assets/favicons/favicon.ico" />
+
+        <style>
+            :root {
+                --bg: #131418;
+                --card: #1c1d23;
+                --text: #f8fafc;
+                --muted: #94a3b8;
+                --accent: #60a5fa;
+                --border: #2e303b;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--bg);
+                color: var(--text);
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                text-align: center;
+                padding: 24px;
+                line-height: 1.6;
+            }
+
+            .error-card {
+                background-color: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 40px 28px;
+                max-width: 440px;
+                width: 100%;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            }
+
+            .error-code {
+                font-size: 5rem;
+                font-weight: 800;
+                color: var(--accent);
+                font-family: ui-monospace, SFMono-Regular, monospace;
+                line-height: 1;
+                margin-bottom: 8px;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+
+            p {
+                color: var(--muted);
+                font-size: 0.9rem;
+                margin-bottom: 24px;
+            }
+
+            /* Minimalistisk återhämtningssökning */
+            .search-form {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 24px;
+            }
+
+            .search-input {
+                flex: 1;
+                background: #131418;
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 10px 14px;
+                border-radius: 6px;
+                font-size: 0.88rem;
+                outline: none;
+            }
+
+            .search-input:focus {
+                border-color: var(--accent);
+            }
+
+            .search-btn {
+                background: var(--border);
+                border: none;
+                color: var(--text);
+                padding: 10px 16px;
+                border-radius: 6px;
+                font-weight: 600;
+                font-size: 0.85rem;
+                cursor: pointer;
+            }
+
+            .search-btn:hover {
+                background: #3f4252;
+            }
+
+            .home-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--text);
+                color: var(--bg);
+                font-weight: 600;
+                font-size: 0.88rem;
+                text-decoration: none;
+                padding: 10px 24px;
+                border-radius: 6px;
+                transition: opacity 0.2s;
+            }
+
+            .home-btn:hover {
+                opacity: 0.9;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="error-card" aria-labelledby="error-heading">
+            <div class="error-code" aria-hidden="true">404</div>
+            <h1 id="error-heading">Page Not Found</h1>
+            <p>The page you are looking for has moved or does not exist.</p>
+
+            <!-- Sökformulär för Beavercheck och besökare -->
+            <form
+                action="https://github.com/adamnordling"
+                method="get"
+                target="_blank"
+                class="search-form"
+                role="search"
+            >
+                <input
+                    type="search"
+                    name="q"
+                    class="search-input"
+                    placeholder="Search projects or repositories..."
+                    aria-label="Search repositories"
+                />
+                <button type="submit" class="search-btn">Search</button>
+            </form>
+
+            <nav aria-label="Error recovery navigation">
+                <a href="/" rel="home" class="home-btn" aria-label="Return to portfolio homepage">Back to Home</a>
+            </nav>
+        </main>
+    </body>
+</html>

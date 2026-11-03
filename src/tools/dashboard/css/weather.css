@@ -1,7 +1,5 @@
 .weather-block {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    contain: layout;
 }
 
 .weather-card-header {
@@ -158,6 +156,8 @@
     overflow-x: auto;
     padding-bottom: 6px;
     margin-top: 6px;
+    min-height: 64px; /* Pre-allocates 24-hr strip space so API arrival doesn't shift the page */
+    contain: layout;
     scrollbar-width: thin;
     scrollbar-color: var(--border-bold) transparent;
 }

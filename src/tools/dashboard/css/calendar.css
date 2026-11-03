@@ -1,7 +1,6 @@
 .calendar-agenda-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    min-height: 310px;
+    contain: layout;
 }
 
 .cal-nav-bar {
@@ -49,6 +48,8 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 1px;
+    min-height: 174px; /* Pre-allocates 6 rows of 28px + gap to eliminate CLS */
+    contain: layout;
 }
 
 .cal-cell {

@@ -3,7 +3,10 @@
     min-height: 105px;
     contain: layout;
 }
-
+.dash-seamless-agenda {
+    min-height: 340px;
+    contain: layout;
+}
 .tasks-agenda-item {
     min-height: 120px;
     contain: layout;
