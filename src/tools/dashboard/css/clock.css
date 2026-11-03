@@ -33,7 +33,7 @@
 }
 
 .session-badge-text {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
@@ -94,7 +94,7 @@
 }
 
 .ambient-label {
-    font-size: 0.67rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
     letter-spacing: 0.04em;
@@ -115,7 +115,7 @@
 }
 
 .ambient-action-hint {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--accent-brand);
     background: var(--accent-brand-subtle);
     padding: 1px 6px;
@@ -139,7 +139,7 @@
 }
 
 .converter-label {
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 600;
 }
@@ -170,7 +170,7 @@
     background: var(--accent-brand-subtle);
     border: none;
     color: var(--accent-brand);
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 700;
     height: 28px;
     width: 42px;
@@ -187,7 +187,7 @@
     background: var(--bg-elevated);
     border: none;
     color: var(--text-primary);
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     font-weight: 500;
     height: 28px;
     padding: 0 6px;
@@ -199,7 +199,7 @@
 }
 
 .converter-result-under {
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     padding-top: 2px;
 }
 
@@ -232,7 +232,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 500;
     margin-bottom: 6px;
@@ -242,7 +242,7 @@
     background: transparent;
     border: none;
     color: var(--accent-brand);
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
 }

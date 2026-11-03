@@ -316,9 +316,18 @@ export function initSystemIntel(): void {
         };
 
         if ('requestIdleCallback' in window) {
-            window.requestIdleCallback(runBench);
+            window.requestIdleCallback(
+                () => {
+                    runBench();
+                    void fetchNetworkInfo();
+                },
+                { timeout: 2000 }
+            );
         } else {
-            setTimeout(runBench, 800);
+            setTimeout(() => {
+                runBench();
+                void fetchNetworkInfo();
+            }, 800);
         }
     }
 

@@ -1,3 +1,31 @@
+/* Pre-allocate structural space so content mounting does not shift layout */
+.deadlines-agenda-item {
+    min-height: 105px;
+    contain: layout;
+}
+
+.tasks-agenda-item {
+    min-height: 120px;
+    contain: layout;
+}
+
+.habits-agenda-item {
+    min-height: 110px;
+    contain: layout;
+}
+
+.deadlines-stream {
+    min-height: 38px;
+}
+
+.task-rows-stream {
+    min-height: 42px;
+}
+
+.habits-container {
+    min-height: 48px;
+}
+
 .deadline-input-row {
     display: flex;
     gap: 6px;

@@ -54,7 +54,7 @@
 }
 
 .telemetry-ping {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     color: var(--accent-emerald);
     background: rgba(16, 185, 129, 0.1);
     padding: 1px 6px;
@@ -63,7 +63,7 @@
 }
 
 .telemetry-isp {
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
@@ -78,7 +78,7 @@
     border: none;
     padding: 3px 8px;
     border-radius: 4px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     font-weight: 600;
 }
@@ -118,7 +118,7 @@
 }
 
 .hud-k {
-    font-size: 0.67rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
     letter-spacing: 0.03em;
@@ -170,7 +170,7 @@
     background: var(--text-primary);
     color: var(--bg-surface);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 6px;
@@ -188,7 +188,7 @@
 }
 
 .telemetry-label-prefix {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
 }

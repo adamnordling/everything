@@ -39,7 +39,7 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     margin-bottom: 2px;
     font-weight: 600;
@@ -128,7 +128,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
 }
 
@@ -143,7 +143,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.74rem;
+    font-size: 0.75rem;
 }
 
 #intel-holiday-name {
@@ -153,5 +153,5 @@
 
 #intel-nameday-text {
     color: var(--text-muted);
-    font-size: 0.72rem;
+    font-size: 0.75rem;
 }

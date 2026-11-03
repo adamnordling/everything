@@ -109,7 +109,7 @@
 }
 
 .metric-sub-label {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-transform: uppercase;
     font-weight: 600;
@@ -145,7 +145,7 @@
 }
 
 .strip-section-title {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -247,7 +247,7 @@
     }
 
     .wx-condition-container {
-        font-size: 0.76rem !important;
+        font-size: 0.75rem !important;
     }
 
     .wx-condition-container svg {
@@ -282,13 +282,13 @@
     }
 
     .metric-sub-label {
-        font-size: 0.62rem !important;
+        font-size: 0.75rem !important;
         color: var(--text-muted) !important;
         margin: 0 !important;
     }
 
     .metric-main-val {
-        font-size: 0.74rem !important;
+        font-size: 0.75rem !important;
         color: var(--accent-amber) !important;
         font-weight: 700 !important;
     }

@@ -60,17 +60,6 @@
         <link rel="dns-prefetch" href="https://api64.ipify.org" />
 
         <link rel="stylesheet" href="./src/styles/main.css" />
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-            crossorigin=""
-        />
-        <script
-            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""
-        ></script>
 
         <script type="application/ld+json">
             {
@@ -389,7 +378,13 @@
                             >
                                 Import
                             </button>
-                            <input type="file" id="backup-file-input" accept=".json" class="visually-hidden" />
+                            <input
+                                type="file"
+                                id="backup-file-input"
+                                accept=".json"
+                                class="visually-hidden"
+                                aria-label="Upload JSON backup file to restore"
+                            />
                         </div>
                     </div>
                     <button
@@ -512,8 +507,9 @@
                                                 max="23"
                                                 class="input-mini-time"
                                                 placeholder="00"
+                                                aria-label="Timezone converter hours"
                                             />
-                                            <span class="converter-colon">:</span>
+                                            <span class="converter-colon" aria-hidden="true">:</span>
                                             <input
                                                 type="number"
                                                 id="tz-min-input"
@@ -521,16 +517,22 @@
                                                 max="59"
                                                 class="input-mini-time"
                                                 placeholder="00"
+                                                aria-label="Timezone converter minutes"
                                             />
                                             <button
                                                 type="button"
                                                 id="tz-format-toggle"
                                                 class="btn-format-cycle"
                                                 title="Click to cycle 24H / AM / PM"
+                                                aria-label="Toggle time format mode"
                                             >
                                                 24H
                                             </button>
-                                            <select id="tz-source-select" class="select-mini-tz"></select>
+                                            <select
+                                                id="tz-source-select"
+                                                class="select-mini-tz"
+                                                aria-label="Source timezone"
+                                            ></select>
                                         </div>
                                         <div id="tz-converted-output" class="converter-result-under">
                                             Calculating...
@@ -856,6 +858,7 @@
                                         id="scratchpad-textarea"
                                         class="scratchpad-area"
                                         placeholder="Paste terminal outputs, snippets, JSON, or quick notes... (Auto-saved)"
+                                        aria-label="Dashboard workstation scratchpad and clipboard buffer"
                                     ></textarea>
                                 </div>
                             </div>
@@ -887,9 +890,16 @@
                                             id="deadline-input-title"
                                             class="input-field"
                                             placeholder="New deadline task..."
+                                            aria-label="New deadline title"
                                             required
                                         />
-                                        <input type="date" id="deadline-input-date" class="input-field" required />
+                                        <input
+                                            type="date"
+                                            id="deadline-input-date"
+                                            class="input-field"
+                                            aria-label="Deadline target due date"
+                                            required
+                                        />
                                         <button type="submit" class="btn-action-primary">Add</button>
                                     </form>
 
@@ -911,6 +921,7 @@
                                             id="daily-task-input"
                                             class="input-field"
                                             placeholder="Enter a task and press Enter..."
+                                            aria-label="New daily task description"
                                             required
                                         />
                                     </form>
@@ -928,6 +939,7 @@
                                             id="habit-add-input"
                                             class="input-field"
                                             placeholder="Add routine habit..."
+                                            aria-label="New routine habit title"
                                             required
                                         />
                                         <button type="submit" class="btn-action-primary">+ Habit</button>
@@ -1004,7 +1016,11 @@
                                 <button type="button" class="icon-action-btn" id="modal-tz-close">&times;</button>
                             </div>
                             <div class="modal-body">
-                                <select id="tz-picker-select" class="input-field"></select>
+                                <select
+                                    id="tz-picker-select"
+                                    class="input-field"
+                                    aria-label="Select active dashboard clock timezone"
+                                ></select>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn-action-primary" id="btn-save-tz">
