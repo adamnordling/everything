@@ -20,6 +20,7 @@ export async function switchView(targetView: string): Promise<void> {
     const viewDashboard = req('#view-dashboard');
     const viewYoutube = req('#view-tool-youtube');
     const viewWinOpt = req('#view-tool-winopt');
+    const viewHandbook = req('#view-tool-handbook');
 
     navButtons.forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-view') === targetView);
@@ -28,6 +29,7 @@ export async function switchView(targetView: string): Promise<void> {
     viewDashboard.style.display = 'none';
     viewYoutube.style.display = 'none';
     viewWinOpt.style.display = 'none';
+    viewHandbook.style.display = 'none';
 
     if (targetView === 'tool-youtube') {
         viewYoutube.style.display = 'flex';
@@ -39,6 +41,10 @@ export async function switchView(targetView: string): Promise<void> {
         // Lazy-loads Windows Optimizer code & CSS only when clicked!
         const { initWindowsOptimizer } = await import('../tools/windowsOptimizer/index');
         initWindowsOptimizer();
+    } else if (targetView === 'tool-handbook') {
+        viewHandbook.style.display = 'flex';
+        const { initDeveloperHandbook } = await import('../tools/developerHandbook/index');
+        initDeveloperHandbook();
     } else {
         viewDashboard.style.display = 'block';
     }

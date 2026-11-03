@@ -1,0 +1,288 @@
+<div class="handbook-container">
+    <!-- TOP WORKBENCH HEADER -->
+    <div class="card handbook-hero">
+        <div class="handbook-hero-left">
+            <div class="brand-icon-box handbook-brand-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+            </div>
+            <div>
+                <h1 style="font-size: 1.15rem; font-weight: 800; margin: 0">Developer Handbook &amp; Scaffolder</h1>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0; font-family: var(--font-mono)">
+                    Architecture planner, multi-language generator, edge security headers &amp; clean file structure
+                </p>
+            </div>
+        </div>
+
+        <!-- LAYER 1: PROJECT METADATA & ARCHETYPE -->
+        <div class="handbook-grid-tier">
+            <div class="selector-field">
+                <label for="hb-input-project-name">PROJECT NAME</label>
+                <input type="text" id="hb-input-project-name" class="handbook-input" value="my-project" />
+            </div>
+
+            <div class="selector-field">
+                <label for="hb-select-archetype">APPLICATION TYPE</label>
+                <div class="select-wrapper">
+                    <select id="hb-select-archetype" class="handbook-select">
+                        <option value="web-spa" selected>Web Application (SPA / Static / Edge Client)</option>
+                        <option value="fullstack-ssr">Full-Stack Web (Next.js 15 / Astro 5 / Nuxt)</option>
+                        <option value="backend-api">Backend REST &amp; Microservice API</option>
+                        <option value="python-ml">Python Machine Learning / AI Intelligence</option>
+                        <option value="systems-cli">Systems CLI / Low-Latency Daemon</option>
+                        <option value="desktop-tauri">Desktop Application (Tauri 2.0 / Rust + Web)</option>
+                        <option value="browser-extension">Browser Extension (Manifest V3)</option>
+                        <option value="library-package">Reusable Library / Package (Dual ESM/CJS)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAYER 2: MULTI-LANGUAGE SELECTION -->
+        <div class="selector-field">
+            <label>PROGRAMMING LANGUAGES (SELECT ALL THAT APPLY)</label>
+            <div class="language-pill-matrix" id="hb-lang-checkboxes">
+                <label class="lang-checkbox-label">
+                    <input type="checkbox" value="typescript" checked class="task-check-custom" />
+                    <span>TypeScript</span>
+                </label>
+                <label class="lang-checkbox-label">
+                    <input type="checkbox" value="javascript" class="task-check-custom" />
+                    <span>JavaScript</span>
+                </label>
+                <label class="lang-checkbox-label">
+                    <input type="checkbox" value="python" class="task-check-custom" />
+                    <span>Python</span>
+                </label>
+                <label class="lang-checkbox-label">
+                    <input type="checkbox" value="rust" class="task-check-custom" />
+                    <span>Rust</span>
+                </label>
+                <label class="lang-checkbox-label">
+                    <input type="checkbox" value="go" class="task-check-custom" />
+                    <span>Go</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- LAYER 3: DYNAMIC TECH CHOICES -->
+        <div class="handbook-profile-selectors">
+            <div class="selector-field">
+                <label for="hb-select-framework">FRAMEWORK / UI</label>
+                <div class="select-wrapper">
+                    <select id="hb-select-framework" class="handbook-select"></select>
+                </div>
+            </div>
+
+            <div class="selector-field">
+                <label for="hb-select-bundler">BUILD ENGINE / RUNTIME</label>
+                <div class="select-wrapper">
+                    <select id="hb-select-bundler" class="handbook-select"></select>
+                </div>
+            </div>
+
+            <div class="selector-field">
+                <label for="hb-select-linter">CODE QUALITY &amp; LINTER</label>
+                <div class="select-wrapper">
+                    <select id="hb-select-linter" class="handbook-select"></select>
+                </div>
+            </div>
+
+            <div class="selector-field">
+                <label for="hb-select-testing">TESTING FRAMEWORK</label>
+                <div class="select-wrapper">
+                    <select id="hb-select-testing" class="handbook-select"></select>
+                </div>
+            </div>
+
+            <div class="selector-field">
+                <label for="hb-select-database">DATABASE / ORM</label>
+                <div class="select-wrapper">
+                    <select id="hb-select-database" class="handbook-select"></select>
+                </div>
+            </div>
+
+            <div class="selector-field" id="hb-pm-group">
+                <label for="hb-select-pm">PACKAGE MANAGER</label>
+                <div class="select-wrapper">
+                    <select id="hb-select-pm" class="handbook-select">
+                        <option value="npm" selected>npm</option>
+                        <option value="pnpm">pnpm</option>
+                        <option value="bun">bun</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="selector-field">
+                <label for="hb-select-license">LICENSE</label>
+                <div class="select-wrapper">
+                    <select id="hb-select-license" class="handbook-select">
+                        <option value="none" selected>None (Proprietary)</option>
+                        <option value="MIT">MIT (Permissive)</option>
+                        <option value="Apache-2.0">Apache 2.0</option>
+                        <option value="Unlicense">The Unlicense (Public Domain)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAYER 4: MODULAR CAPABILITY SWITCHES (UNCHECKED BY DEFAULT) -->
+        <div class="features-pill-row">
+            <label class="feature-toggle-label">
+                <input type="checkbox" id="hb-opt-docker" class="task-check-custom" />
+                <span>Docker Containerization</span>
+            </label>
+            <label class="feature-toggle-label">
+                <input type="checkbox" id="hb-opt-ci" class="task-check-custom" />
+                <span>GitHub Actions CI</span>
+            </label>
+            <label class="feature-toggle-label" id="hb-headers-toggle-wrap">
+                <input type="checkbox" id="hb-opt-headers" class="task-check-custom" />
+                <span>Edge Security Headers (_headers, PWA, Sitemap &amp; Favicon)</span>
+            </label>
+            <label class="feature-toggle-label">
+                <input type="checkbox" id="hb-opt-env" class="task-check-custom" />
+                <span>Secrets Template (.env.example)</span>
+            </label>
+            <label class="feature-toggle-label">
+                <input type="checkbox" id="hb-opt-editorconfig" class="task-check-custom" />
+                <span>EditorConfig (.editorconfig)</span>
+            </label>
+            <label class="feature-toggle-label">
+                <input type="checkbox" id="hb-opt-gitattributes" class="task-check-custom" />
+                <span>Line-Ending Guard (.gitattributes)</span>
+            </label>
+            <label class="feature-toggle-label">
+                <input type="checkbox" id="hb-opt-packscript" class="task-check-custom" />
+                <span>Bundle Script (pack-project.sh)</span>
+            </label>
+            <label class="feature-toggle-label">
+                <input type="checkbox" id="hb-opt-dependabot" class="task-check-custom" />
+                <span>Dependabot Security (.github)</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- 1-CLICK TERMINAL BOOTSTRAPPER COMPONENT -->
+    <div class="card handbook-bootstrapper-card">
+        <div class="bootstrapper-header">
+            <div style="display: flex; align-items: center; gap: 8px">
+                <span class="pill-badge">1-CLICK TERMINAL BOOTSTRAPPER</span>
+                <span style="font-size: 0.84rem; font-weight: 700; color: var(--text-primary)">
+                    Run in your terminal to create all directories and files:
+                </span>
+            </div>
+            <div class="terminal-tab-group">
+                <button type="button" class="hb-tab-btn active" data-platform="bash">Bash / macOS / Linux</button>
+                <button type="button" class="hb-tab-btn" data-platform="powershell">Windows PowerShell</button>
+            </div>
+        </div>
+
+        <div class="terminal-code-window" style="margin-top: 8px">
+            <div class="terminal-bar">
+                <div class="terminal-badge">
+                    <span class="terminal-dot"></span>
+                    <span class="terminal-title" id="hb-bootstrapper-title">Bash Bootstrap Script</span>
+                </div>
+                <button type="button" class="btn-action-pill" id="hb-copy-bootstrapper-btn">Copy Script</button>
+            </div>
+            <textarea id="hb-bootstrapper-code" class="terminal-code-area" readonly spellcheck="false"></textarea>
+        </div>
+    </div>
+
+    <!-- 2-COLUMN WORKBENCH: FILE TREE & LIVE FILE INSPECTOR -->
+    <div class="handbook-workbench-layout">
+        <!-- LEFT: INTERACTIVE FILE TREE EXPLORER -->
+        <div class="file-tree-column">
+            <div class="card tree-card">
+                <div class="tree-header">
+                    <div style="display: flex; align-items: center; gap: 8px">
+                        <svg
+                            width="15"
+                            height="15"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                            ></path>
+                        </svg>
+                        <span style="font-weight: 700; font-size: 0.82rem">Project Tree Explorer</span>
+                    </div>
+                    <span class="pill-badge" id="hb-file-count-badge">0 Files</span>
+                </div>
+                <div class="file-list-stream" id="hb-file-list-stream"></div>
+            </div>
+        </div>
+
+        <!-- RIGHT: LIVE FILE INSPECTOR & CODE VIEWER -->
+        <div class="code-inspector-column">
+            <div class="card inspector-card">
+                <div class="inspector-header">
+                    <div class="file-meta-group">
+                        <span class="active-file-path" id="hb-active-filename">package.json</span>
+                        <span class="file-desc-sub" id="hb-active-desc">Manifest description</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px">
+                        <span class="pill-badge" id="hb-active-badge">JSON</span>
+                        <button type="button" class="btn-action-pill highlight" id="hb-copy-active-file-btn">
+                            Copy File
+                        </button>
+                    </div>
+                </div>
+                <textarea id="hb-file-content-display" class="file-code-area" readonly spellcheck="false"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         DEVELOPER WORKSTATION & IDE MASTER GUIDE
+         ========================================================================= -->
+    <div class="card ide-guide-card" style="margin-top: 16px">
+        <div class="ide-guide-header">
+            <div style="display: flex; align-items: center; gap: 8px">
+                <span class="pill-badge">IDE BENCHMARK &amp; DEBLOAT HUB</span>
+                <span style="font-size: 0.94rem; font-weight: 800; color: var(--text-primary)">
+                    Developer Workstation Engineering &amp; IDE Tier List
+                </span>
+            </div>
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono)">
+                Memory Footprint · Telemetry Posture · Debloat Configurations
+            </span>
+        </div>
+
+        <p style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; margin: 4px 0 12px 0">
+            A slow, bloated editor drains battery and introduces typing input lag. Below is our codified benchmark of
+            popular editors, their memory footprints, cold start times, and zero-lag configurations:
+        </p>
+
+        <!-- IDE CARDS STREAM -->
+        <div class="ide-cards-grid" id="hb-ide-cards-mount"></div>
+
+        <!-- GLOBAL GIT HYGIENE SCRIPT -->
+        <div class="step-content-box" style="margin-top: 14px; border-left: 3px solid var(--accent-brand)">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px">
+                <strong style="color: var(--text-primary); font-size: 0.8rem">
+                    Universal 1-Click Git Configuration (Safe Rebase, Auto-Prune &amp; Clean Diffs):
+                </strong>
+                <button
+                    type="button"
+                    class="btn-action-pill copy-btn-trigger"
+                    data-copy="git config --global pull.rebase true; git config --global fetch.prune true; git config --global core.autocrlf false; git config --global init.defaultBranch main; git config --global diff.algorithm histogram"
+                >
+                    Copy Git Script
+                </button>
+            </div>
+            <p style="font-size: 0.73rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45">
+                Configures Git globally to: 1) Prevent noisy merge commit bubbles on pull (<code>pull.rebase true</code
+                >), 2) Auto-delete deleted remote branches on fetch (<code>fetch.prune true</code>), 3) Preserve strict
+                LF line endings without Windows corruption (<code>core.autocrlf false</code>), and 4) Use accurate
+                diffing (<code>histogram</code>).
+            </p>
+        </div>
+    </div>
+</div>
