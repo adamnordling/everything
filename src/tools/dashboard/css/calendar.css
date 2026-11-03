@@ -118,7 +118,14 @@
 }
 
 .cal-cell.outside-month {
-    opacity: 0.25;
+    color: #64748b !important; /* 4.6:1 contrast ratio on white (Passes WCAG AA!) */
+    opacity: 1 !important;
+    font-weight: 500;
+}
+
+html.dark-theme .cal-cell.outside-month {
+    color: #64748b !important;
+    opacity: 1 !important;
 }
 
 .cal-footer-meta {

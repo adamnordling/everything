@@ -1,7 +1,7 @@
 .clock-hero-block {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 }
 
 .clock-top-bar {
@@ -9,6 +9,7 @@
     justify-content: space-between;
     align-items: flex-start;
     width: 100%;
+    margin-bottom: 6px; /* Adds clean gap between date and unix epoch */
 }
 
 .clock-primary-stack {
@@ -30,6 +31,7 @@
     color: var(--text-secondary);
     font-weight: 500;
     margin-top: 6px;
+    padding-bottom: 2px;
 }
 
 .session-badge-text {
@@ -125,10 +127,12 @@
 
 /* KONVERTERARE */
 .converter-stacked-module {
-    padding: 4px 0;
+    padding: 6px 0;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    border-top: 1px dashed var(--border-subtle);
+    padding-top: 10px;
 }
 
 .converter-inputs-bar {
@@ -225,7 +229,8 @@
 /* YEAR PROGRESS */
 .year-progress-module {
     margin-top: auto;
-    padding-top: 4px;
+    padding-top: 12px; /* Adds clean gap above Q4 line */
+    border-top: 1px solid var(--border-subtle);
 }
 
 .year-stats-line {

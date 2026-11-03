@@ -475,7 +475,6 @@
 
 /* =============================================================================
    MOBILE DASHBOARD ARCHITECTURE (<= 768px ONLY)
-   Strictly scoped to mobile devices so desktop > 1024px is untouched
    ============================================================================= */
 @media (max-width: 768px) {
     #view-dashboard:not([style*='display: none']) {
@@ -484,7 +483,7 @@
         gap: 18px !important;
     }
 
-    /* Dissolve row wrapper tiers on mobile so individual blocks can be re-ordered */
+    /* Dissolve grid tiers on mobile so individual blocks can be reordered */
     #view-dashboard .dashboard-tier,
     #view-dashboard .tier-left-stream,
     #view-dashboard .tier-top .tier-right-stream,
@@ -504,12 +503,11 @@
         border-bottom: 1px solid var(--border-subtle) !important;
     }
 
-    /* Hide Unix Epoch on mobile */
     #clock-epoch-btn {
         display: none !important;
     }
 
-    /* 2. WEATHER (Compact: Temp & UV on exact same row) */
+    /* 2. WEATHER (Compact single row) */
     .weather-block {
         order: 2 !important;
         padding-bottom: 16px !important;
@@ -523,7 +521,7 @@
         border-bottom: 1px solid var(--border-subtle) !important;
     }
 
-    /* 4. DEADLINES & TASKS (Explicit order 4 prevents jumping to the top) */
+    /* 4. DEADLINES & TASKS */
     .dash-seamless-agenda,
     .deadlines-agenda-item,
     .tasks-agenda-item,
@@ -539,7 +537,7 @@
         border-bottom: 1px solid var(--border-subtle) !important;
     }
 
-    /* 5. TIME CONVERTER (Directly ABOVE Telemetry) */
+    /* 5. TIME CONVERTER (ABOVE Telemetry on mobile) */
     .converter-stacked-module {
         order: 5 !important;
         display: flex !important;
@@ -551,7 +549,7 @@
         padding: 12px 14px !important;
     }
 
-    /* 6. TELEMETRY HUD (Directly UNDER Time Converter) */
+    /* 6. TELEMETRY HUD (BELOW Time Converter on mobile) */
     .telemetry-block {
         order: 6 !important;
         padding-bottom: 16px !important;

@@ -87,10 +87,11 @@ export function initClockAndConverter(): void {
         const jan = new Date(year, 0, 1);
         const jul = new Date(year, 6, 1);
 
+        // Reuse a SINGLE DateTimeFormat instance instead of instantiating 210 times
+        const dtf = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' });
+
         const getOffset = (d: Date): number => {
-            const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' }).formatToParts(
-                d
-            );
+            const parts = dtf.formatToParts(d);
             const part = parts.find(p => p.type === 'timeZoneName');
             if (!part) return 0;
             const m = /GMT([+-]\d+)(?::(\d+))?/.exec(part.value);
@@ -107,14 +108,23 @@ export function initClockAndConverter(): void {
         const nowOff = getOffset(now);
         const isDst = nowOff === Math.max(janOff, julOff);
 
+        // Step 7 days at a time to find the transition week, then pinpoint the day
         let probe = new Date(now.getTime() + 86400000);
         let foundDate: Date | null = null;
-        for (let i = 1; i <= 210; i++) {
+        for (let i = 1; i <= 30; i++) {
             if (getOffset(probe) !== nowOff) {
-                foundDate = probe;
+                // Pinpoint exact day within the 7-day window
+                let backProbe = new Date(probe.getTime() - 6 * 86400000);
+                for (let d = 0; d < 7; d++) {
+                    if (getOffset(backProbe) !== nowOff) {
+                        foundDate = backProbe;
+                        break;
+                    }
+                    backProbe = new Date(backProbe.getTime() + 86400000);
+                }
                 break;
             }
-            probe = new Date(probe.getTime() + 86400000);
+            probe = new Date(probe.getTime() + 7 * 86400000);
         }
 
         if (!foundDate) return isDst ? 'DST Active' : 'Standard Time';
