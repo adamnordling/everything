@@ -3,25 +3,26 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Privacy Policy, Terms & Accessibility — Everything</title>
+        <title>Privacy Policy, Terms &amp; Accessibility — Everything</title>
         <meta
             name="description"
-            content="Privacy policy, terms of service, acceptable use, refund policy, GDPR Article 13 disclosures, and accessibility statement for Everything website."
+            content="Privacy policy, terms of service, acceptable use, GDPR Article 13 disclosures, and accessibility statement for Everything Suite."
         />
         <meta name="author" content="Adam Nordling" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://everything.adamnordling.se/privacy.html" />
-        <meta name="theme-color" content="#131418" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <meta name="theme-color" content="#0c0f17" />
+        <link rel="icon" type="image/x-icon" href="/favicons/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
         <style>
             :root {
-                --bg: #131418;
-                --card: #1c1d23;
-                --text: #f8fafc;
+                --bg: #0c0f17;
+                --card: #161a26;
+                --text: #f9fafb;
                 --text-muted: #94a3b8;
-                --accent: #60a5fa;
-                --border: #2e303b;
+                --accent: #818cf8;
+                --border: rgba(255, 255, 255, 0.12);
                 --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             }
 
@@ -31,20 +32,18 @@
                 padding: 0;
             }
 
-            html,
-            body {
+            html, body {
                 height: 100%;
-                overflow: hidden;
+                background-color: var(--bg);
+                color: var(--text);
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
             }
 
             body {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background-color: var(--bg);
-                color: var(--text);
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-                line-height: 1.6;
                 padding: 16px;
             }
 
@@ -52,18 +51,16 @@
                 background-color: var(--card);
                 border: 1px solid var(--border);
                 border-radius: 12px;
-                max-width: 760px;
+                max-width: 780px;
                 width: 100%;
-                height: calc(100vh - 32px);
                 height: calc(100dvh - 32px);
-                max-height: 820px;
+                max-height: 840px;
                 display: flex;
                 flex-direction: column;
                 box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
                 overflow: hidden;
             }
 
-            /* 1. FIXED HEADER */
             .policy-header {
                 padding: 18px 24px;
                 border-bottom: 1px solid var(--border);
@@ -79,11 +76,10 @@
                 font-weight: 700;
                 color: var(--text);
                 letter-spacing: -0.02em;
-                line-height: 1.3;
             }
 
             .header-info p {
-                font-size: 0.76rem;
+                font-size: 0.78rem;
                 color: var(--text-muted);
                 font-family: var(--font-mono);
                 margin-top: 2px;
@@ -110,8 +106,6 @@
                 background: rgba(255, 255, 255, 0.05);
             }
 
-            /* 2. SCROLLABLE POLICY BODY */
-            /* Ensure policy-body does not animate or smooth-scroll down */
             .policy-body {
                 flex: 1;
                 overflow-y: auto;
@@ -121,20 +115,10 @@
                 scrollbar-color: var(--border) transparent;
             }
 
-            .policy-body::-webkit-scrollbar {
-                width: 6px;
-            }
-
-            .policy-body::-webkit-scrollbar-thumb {
-                background: var(--border);
-                border-radius: 3px;
-            }
-
             .policy-section {
                 margin-bottom: 24px;
                 padding-bottom: 16px;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-                scroll-margin-top: 12px;
             }
 
             .policy-section:last-child {
@@ -145,21 +129,18 @@
 
             h2 {
                 font-size: 0.96rem;
-                font-weight: 600;
+                font-weight: 700;
                 color: var(--accent);
                 margin-bottom: 8px;
-                letter-spacing: 0.01em;
             }
 
-            p,
-            li {
+            p, li {
                 color: var(--text-muted);
                 font-size: 0.88rem;
                 margin-bottom: 8px;
-                line-height: 1.55;
+                line-height: 1.6;
             }
 
-            /* 3. PINNED BOTTOM FOOTER */
             .policy-footer {
                 padding: 14px 24px;
                 border-top: 1px solid var(--border);
@@ -174,64 +155,38 @@
                 display: inline-flex;
                 align-items: center;
                 gap: 6px;
-                background-color: #27272a;
-                border: 1px solid #3f3f46;
-                color: #f4f4f5;
+                background-color: var(--accent);
+                color: #ffffff;
                 font-size: 0.84rem;
-                font-weight: 600;
+                font-weight: 700;
                 text-decoration: none;
                 padding: 8px 16px;
                 border-radius: 6px;
-                transition: all 0.15s ease;
+                transition: opacity 0.15s ease;
             }
 
             .back-btn:hover {
-                background-color: #3f3f46;
-                border-color: #52525b;
-                color: #ffffff;
+                opacity: 0.9;
             }
 
             .footer-meta {
                 font-family: var(--font-mono);
-                font-size: 0.72rem;
+                font-size: 0.75rem;
                 color: var(--text-muted);
             }
 
             @media (max-width: 540px) {
-                body {
-                    padding: 8px;
-                }
+                body { padding: 8px; }
+                .policy-modal-card { height: calc(100dvh - 16px); }
+                .policy-header { padding: 14px 16px; }
+                .policy-body { padding: 16px; }
+                .policy-footer { padding: 12px 16px; }
+            }
 
-                .policy-modal-card {
-                    height: calc(100vh - 16px);
-                    height: calc(100dvh - 16px);
-                    border-radius: 8px;
-                }
-
-                .policy-header {
-                    padding: 14px 16px;
-                }
-
-                .header-info h1 {
-                    font-size: 1.05rem;
-                }
-
-                .policy-body {
-                    padding: 16px;
-                }
-
-                .policy-footer {
-                    padding: 12px 16px;
-                }
-
-                .footer-meta {
-                    display: none;
-                }
-
-                .back-btn {
-                    width: 100%;
-                    justify-content: center;
-                }
+            @media print {
+                .policy-header, .policy-footer { display: none; }
+                .policy-modal-card { border: none; height: auto; max-height: none; }
+                .policy-body { overflow: visible; }
             }
         </style>
     </head>
@@ -239,171 +194,61 @@
         <main class="policy-modal-card">
             <header class="policy-header">
                 <div class="header-info">
-                    <h1>Privacy Policy &amp; Terms</h1>
+                    <h1>Privacy Policy, Terms &amp; Security</h1>
                     <p>GDPR · Article 13 · WCAG 2.1 Level AA</p>
                 </div>
-                <a href="/" class="header-close-btn" aria-label="Close and return to portfolio">✕</a>
+                <a href="/" class="header-close-btn" aria-label="Close and return to Everything Suite">✕</a>
             </header>
 
             <div class="policy-body" id="policy-scroll-container">
-                <!-- 1. DATA CONTROLLER -->
                 <section class="policy-section">
                     <h2>1. Data Controller Identity &amp; Contact Details</h2>
                     <p>
-                        The Data Controller responsible for this personal portfolio website is Adam Nordling. Inquiries
-                        regarding data privacy can be directed via GitHub security advisory or LinkedIn.
+                        The Data Controller for Everything Suite is Adam Nordling. Inquiries can be submitted via
+                        GitHub Security Advisory or LinkedIn.
                     </p>
                 </section>
 
-                <!-- 2. DPO CONTACT -->
                 <section class="policy-section">
-                    <h2>2. Data Protection Officer (DPO) Contact</h2>
+                    <h2>2. Local-First Architecture &amp; Zero Tracking</h2>
                     <p>
-                        Given the personal nature of this portfolio and absence of large-scale processing under Article
-                        37 GDPR, a designated Data Protection Officer is not required. All inquiries are handled
-                        directly by the Data Controller.
+                        Everything is built as a client-side utility suite. It employs <strong>zero tracking cookies, zero remote analytics scripts, and zero advertising beacons</strong>. All user state (scratchpad buffers, habit trackers, deadlines) persists solely in the browser's <code>localStorage</code> sandbox and never leaves your device.
                     </p>
                 </section>
 
-                <!-- 3. LEGAL BASIS & RETENTION -->
-                <section class="policy-section" id="gdpr">
-                    <h2>3. Legal Basis for Processing &amp; Data Retention Period</h2>
-                    <p>
-                        This website processes minimal technical log data strictly under legitimate interests (Article
-                        6(1)(f) GDPR). The data retention period is strictly ephemeral: connection logs are retained
-                        only for real-time edge routing and discarded immediately.
-                    </p>
-                </section>
-
-                <!-- 4. COOKIE POLICY -->
-                <section class="policy-section" id="cookies">
-                    <h2>4. Cookie Policy &amp; Tracking Technologies</h2>
-                    <p>
-                        This website employs zero cookies, zero local storage tracking, and zero advertising or
-                        analytics tracking pixels. All digital tools execute 100% client-side inside the visitor's local
-                        browser sandbox.
-                    </p>
-                </section>
-
-                <!-- 5. DATA SUBJECT RIGHTS -->
                 <section class="policy-section">
-                    <h2>5. Data Subject Rights</h2>
+                    <h2>3. Legal Basis for Processing (GDPR Art. 6)</h2>
                     <p>
-                        Under GDPR, visitors hold data subject rights including the right of access, rectification,
-                        erasure, restriction of processing, data portability, and the right to object.
+                        Connection metadata is processed ephemerally on Cloudflare Edge servers strictly under legitimate interests (Article 6(1)(f) GDPR) for real-time edge routing and DDoS mitigation. Connection logs are discarded immediately.
                     </p>
                 </section>
 
-                <!-- 6. RECIPIENTS & TRANSFERS -->
-                <section class="policy-section" id="recipients">
-                    <h2>6. Recipients of Personal Data &amp; International Data Transfers</h2>
-                    <p>
-                        <strong>Recipients of personal data:</strong> There are no third-party recipients or categories
-                        of recipients of personal data. Personal data is never sold, leased, or transferred. Technical
-                        network routing and edge caching are handled via Cloudflare Edge servers acting as data
-                        processors under Standard Contractual Clauses (SCCs).
-                    </p>
-                </section>
-
-                <!-- 7. SUPERVISORY AUTHORITY -->
                 <section class="policy-section">
-                    <h2>7. Supervisory Authority</h2>
+                    <h2>4. Data Subject Rights</h2>
                     <p>
-                        Visitors have the right to lodge a complaint with their supervisory authority, such as the
-                        Swedish Authority for Privacy Protection (Integritetsskyddsmyndigheten — IMY).
+                        Visitors hold full data subject rights under GDPR Articles 15–22. Because Everything does not store your data on external servers, clearing your browser's site data completely erases all personal state.
                     </p>
                 </section>
 
-                <!-- 8. TERMS OF SERVICE -->
-                <section class="policy-section" id="terms">
-                    <h2>8. Terms of Service</h2>
+                <section class="policy-section">
+                    <h2>5. Terms of Service &amp; MIT License</h2>
                     <p>
-                        All open-source source code repositories, research papers, and applications presented on this
-                        portfolio are provided for educational demonstration under the MIT License.
+                        All source code and documentation are distributed under the MIT License. The software is provided "as is", without warranty of any kind.
                     </p>
                 </section>
 
-                <!-- 9. ACCEPTABLE USE -->
-                <section class="policy-section" id="acceptable-use">
-                    <h2>9. Acceptable Use Policy</h2>
+                <section class="policy-section">
+                    <h2>6. Accessibility Statement</h2>
                     <p>
-                        Visitors may view, inspect, and fork open-source demo projects in accordance with their
-                        respective open-source licenses. Automated crawling that causes denial of service or network
-                        degradation is strictly prohibited.
-                    </p>
-                </section>
-
-                <!-- 10. DMCA & COPYRIGHT -->
-                <section class="policy-section" id="copyright">
-                    <h2>10. DMCA &amp; Copyright Notice</h2>
-                    <p>
-                        Original content, vector graphics, and designs are &copy; 2026 Adam Nordling. Open-source source
-                        code is subject to respective software repository licenses.
-                    </p>
-                </section>
-
-                <!-- 11. REFUND & RETURNS -->
-                <section class="policy-section" id="refunds">
-                    <h2>11. Refund &amp; Returns Policy</h2>
-                    <p>
-                        This portfolio is a personal engineering showcase and does not sell goods, commercial services,
-                        or paid subscriptions. Because no financial transactions occur on this site, no refund or
-                        returns policies are applicable.
-                    </p>
-                </section>
-
-                <!-- 12. ACCESSIBILITY -->
-                <section class="policy-section" id="accessibility">
-                    <h2>12. Accessibility Statement</h2>
-                    <p>
-                        This website is committed to ensuring digital accessibility in accordance with the
-                        <strong>Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</strong> standard (WCAG 2.1 AA
-                        conformance) and the EU Web Accessibility Directive (Directive 2016/2102).
+                        Everything conforms to <strong>WCAG 2.1 Level AA</strong> standards and EU Directive 2016/2102.
                     </p>
                 </section>
             </div>
 
             <footer class="policy-footer">
-                <a href="/" class="back-btn">&larr; Back to Portfolio</a>
-                <span class="footer-meta">Zero Cookies · Edge Routed</span>
+                <a href="/" class="back-btn">&larr; Return to Everything Suite</a>
+                <span class="footer-meta">Zero Cookies · 100% Client-Side</span>
             </footer>
         </main>
-
-        <script>
-            // 1. Disable browser automatic scroll restoration
-            if ('scrollRestoration' in history) {
-                history.scrollRestoration = 'manual';
-            }
-
-            function lockToTop() {
-                var container = document.getElementById('policy-scroll-container');
-                if (container) {
-                    container.scrollTop = 0;
-                }
-                window.scrollTo(0, 0);
-                document.documentElement.scrollTop = 0;
-                document.body.scrollTop = 0;
-            }
-
-            // 2. Strip any anchor hash so the browser never auto-jumps to the bottom
-            if (window.location.hash) {
-                try {
-                    history.replaceState(null, '', window.location.pathname + window.location.search);
-                } catch (err) {}
-            }
-
-            // 3. Unconditionally lock to top across all lifecycle events
-            lockToTop();
-            window.addEventListener('DOMContentLoaded', lockToTop);
-            window.addEventListener('load', lockToTop);
-            window.addEventListener('pageshow', lockToTop);
-
-            // 4. Escape key returns to portfolio
-            window.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    window.location.href = '/';
-                }
-            });
-        </script>
     </body>
 </html>

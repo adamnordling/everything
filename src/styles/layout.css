@@ -297,10 +297,6 @@
         padding-bottom: 0;
     }
 
-    .view-panel[style*='display: none'] {
-        display: none !important;
-    }
-
     .view-panel {
         display: flex;
         flex-direction: column;
@@ -308,6 +304,12 @@
         min-width: 0;
     }
 
+    /* Start all sub-tool views hidden; router.ts displays them on click */
+    .view-panel[id^='view-tool-'] {
+        display: none;
+    }
+
+    /* MODALS */
     /* MODALS */
     .modal-backdrop {
         position: fixed;
@@ -316,7 +318,7 @@
         height: 100%;
         background: rgba(18, 24, 40, 0.45);
         backdrop-filter: blur(5px);
-        display: flex;
+        display: none; /* <--- MUST BE NONE BY DEFAULT (NOT FLEX) */
         align-items: center;
         justify-content: center;
         z-index: 10000;
@@ -449,11 +451,15 @@
 
     .pill-edge {
         background: rgba(243, 128, 32, 0.1) !important;
-        border: 1px solid rgba(243, 128, 32, 0.3) !important;
-        color: #f38020 !important;
+        border: 1px solid rgba(243, 128, 32, 0.35) !important;
+        color: #9a3412 !important; /* Passes WCAG 4.5:1 on light mode */
         font-family: var(--font-mono);
-        font-size: 0.7rem !important;
+        font-size: 0.75rem !important; /* 12px for mobile readability */
         font-weight: 700;
+    }
+
+    html.dark-theme .pill-edge {
+        color: #fb923c !important; /* Passes WCAG on dark mode */
     }
 
     .footer-tagline {
@@ -731,6 +737,64 @@
 
     /* 7. REMOVE SCRATCHPAD ON MOBILE */
     .scratchpad-block {
+        display: none !important;
+    }
+
+    /* =============================================================================
+   PRINT STYLESHEET (WCAG & Paper Optimized)
+   ============================================================================= */
+    @media print {
+        /* Hide navigation bars, mobile bars, backdrop, and footer actions */
+        .mobile-top-bar,
+        .app-sidebar,
+        .sidebar-backdrop,
+        .backup-actions-bar,
+        .footer-theme-toggle-row,
+        #modal-weather-loc,
+        #modal-tz-picker,
+        button {
+            display: none !important;
+        }
+
+        body,
+        .app-layout,
+        .app-main,
+        .stage-content {
+            background: #ffffff !important;
+            color: #000000 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        .dashboard-tier {
+            display: block !important;
+            page-break-inside: avoid;
+        }
+
+        .dash-block,
+        .calendar-agenda-item,
+        .agenda-item {
+            border: 1px solid #cccccc !important;
+            page-break-inside: avoid;
+            margin-bottom: 16px !important;
+            padding: 12px !important;
+        }
+
+        a[href]::after {
+            content: ' (' attr(href) ')';
+            font-size: 0.75rem;
+        }
+
+        /* Omit external protocol links from printing raw long URLs */
+        a[href^='#']::after,
+        a[href^='javascript:']::after {
+            content: '';
+        }
+    }
+
+    .is-hidden {
         display: none !important;
     }
 }

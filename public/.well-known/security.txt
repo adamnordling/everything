@@ -1,0 +1,7 @@
+Contact: https://github.com/adamnordling/everything/security/advisories/new
+Contact: https://www.linkedin.com/in/adamnordling
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, sv
+Canonical: https://everything.adamnordling.se/.well-known/security.txt
+Policy: https://everything.adamnordling.se/privacy.html
+Hiring: https://adamnordling.se/

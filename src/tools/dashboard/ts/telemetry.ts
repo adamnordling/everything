@@ -140,7 +140,7 @@ export function initSystemIntel(): void {
                 const data = (await res.json()) as { ip: string };
                 if (data.ip && data.ip.includes(':')) {
                     ipv6Text.textContent = 'Dual-Stack (IPv6 Active)';
-                    ipv6Text.style.color = 'var(--accent-mint)';
+                    ipv6Text.className = 'hud-v text-accessible-green';
                 } else {
                     ipv6Text.textContent = 'IPv4-Only (No IPv6)';
                 }
@@ -315,19 +315,27 @@ export function initSystemIntel(): void {
             cpuBenchText.textContent = `${mops.toLocaleString()} Mops/s Index`;
         };
 
-        if ('requestIdleCallback' in window) {
-            window.requestIdleCallback(
-                () => {
+        const runDeferredWork = (): void => {
+            if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(
+                    () => {
+                        runBench();
+                        void fetchNetworkInfo();
+                    },
+                    { timeout: 3500 }
+                );
+            } else {
+                setTimeout(() => {
                     runBench();
                     void fetchNetworkInfo();
-                },
-                { timeout: 2000 }
-            );
+                }, 1500);
+            }
+        };
+
+        if (document.readyState === 'complete') {
+            runDeferredWork();
         } else {
-            setTimeout(() => {
-                runBench();
-                void fetchNetworkInfo();
-            }, 800);
+            window.addEventListener('load', runDeferredWork, { once: true });
         }
     }
 

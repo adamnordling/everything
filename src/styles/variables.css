@@ -72,4 +72,12 @@
         --accent-rose: #fb7185;
         --accent-violet: #c084fc;
     }
+
+    /* Add accessible indicator colors */
+    .text-accessible-green {
+        color: #047857; /* 5.1:1 on white, passes AA & AAA large text */
+    }
+    html.dark-theme .text-accessible-green {
+        color: #34d399; /* 10.5:1 on #0c0f17 */
+    }
 }
