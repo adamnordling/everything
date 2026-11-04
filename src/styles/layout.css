@@ -1,7 +1,7 @@
 @layer layout {
     .app-layout {
         display: flex;
-        min-height: 100vh;
+        min-height: auto; /* Changed from 100vh */
         width: 100%;
         max-width: 100%;
         overflow-x: hidden;
@@ -82,9 +82,10 @@
         flex-direction: column;
         flex-shrink: 0;
         z-index: 999;
-        height: 100vh;
+        max-height: 100vh; /* Limits to screen height */
         position: sticky;
         top: 0;
+        align-self: flex-start; /* Prevents stretching app-layout */
     }
 
     .sidebar-header {
@@ -219,10 +220,11 @@
         display: flex;
         flex-direction: column;
         min-width: 0;
+        min-height: 100vh;
     }
 
     .stage-content {
-        padding: clamp(16px, 2.5vw, 36px);
+        padding: clamp(16px, 2.5vw, 36px) clamp(16px, 2.5vw, 36px) 16px; /* 16px bottom */
         display: flex;
         flex-direction: column;
         gap: 0;
@@ -392,35 +394,35 @@
     .app-workstation-footer {
         background-color: var(--bg-surface);
         border-top: 1px solid var(--border-subtle);
-        padding: 36px 0 24px 0;
+        padding: 20px 0 16px 0; /* Compact top & bottom padding */
         width: 100%;
-        display: flex;
-        justify-content: center;
         z-index: 10;
         position: relative;
+        box-sizing: border-box;
     }
 
     .footer-content-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 16px;
         width: 100%;
-        max-width: min(1680px, 98vw);
-        padding: 0 clamp(16px, 2.5vw, 36px);
+        max-width: 100%; /* No 1680px cap - spans the real full width */
+        padding: 0 clamp(20px, 3vw, 48px); /* Padding from the real screen edges */
         box-sizing: border-box;
     }
 
     .footer-primary-row {
-        display: grid;
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
-        gap: 24px;
-        align-items: start;
+        display: flex;
+        justify-content: space-between; /* Brand at REAL left, Docs at REAL right */
+        align-items: flex-start;
+        gap: 28px;
+        width: 100%;
     }
 
     .footer-brand-info {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
     }
 
     .footer-title-line {
@@ -431,37 +433,77 @@
     }
 
     .footer-app-title {
-        font-size: 0.95rem;
-        font-weight: 700;
+        font-size: 0.98rem;
+        font-weight: 800;
         color: var(--text-primary);
+        letter-spacing: -0.01em;
+    }
+
+    .pill-tech {
+        background: transparent !important;
+        border: 1px solid var(--border-bold) !important;
+        color: var(--text-secondary) !important;
+        font-family: var(--font-mono);
+        font-size: 0.7rem !important;
+    }
+
+    .pill-edge {
+        background: rgba(243, 128, 32, 0.1) !important;
+        border: 1px solid rgba(243, 128, 32, 0.3) !important;
+        color: #f38020 !important;
+        font-family: var(--font-mono);
+        font-size: 0.7rem !important;
+        font-weight: 700;
     }
 
     .footer-tagline {
         font-size: 0.76rem;
         color: var(--text-secondary);
         line-height: 1.5;
+        max-width: 520px;
+    }
+
+    .footer-theme-toggle-row {
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .footer-data-hub {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
     }
 
     .footer-hub-label {
         font-family: var(--font-mono);
-        font-size: 0.65rem;
-        font-weight: 700;
+        font-size: 0.66rem;
+        font-weight: 800;
         letter-spacing: 0.06em;
         color: var(--text-muted);
         text-transform: uppercase;
-        margin-bottom: 8px;
         display: block;
+    }
+
+    .footer-hub-desc {
+        font-size: 0.74rem;
+        color: var(--text-secondary);
+        line-height: 1.45;
+        margin: 0;
     }
 
     .backup-actions-bar {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
+        margin-top: 4px;
     }
 
     .footer-links-col {
         display: flex;
         flex-direction: column;
+        gap: 8px;
     }
 
     .footer-icons-list {
@@ -499,11 +541,10 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 10px;
+        width: 100%;
         font-size: 0.72rem;
         color: var(--text-muted);
-        padding-top: 14px;
+        padding-top: 12px;
         border-top: 1px dashed var(--border-subtle);
     }
 
@@ -517,6 +558,7 @@
     .footer-copy-left a {
         color: var(--text-secondary);
         text-decoration: none;
+        font-weight: 600;
     }
 
     .footer-copy-left a:hover {
@@ -524,30 +566,24 @@
         text-decoration: underline;
     }
 
-    .footer-actions-right {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    @media (max-width: 900px) {
+    @media (max-width: 1024px) {
         .footer-primary-row {
             grid-template-columns: 1fr;
-            gap: 24px;
+            gap: 22px;
         }
     }
+
     @media (max-width: 768px) {
         .app-workstation-footer {
-            padding-top: 24px;
+            padding: 22px 0 16px 0;
         }
         .footer-primary-row {
-            flex-direction: column;
             gap: 18px;
         }
         .footer-secondary-row {
             flex-direction: column;
             align-items: flex-start;
-            gap: 8px;
+            gap: 6px;
         }
     }
 

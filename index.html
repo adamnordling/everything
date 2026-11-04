@@ -977,7 +977,7 @@
         <footer class="app-workstation-footer">
             <div class="footer-content-wrapper">
                 <div class="footer-primary-row">
-                    <!-- Left: Brand & Local-First Philosophy -->
+                    <!-- Left: Workstation Architecture & Philosophy -->
                     <div class="footer-brand-info">
                         <div class="footer-title-line">
                             <div class="brand-icon-box sm">
@@ -996,32 +996,17 @@
                             </div>
                             <span class="footer-app-title">Everything</span>
                             <span class="pill-badge">100% Client-Side</span>
-                            <span
-                                class="pill-badge"
-                                style="
-                                    background: transparent;
-                                    border: 1px solid var(--border-subtle);
-                                    color: var(--text-muted);
-                                "
-                                >v1.0.0</span
-                            >
-                            <span
-                                class="pill-badge"
-                                style="
-                                    background: transparent;
-                                    border: 1px dashed var(--border-bold);
-                                    color: var(--text-muted);
-                                "
-                                >Built with Vite + TS</span
-                            >
+                            <span class="pill-badge pill-tech">TypeScript + Vite</span>
+                            <span class="pill-badge pill-tech">CSS Cascade Layers</span>
+                            <span class="pill-badge pill-edge">Cloudflare Edge</span>
                         </div>
                         <p class="footer-tagline">
-                            Zero analytics, zero tracking cookies, zero remote data harvesting. All state persists
-                            strictly inside your browser sandbox.
+                            Zero tracking cookies, zero remote harvesting, zero third-party scripts. All computations
+                            and scratchpad buffers execute strictly within your local browser sandbox.
                         </p>
 
-                        <!-- Theme Toggle & Status Indicator -->
-                        <div style="margin-top: 10px; display: flex; align-items: center; gap: 12px">
+                        <!-- Theme Toggle -->
+                        <div class="footer-theme-toggle-row">
                             <button
                                 type="button"
                                 class="btn-action-pill"
@@ -1045,42 +1030,24 @@
                                     <line x1="1" y1="12" x2="3" y2="12"></line>
                                     <line x1="21" y1="12" x2="23" y2="12"></line>
                                 </svg>
-                                <span>Toggle Theme</span>
+                                <span>Toggle Dark / Light Mode</span>
                             </button>
-                            <span
-                                style="
-                                    font-family: var(--font-mono);
-                                    font-size: 0.72rem;
-                                    color: var(--text-muted);
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 6px;
-                                "
-                            >
-                                <span
-                                    style="
-                                        display: inline-block;
-                                        width: 6px;
-                                        height: 6px;
-                                        background-color: var(--accent-mint);
-                                        border-radius: 50%;
-                                        box-shadow: 0 0 6px var(--accent-mint);
-                                    "
-                                ></span>
-                                Local Operations Ready
-                            </span>
                         </div>
                     </div>
 
-                    <!-- Middle: Data Backup Hub -->
+                    <!-- Middle: Local Workspace Hub & Quick Actions -->
                     <div class="footer-data-hub">
-                        <span class="footer-hub-label">LOCAL DATA STORAGE</span>
+                        <span class="footer-hub-label">LOCAL WORKSPACE &amp; ACTIONS</span>
+                        <p class="footer-hub-desc">
+                            Export or restore your scratchpad buffers, habits, deadlines, and settings to an offline
+                            JSON backup:
+                        </p>
                         <div class="backup-actions-bar">
                             <button
                                 type="button"
                                 class="btn-action-pill"
                                 id="btn-export-data"
-                                title="Export all dashboard data to JSON"
+                                title="Export all workstation data to a JSON file"
                             >
                                 <svg
                                     width="13"
@@ -1100,7 +1067,7 @@
                                 type="button"
                                 class="btn-action-pill"
                                 id="btn-import-data"
-                                title="Import data from JSON backup"
+                                title="Restore workstation state from a JSON backup"
                             >
                                 <svg
                                     width="13"
@@ -1116,6 +1083,24 @@
                                 </svg>
                                 <span>Import JSON</span>
                             </button>
+                            <button
+                                type="button"
+                                class="btn-action-pill highlight"
+                                id="btn-back-to-top"
+                                title="Scroll back to top of page"
+                            >
+                                <svg
+                                    width="13"
+                                    height="13"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2.5"
+                                >
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                                <span>Back to Top</span>
+                            </button>
                             <input
                                 type="file"
                                 id="backup-file-input"
@@ -1126,7 +1111,7 @@
                         </div>
                     </div>
 
-                    <!-- Right: Navigation & External Links -->
+                    <!-- Right: Network & Privacy Documentation -->
                     <div class="footer-links-col">
                         <span class="footer-hub-label">CONNECTIONS &amp; DOCS</span>
                         <div class="footer-icons-list">
@@ -1142,7 +1127,7 @@
                                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
                                 </svg>
-                                <span>Portfolio</span>
+                                <span>Portfolio Portal</span>
                             </a>
                             <a
                                 href="https://github.com/adamnordling/everything"
@@ -1157,7 +1142,7 @@
                                         d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
                                     ></path>
                                 </svg>
-                                <span>GitHub</span>
+                                <span>GitHub Source</span>
                             </a>
                             <a
                                 href="https://www.linkedin.com/in/adamnordling"
@@ -1172,7 +1157,6 @@
                                 </svg>
                                 <span>LinkedIn</span>
                             </a>
-                            <!-- Restored GDPR/Privacy Link -->
                             <a href="/privacy.html" class="footer-icon-link">
                                 <svg
                                     width="14"
@@ -1190,14 +1174,14 @@
                     </div>
                 </div>
 
-                <!-- Secondary Row: Copyright & Top action -->
+                <!-- Secondary Row: Clean Metadata -->
                 <div class="footer-secondary-row">
                     <div class="footer-copy-left">
                         <span
                             >&copy; 2026
                             <a href="https://adamnordling.se/" target="_blank" rel="noopener">Adam Nordling</a></span
                         >
-                        <span class="footer-dot">·</span>
+                        <span class="footer-dot">&middot;</span>
                         <span
                             >Released under the
                             <a
@@ -1207,24 +1191,8 @@
                                 >MIT License</a
                             ></span
                         >
-                        <span class="footer-dot">·</span>
-                        <span>No cookies or remote logging</span>
-                    </div>
-
-                    <div class="footer-actions-right">
-                        <button type="button" class="btn-action-pill" id="btn-back-to-top" title="Scroll to top">
-                            <svg
-                                width="13"
-                                height="13"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2.5"
-                            >
-                                <polyline points="18 15 12 9 6 15"></polyline>
-                            </svg>
-                            <span>Back to Top</span>
-                        </button>
+                        <span class="footer-dot">&middot;</span>
+                        <span>Zero cookies &middot; Edge routed via Cloudflare Pages</span>
                     </div>
                 </div>
             </div>
