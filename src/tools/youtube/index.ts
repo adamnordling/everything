@@ -1,6 +1,7 @@
 // =============================================================================
-// YOUTUBE PRECISION STUDIO & DOWNLOAD ENGINE
+// YOUTUBE PRECISION STREAM STUDIO & EXTRACTOR (STRICT TYPESCRIPT)
 // =============================================================================
+
 import { req } from '../../core/dom';
 import template from './youtubeView.html?raw';
 
@@ -10,7 +11,7 @@ export interface YtStudioState {
     playlistId: string | null;
     isPlaylistMode: boolean;
     mediaType: 'audio' | 'video';
-    audioFormat: 'wav' | 'flac' | 'mp3' | 'opus' | 'm4a' | 'aac';
+    audioFormat: 'mp3' | 'wav' | 'flac' | 'opus' | 'm4a';
     videoFormat: 'mp4' | 'mkv' | 'webm';
     videoQuality: 'best' | '2160' | '1440' | '1080' | '720';
     timeTrimEnabled: boolean;
@@ -22,50 +23,48 @@ export interface YtStudioState {
     playlistEnd: number;
 }
 
-const STORAGE_KEY = 'everything_yt_settings';
-
+const STORAGE_KEY = 'everything_yt_settings_v3';
+const DEFAULT_VIDEO_URL = 'https://www.youtube.com/watch?v=aqz-KE-bpKQ'; // Big Buck Bunny 4K
 const BLACK_THUMBNAIL =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='100%25' height='100%25' fill='%23000000'/%3E%3C/svg%3E";
 
 const DEFAULT_STATE: YtStudioState = {
-    url: '',
-    videoId: '',
+    url: DEFAULT_VIDEO_URL,
+    videoId: 'aqz-KE-bpKQ',
     playlistId: null,
     isPlaylistMode: false,
     mediaType: 'audio',
-    audioFormat: 'wav',
+    audioFormat: 'mp3',
     videoFormat: 'mp4',
-    videoQuality: 'best',
+    videoQuality: '1080',
     timeTrimEnabled: false,
     startTime: '00:00:00',
-    endTime: '01:00:00',
+    endTime: '00:30:00',
     volumePercent: 100,
     ignorePlaylistErrors: true,
     playlistStart: 1,
     playlistEnd: 50
 };
 
-let isInitialized = false;
+let isYoutubeInitialized = false;
 
 export function initYoutube(): void {
-    // Load persisted state or fallback
     const stage = req('#view-tool-youtube');
     if (!stage.hasChildNodes()) {
         stage.innerHTML = template;
     }
-    if (isInitialized) return;
-    isInitialized = true;
+
+    if (isYoutubeInitialized) return;
+    isYoutubeInitialized = true;
 
     let state: YtStudioState = { ...DEFAULT_STATE };
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         try {
             state = { ...DEFAULT_STATE, ...(JSON.parse(saved) as Partial<YtStudioState>) };
-
-            if (state.videoId === 'dQw4w9WgXcQ' || state.url.includes('dQw4w9WgXcQ')) {
-                state.url = '';
-                state.videoId = '';
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            if (!state.url) {
+                state.url = DEFAULT_VIDEO_URL;
+                state.videoId = 'aqz-KE-bpKQ';
             }
         } catch {
             state = { ...DEFAULT_STATE };
@@ -76,7 +75,7 @@ export function initYoutube(): void {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         } catch {
-            // Storage quota safe guard
+            // Storage quota safety
         }
     };
 
@@ -90,10 +89,14 @@ export function initYoutube(): void {
     const previewAuthor = document.getElementById('yt-preview-author');
     const previewBadge = document.getElementById('yt-preview-badge');
 
-    const btnPresetBinaural = document.getElementById('yt-preset-binaural');
-    const btnPresetCutter = document.getElementById('yt-preset-cutter');
-    const btnPreset4k = document.getElementById('yt-preset-4k');
-    const btnPresetPlaylist = document.getElementById('yt-preset-playlist');
+    // Presets
+    const presetMp3 = document.getElementById('yt-preset-mp3');
+    const presetWav = document.getElementById('yt-preset-wav');
+    const preset1080p = document.getElementById('yt-preset-1080p');
+    const preset4k = document.getElementById('yt-preset-4k');
+    const presetCutter = document.getElementById('yt-preset-cutter');
+    const presetPlaylist = document.getElementById('yt-preset-playlist');
+    const presetButtons = document.querySelectorAll('.studio-preset-bar .preset-chip-btn');
 
     const radioSingle = document.getElementById('yt-mode-single') as HTMLInputElement | null;
     const radioPlaylist = document.getElementById('yt-mode-playlist') as HTMLInputElement | null;
@@ -111,17 +114,18 @@ export function initYoutube(): void {
     const startInput = document.getElementById('yt-trim-start') as HTMLInputElement | null;
     const endInput = document.getElementById('yt-trim-end') as HTMLInputElement | null;
     const trimDurationDisplay = document.getElementById('yt-trim-duration');
-    const btnTrim6h = document.getElementById('yt-trim-6h-btn');
     const btnTrim1h = document.getElementById('yt-trim-1h-btn');
+    const btnTrim30m = document.getElementById('yt-trim-30m-btn');
     const btnTrimReset = document.getElementById('yt-trim-reset-btn');
 
     const volumeSlider = document.getElementById('yt-volume-slider') as HTMLInputElement | null;
     const volumeNumber = document.getElementById('yt-volume-number') as HTMLInputElement | null;
     const volumeDbDisplay = document.getElementById('yt-volume-db');
     const btnVol5 = document.getElementById('yt-vol-5-btn');
-    const btnVol25 = document.getElementById('yt-vol-25-btn');
     const btnVol50 = document.getElementById('yt-vol-50-btn');
     const btnVol100 = document.getElementById('yt-vol-100-btn');
+    const btnVol125 = document.getElementById('yt-vol-125-btn');
+    const volumePresetBtns = document.querySelectorAll('.volume-presets-row .preset-chip-btn');
 
     const ignoreErrorsCheck = document.getElementById('yt-pl-ignore-errors') as HTMLInputElement | null;
     const plStartInput = document.getElementById('yt-pl-start') as HTMLInputElement | null;
@@ -129,7 +133,7 @@ export function initYoutube(): void {
 
     const commandTextarea = document.getElementById('yt-command-output') as HTMLTextAreaElement | null;
     const copyCommandBtn = document.getElementById('yt-copy-cmd-btn');
-    const platformTabs = document.querySelectorAll('.cmd-tab-btn');
+    const platformTabs = document.querySelectorAll('.terminal-tabs-left .hb-tab-btn');
 
     let currentPlatform: 'ytdlp' | 'bash' = 'ytdlp';
 
@@ -152,13 +156,6 @@ export function initYoutube(): void {
             } else {
                 videoId = urlObj.searchParams.get('v') ?? '';
             }
-
-            const timeParam = urlObj.searchParams.get('t');
-            if (timeParam && startInput) {
-                const totalSeconds = parseTimeStringToSeconds(timeParam);
-                startInput.value = formatSecondsToTimeString(totalSeconds);
-                state.startTime = startInput.value;
-            }
         } catch {
             if (/^[a-zA-Z0-9_-]{11}$/.test(cleanUrl)) {
                 videoId = cleanUrl;
@@ -170,17 +167,6 @@ export function initYoutube(): void {
 
     function parseTimeStringToSeconds(timeStr: string): number {
         const clean = timeStr.replace(/[^\d:hms]/g, '');
-        if (clean.includes('h') || clean.includes('m') || clean.includes('s')) {
-            let total = 0;
-            const h = /(\d+)h/.exec(clean);
-            const m = /(\d+)m/.exec(clean);
-            const s = /(\d+)s/.exec(clean);
-            if (h) total += parseInt(h[1], 10) * 3600;
-            if (m) total += parseInt(m[1], 10) * 60;
-            if (s) total += parseInt(s[1], 10);
-            return total;
-        }
-
         const parts = clean.split(':').map(p => parseInt(p, 10) || 0);
         if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
         if (parts.length === 2) return parts[0] * 60 + parts[1];
@@ -196,7 +182,7 @@ export function initYoutube(): void {
     }
 
     if (previewThumb) {
-        previewThumb.addEventListener('error', () => {
+        previewThumb.addEventListener('error', (): void => {
             previewThumb.src = BLACK_THUMBNAIL;
         });
     }
@@ -210,9 +196,6 @@ export function initYoutube(): void {
             return;
         }
 
-        if (previewTitle) previewTitle.textContent = 'Fetching stream information...';
-        if (previewAuthor) previewAuthor.textContent = 'Connecting to Google CDN...';
-
         if (videoId && previewThumb) {
             previewThumb.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
         }
@@ -223,9 +206,9 @@ export function initYoutube(): void {
 
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => {
+            const timeoutId = setTimeout((): void => {
                 controller.abort();
-            }, 2000);
+            }, 2500);
 
             const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(targetUrl)}&format=json`, {
                 signal: controller.signal
@@ -239,8 +222,9 @@ export function initYoutube(): void {
                 if (previewThumb && data.thumbnail_url) previewThumb.src = data.thumbnail_url;
             }
         } catch {
-            if (previewTitle) previewTitle.textContent = state.isPlaylistMode ? 'Active Playlist' : `Video: ${videoId}`;
-            if (previewAuthor) previewAuthor.textContent = 'Target Stream Verified';
+            if (previewTitle)
+                previewTitle.textContent = state.isPlaylistMode ? 'Active Playlist Target' : `Video ID: ${videoId}`;
+            if (previewAuthor) previewAuthor.textContent = 'Stream Endpoint Ready';
         }
 
         if (previewBadge) {
@@ -249,6 +233,14 @@ export function initYoutube(): void {
     }
 
     function updateDurationCalculation(): void {
+        if (!state.timeTrimEnabled) {
+            if (trimDurationDisplay) {
+                trimDurationDisplay.textContent = 'Slicing Inactive (Full stream will be extracted)';
+                trimDurationDisplay.style.color = 'var(--text-secondary)';
+            }
+            return;
+        }
+
         const startSec = parseTimeStringToSeconds(state.startTime);
         const endSec = parseTimeStringToSeconds(state.endTime);
 
@@ -262,10 +254,10 @@ export function initYoutube(): void {
 
         const diffSec = endSec - startSec;
         const diffStr = formatSecondsToTimeString(diffSec);
-        const hours = (diffSec / 3600).toFixed(2);
+        const minutes = Math.round(diffSec / 60);
 
         if (trimDurationDisplay) {
-            trimDurationDisplay.textContent = `Trim Section: ${diffStr} (${hours} hrs to download)`;
+            trimDurationDisplay.textContent = `Active Range Slice: ${diffStr} (~${minutes} mins extracted via HTTP Range)`;
             trimDurationDisplay.style.color = 'var(--accent-mint)';
         }
     }
@@ -273,12 +265,13 @@ export function initYoutube(): void {
     function updateVolumeDbDisplay(pct: number): void {
         if (!volumeDbDisplay) return;
         if (pct <= 0) {
-            volumeDbDisplay.textContent = '-∞ dB (Muted)';
+            volumeDbDisplay.textContent = 'Muted (0%)';
             return;
         }
         const ratio = pct / 100;
-        const db = 20 * Math.log10(ratio);
-        volumeDbDisplay.textContent = `${pct}% · ${db.toFixed(1)} dB`;
+        const db = (20 * Math.log10(ratio)).toFixed(1);
+        const sign = Number(db) > 0 ? '+' : '';
+        volumeDbDisplay.textContent = `${pct}% · ${sign}${db} dB`;
     }
 
     function sanitizeShellArg(val: string): string {
@@ -309,13 +302,12 @@ export function initYoutube(): void {
             flags.push('--no-playlist');
         }
 
-        // Precision Time Trimming (Single declaration with anti-403 headers)
+        // Precision Range Slicing
         if (state.timeTrimEnabled) {
             const safeStart = sanitizeShellArg(state.startTime);
             const safeEnd = sanitizeShellArg(state.endTime);
             flags.push(`--download-sections "*${safeStart}-${safeEnd}"`);
             flags.push('--force-keyframes-at-cuts');
-            flags.push('--downloader-args "ffmpeg_i:-headers Referer:https://www.youtube.com/"');
         }
 
         if (isAudio) {
@@ -360,6 +352,37 @@ export function initYoutube(): void {
         commandTextarea.value = getGeneratedCommand();
     }
 
+    function syncUiFromState(): void {
+        if (urlInput) urlInput.value = state.url;
+        if (radioSingle) radioSingle.checked = !state.isPlaylistMode;
+        if (radioPlaylist) radioPlaylist.checked = state.isPlaylistMode;
+        if (playlistOptionsCard) playlistOptionsCard.style.display = state.isPlaylistMode ? 'flex' : 'none';
+
+        if (selectMediaType) selectMediaType.value = state.mediaType;
+        if (selectAudioFormat) selectAudioFormat.value = state.audioFormat;
+        if (selectVideoFormat) selectVideoFormat.value = state.videoFormat;
+        if (selectVideoQuality) selectVideoQuality.value = state.videoQuality;
+
+        if (audioOptionsGroup) audioOptionsGroup.style.display = state.mediaType === 'audio' ? 'flex' : 'none';
+        if (videoOptionsGroup) videoOptionsGroup.style.display = state.mediaType === 'video' ? 'flex' : 'none';
+
+        if (trimCheckbox) trimCheckbox.checked = state.timeTrimEnabled;
+        if (trimInputsContainer) trimInputsContainer.style.display = state.timeTrimEnabled ? 'grid' : 'none';
+        if (startInput) startInput.value = state.startTime;
+        if (endInput) endInput.value = state.endTime;
+
+        if (volumeSlider) volumeSlider.value = String(state.volumePercent);
+        if (volumeNumber) volumeNumber.value = String(state.volumePercent);
+
+        if (ignoreErrorsCheck) ignoreErrorsCheck.checked = state.ignorePlaylistErrors;
+        if (plStartInput) plStartInput.value = String(state.playlistStart);
+        if (plEndInput) plEndInput.value = String(state.playlistEnd);
+
+        updateVolumeDbDisplay(state.volumePercent);
+        updateDurationCalculation();
+        renderCommand();
+    }
+
     function syncUrlChange(): void {
         if (!urlInput) return;
         state.url = urlInput.value.trim();
@@ -369,56 +392,96 @@ export function initYoutube(): void {
 
         if (parsed.playlistId) {
             state.isPlaylistMode = true;
-            if (radioPlaylist) radioPlaylist.checked = true;
-            if (radioSingle) radioSingle.checked = false;
-            if (playlistOptionsCard) playlistOptionsCard.style.display = 'block';
-        } else {
+        } else if (!state.url.includes('list=')) {
             state.isPlaylistMode = false;
-            if (radioSingle) radioSingle.checked = true;
-            if (radioPlaylist) radioPlaylist.checked = false;
-            if (playlistOptionsCard) playlistOptionsCard.style.display = 'none';
         }
 
         persist();
+        syncUiFromState();
         void fetchMetadata(state.videoId);
-        renderCommand();
     }
 
-    // Populate initial inputs
-    if (urlInput) urlInput.value = state.url;
-    if (radioSingle) radioSingle.checked = !state.isPlaylistMode;
-    if (radioPlaylist) radioPlaylist.checked = state.isPlaylistMode;
-    if (playlistOptionsCard) playlistOptionsCard.style.display = state.isPlaylistMode ? 'block' : 'none';
+    function setActivePresetChip(activeBtn: HTMLElement | null): void {
+        presetButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+        if (activeBtn) activeBtn.classList.add('active');
+    }
 
-    if (selectMediaType) selectMediaType.value = state.mediaType;
-    if (selectAudioFormat) selectAudioFormat.value = state.audioFormat;
-    if (selectVideoFormat) selectVideoFormat.value = state.videoFormat;
-    if (selectVideoQuality) selectVideoQuality.value = state.videoQuality;
+    // Bind Presets
+    presetMp3?.addEventListener('click', (): void => {
+        state.mediaType = 'audio';
+        state.audioFormat = 'mp3';
+        state.timeTrimEnabled = false;
+        state.volumePercent = 100;
+        state.isPlaylistMode = false;
+        setActivePresetChip(presetMp3);
+        persist();
+        syncUiFromState();
+    });
 
-    if (audioOptionsGroup) audioOptionsGroup.style.display = state.mediaType === 'audio' ? 'flex' : 'none';
-    if (videoOptionsGroup) videoOptionsGroup.style.display = state.mediaType === 'video' ? 'flex' : 'none';
+    presetWav?.addEventListener('click', (): void => {
+        state.mediaType = 'audio';
+        state.audioFormat = 'wav';
+        state.timeTrimEnabled = false;
+        state.volumePercent = 100;
+        state.isPlaylistMode = false;
+        setActivePresetChip(presetWav);
+        persist();
+        syncUiFromState();
+    });
 
-    if (trimCheckbox) trimCheckbox.checked = state.timeTrimEnabled;
-    if (trimInputsContainer) trimInputsContainer.style.display = state.timeTrimEnabled ? 'grid' : 'none';
-    if (startInput) startInput.value = state.startTime;
-    if (endInput) endInput.value = state.endTime;
+    preset1080p?.addEventListener('click', (): void => {
+        state.mediaType = 'video';
+        state.videoFormat = 'mp4';
+        state.videoQuality = '1080';
+        state.timeTrimEnabled = false;
+        state.volumePercent = 100;
+        state.isPlaylistMode = false;
+        setActivePresetChip(preset1080p);
+        persist();
+        syncUiFromState();
+    });
 
-    if (volumeSlider) volumeSlider.value = String(state.volumePercent);
-    if (volumeNumber) volumeNumber.value = String(state.volumePercent);
+    preset4k?.addEventListener('click', (): void => {
+        state.mediaType = 'video';
+        state.videoFormat = 'mp4';
+        state.videoQuality = 'best';
+        state.timeTrimEnabled = false;
+        state.volumePercent = 100;
+        state.isPlaylistMode = false;
+        setActivePresetChip(preset4k);
+        persist();
+        syncUiFromState();
+    });
 
-    if (ignoreErrorsCheck) ignoreErrorsCheck.checked = state.ignorePlaylistErrors;
-    if (plStartInput) plStartInput.value = String(state.playlistStart);
-    if (plEndInput) plEndInput.value = String(state.playlistEnd);
+    presetCutter?.addEventListener('click', (): void => {
+        state.timeTrimEnabled = true;
+        state.startTime = '00:00:00';
+        state.endTime = '00:30:00';
+        setActivePresetChip(presetCutter);
+        persist();
+        syncUiFromState();
+    });
 
+    presetPlaylist?.addEventListener('click', (): void => {
+        state.isPlaylistMode = true;
+        state.ignorePlaylistErrors = true;
+        setActivePresetChip(presetPlaylist);
+        persist();
+        syncUiFromState();
+    });
+
+    // Inputs
     let urlDebounce: number | undefined;
-    urlInput?.addEventListener('input', () => {
+    urlInput?.addEventListener('input', (): void => {
         window.clearTimeout(urlDebounce);
         urlDebounce = window.setTimeout(syncUrlChange, 350);
     });
 
     fetchBtn?.addEventListener('click', syncUrlChange);
 
-    pasteBtn?.addEventListener('click', () => {
+    pasteBtn?.addEventListener('click', (): void => {
         void (async (): Promise<void> => {
             try {
                 const text = await navigator.clipboard.readText();
@@ -432,225 +495,145 @@ export function initYoutube(): void {
         })();
     });
 
-    btnPresetBinaural?.addEventListener('click', () => {
-        state.mediaType = 'audio';
-        state.audioFormat = 'wav';
-        state.volumePercent = 5;
-        state.timeTrimEnabled = false;
-
-        if (selectMediaType) selectMediaType.value = 'audio';
-        if (selectAudioFormat) selectAudioFormat.value = 'wav';
-        if (audioOptionsGroup) audioOptionsGroup.style.display = 'flex';
-        if (videoOptionsGroup) videoOptionsGroup.style.display = 'none';
-        if (trimCheckbox) trimCheckbox.checked = false;
-        if (trimInputsContainer) trimInputsContainer.style.display = 'none';
-        if (volumeSlider) volumeSlider.value = '5';
-        if (volumeNumber) volumeNumber.value = '5';
-
-        persist();
-        updateVolumeDbDisplay(5);
-        renderCommand();
-    });
-
-    btnPresetCutter?.addEventListener('click', () => {
-        state.timeTrimEnabled = true;
-        state.startTime = '00:00:00';
-        state.endTime = '06:00:00';
-
-        if (trimCheckbox) trimCheckbox.checked = true;
-        if (trimInputsContainer) trimInputsContainer.style.display = 'grid';
-        if (startInput) startInput.value = '00:00:00';
-        if (endInput) endInput.value = '06:00:00';
-
-        persist();
-        updateDurationCalculation();
-        renderCommand();
-    });
-
-    btnPreset4k?.addEventListener('click', () => {
-        state.mediaType = 'video';
-        state.videoFormat = 'mp4';
-        state.videoQuality = '2160';
-        state.volumePercent = 100;
-
-        if (selectMediaType) selectMediaType.value = 'video';
-        if (selectVideoFormat) selectVideoFormat.value = 'mp4';
-        if (selectVideoQuality) selectVideoQuality.value = '2160';
-        if (audioOptionsGroup) audioOptionsGroup.style.display = 'none';
-        if (videoOptionsGroup) videoOptionsGroup.style.display = 'flex';
-        if (volumeSlider) volumeSlider.value = '100';
-        if (volumeNumber) volumeNumber.value = '100';
-
-        persist();
-        updateVolumeDbDisplay(100);
-        renderCommand();
-    });
-
-    btnPresetPlaylist?.addEventListener('click', () => {
-        state.isPlaylistMode = true;
-        state.ignorePlaylistErrors = true;
-        if (radioPlaylist) radioPlaylist.checked = true;
-        if (radioSingle) radioSingle.checked = false;
-        if (playlistOptionsCard) playlistOptionsCard.style.display = 'block';
-        if (ignoreErrorsCheck) ignoreErrorsCheck.checked = true;
-
-        persist();
-        renderCommand();
-    });
-
-    radioSingle?.addEventListener('change', () => {
+    radioSingle?.addEventListener('change', (): void => {
         if (radioSingle.checked) {
             state.isPlaylistMode = false;
-            if (playlistOptionsCard) playlistOptionsCard.style.display = 'none';
             persist();
-            renderCommand();
+            syncUiFromState();
         }
     });
 
-    radioPlaylist?.addEventListener('change', () => {
+    radioPlaylist?.addEventListener('change', (): void => {
         if (radioPlaylist.checked) {
             state.isPlaylistMode = true;
-            if (playlistOptionsCard) playlistOptionsCard.style.display = 'block';
             persist();
-            renderCommand();
+            syncUiFromState();
         }
     });
 
-    selectMediaType?.addEventListener('change', () => {
+    selectMediaType?.addEventListener('change', (): void => {
         state.mediaType = selectMediaType.value as 'audio' | 'video';
-        if (state.mediaType === 'audio') {
-            if (audioOptionsGroup) audioOptionsGroup.style.display = 'flex';
-            if (videoOptionsGroup) videoOptionsGroup.style.display = 'none';
-        } else {
-            if (audioOptionsGroup) audioOptionsGroup.style.display = 'none';
-            if (videoOptionsGroup) videoOptionsGroup.style.display = 'flex';
-        }
         persist();
-        renderCommand();
+        syncUiFromState();
     });
 
-    selectAudioFormat?.addEventListener('change', () => {
+    selectAudioFormat?.addEventListener('change', (): void => {
         state.audioFormat = selectAudioFormat.value as YtStudioState['audioFormat'];
         persist();
         renderCommand();
     });
 
-    selectVideoFormat?.addEventListener('change', () => {
+    selectVideoFormat?.addEventListener('change', (): void => {
         state.videoFormat = selectVideoFormat.value as YtStudioState['videoFormat'];
         persist();
         renderCommand();
     });
 
-    selectVideoQuality?.addEventListener('change', () => {
+    selectVideoQuality?.addEventListener('change', (): void => {
         state.videoQuality = selectVideoQuality.value as YtStudioState['videoQuality'];
         persist();
         renderCommand();
     });
 
-    trimCheckbox?.addEventListener('change', () => {
+    trimCheckbox?.addEventListener('change', (): void => {
         state.timeTrimEnabled = trimCheckbox.checked;
-        if (trimInputsContainer) {
-            trimInputsContainer.style.display = state.timeTrimEnabled ? 'grid' : 'none';
-        }
         persist();
-        updateDurationCalculation();
-        renderCommand();
+        syncUiFromState();
     });
 
-    startInput?.addEventListener('input', () => {
+    startInput?.addEventListener('input', (): void => {
         state.startTime = startInput.value.trim() || '00:00:00';
         persist();
         updateDurationCalculation();
         renderCommand();
     });
 
-    endInput?.addEventListener('input', () => {
-        state.endTime = endInput.value.trim() || '01:00:00';
+    endInput?.addEventListener('input', (): void => {
+        state.endTime = endInput.value.trim() || '00:30:00';
         persist();
         updateDurationCalculation();
         renderCommand();
     });
 
-    btnTrim6h?.addEventListener('click', () => {
-        state.startTime = '00:00:00';
-        state.endTime = '06:00:00';
-        if (startInput) startInput.value = '00:00:00';
-        if (endInput) endInput.value = '06:00:00';
-        persist();
-        updateDurationCalculation();
-        renderCommand();
-    });
-
-    btnTrim1h?.addEventListener('click', () => {
+    btnTrim1h?.addEventListener('click', (): void => {
+        state.timeTrimEnabled = true;
         state.startTime = '00:00:00';
         state.endTime = '01:00:00';
-        if (startInput) startInput.value = '00:00:00';
-        if (endInput) endInput.value = '01:00:00';
         persist();
-        updateDurationCalculation();
-        renderCommand();
+        syncUiFromState();
     });
 
-    btnTrimReset?.addEventListener('click', () => {
+    btnTrim30m?.addEventListener('click', (): void => {
+        state.timeTrimEnabled = true;
         state.startTime = '00:00:00';
-        state.endTime = '00:00:00';
-        if (startInput) startInput.value = '00:00:00';
-        if (endInput) endInput.value = '00:00:00';
+        state.endTime = '00:30:00';
         persist();
-        updateDurationCalculation();
-        renderCommand();
+        syncUiFromState();
     });
 
-    const setVolume = (val: number): void => {
+    btnTrimReset?.addEventListener('click', (): void => {
+        state.timeTrimEnabled = false;
+        state.startTime = '00:00:00';
+        state.endTime = '00:30:00';
+        persist();
+        syncUiFromState();
+    });
+
+    const setVolume = (val: number, activeBtn?: HTMLElement | null): void => {
         state.volumePercent = Math.max(0, Math.min(200, val));
         if (volumeSlider) volumeSlider.value = String(state.volumePercent);
         if (volumeNumber) volumeNumber.value = String(state.volumePercent);
+        volumePresetBtns.forEach(btn => {
+            btn.classList.remove('active');
+        });
+        if (activeBtn) activeBtn.classList.add('active');
         persist();
         updateVolumeDbDisplay(state.volumePercent);
         renderCommand();
     };
 
-    volumeSlider?.addEventListener('input', () => {
-        setVolume(parseInt(volumeSlider.value, 10) || 5);
+    volumeSlider?.addEventListener('input', (): void => {
+        setVolume(parseInt(volumeSlider.value, 10) || 100);
     });
 
-    volumeNumber?.addEventListener('input', () => {
-        setVolume(parseInt(volumeNumber.value, 10) || 5);
+    volumeNumber?.addEventListener('input', (): void => {
+        setVolume(parseInt(volumeNumber.value, 10) || 100);
     });
 
-    btnVol5?.addEventListener('click', () => {
-        setVolume(5);
+    btnVol5?.addEventListener('click', (): void => {
+        setVolume(5, btnVol5);
     });
-    btnVol25?.addEventListener('click', () => {
-        setVolume(25);
+    btnVol50?.addEventListener('click', (): void => {
+        setVolume(50, btnVol50);
     });
-    btnVol50?.addEventListener('click', () => {
-        setVolume(50);
+    btnVol100?.addEventListener('click', (): void => {
+        setVolume(100, btnVol100);
     });
-    btnVol100?.addEventListener('click', () => {
-        setVolume(100);
+    btnVol125?.addEventListener('click', (): void => {
+        setVolume(125, btnVol125);
     });
 
-    ignoreErrorsCheck?.addEventListener('change', () => {
+    ignoreErrorsCheck?.addEventListener('change', (): void => {
         state.ignorePlaylistErrors = ignoreErrorsCheck.checked;
         persist();
         renderCommand();
     });
 
-    plStartInput?.addEventListener('input', () => {
+    plStartInput?.addEventListener('input', (): void => {
         state.playlistStart = parseInt(plStartInput.value, 10) || 1;
         persist();
         renderCommand();
     });
 
-    plEndInput?.addEventListener('input', () => {
+    plEndInput?.addEventListener('input', (): void => {
         state.playlistEnd = parseInt(plEndInput.value, 10) || 0;
         persist();
         renderCommand();
     });
 
+    // Terminal Tabs
     platformTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
+        tab.addEventListener('click', (): void => {
             platformTabs.forEach(t => {
                 t.classList.remove('active');
             });
@@ -661,6 +644,7 @@ export function initYoutube(): void {
         });
     });
 
+    // Toolchain Setup
     type OsKey = 'windows-winget' | 'windows-scoop' | 'macos' | 'linux' | 'python';
 
     const OS_COMMANDS: Record<OsKey, string> = {
@@ -671,7 +655,7 @@ export function initYoutube(): void {
         python: 'pip install -U yt-dlp'
     };
 
-    const osTabs = document.querySelectorAll<HTMLButtonElement>('.os-pill-btn');
+    const osTabs = document.querySelectorAll<HTMLButtonElement>('.os-tab-bar .os-pill-btn');
     const setupCodeDisplay = document.getElementById('setup-code-display');
     const setupCopyBtn = document.getElementById('setup-copy-btn');
     const setupUpdateBtn = document.getElementById('setup-update-btn');
@@ -679,7 +663,7 @@ export function initYoutube(): void {
     let currentOsKey: OsKey = 'windows-winget';
 
     osTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
+        tab.addEventListener('click', (): void => {
             osTabs.forEach(t => {
                 t.classList.remove('active');
             });
@@ -694,36 +678,36 @@ export function initYoutube(): void {
         });
     });
 
-    setupCopyBtn?.addEventListener('click', () => {
+    setupCopyBtn?.addEventListener('click', (): void => {
         const cmdToCopy = OS_COMMANDS[currentOsKey];
         void navigator.clipboard.writeText(cmdToCopy);
         const originalText = setupCopyBtn.textContent;
         setupCopyBtn.textContent = '✓ Copied!';
-        setTimeout(() => {
+        setTimeout((): void => {
             setupCopyBtn.textContent = originalText;
         }, 1400);
     });
 
-    setupUpdateBtn?.addEventListener('click', () => {
+    setupUpdateBtn?.addEventListener('click', (): void => {
         void navigator.clipboard.writeText('yt-dlp -U');
         const originalText = setupUpdateBtn.textContent;
         setupUpdateBtn.textContent = '✓ Copied!';
-        setTimeout(() => {
+        setTimeout((): void => {
             setupUpdateBtn.textContent = originalText;
         }, 1400);
     });
 
-    copyCommandBtn?.addEventListener('click', () => {
+    copyCommandBtn?.addEventListener('click', (): void => {
         if (!commandTextarea) return;
         void navigator.clipboard.writeText(commandTextarea.value);
         const originalText = copyCommandBtn.textContent;
-        copyCommandBtn.textContent = '✓ Copied Command!';
-        setTimeout(() => {
+        copyCommandBtn.textContent = '✓ Copied!';
+        setTimeout((): void => {
             copyCommandBtn.textContent = originalText;
         }, 1400);
     });
 
-    updateVolumeDbDisplay(state.volumePercent);
-    updateDurationCalculation();
-    syncUrlChange();
+    // Boot
+    syncUiFromState();
+    void fetchMetadata(state.videoId);
 }
