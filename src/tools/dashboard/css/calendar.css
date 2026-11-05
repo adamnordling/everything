@@ -152,6 +152,14 @@ html.dark-theme .cal-cell.outside-month {
     justify-content: space-between;
     align-items: center;
     font-size: 0.75rem;
+    gap: 8px;
+    min-width: 0;
+}
+
+.date-intel-card > div:first-child {
+    min-width: 0;
+    flex: 1;
+    word-break: break-word;
 }
 
 #intel-holiday-name {
@@ -162,4 +170,8 @@ html.dark-theme .cal-cell.outside-month {
 #intel-nameday-text {
     color: var(--text-muted);
     font-size: 0.75rem;
+}
+
+#intel-countdown-badge {
+    flex-shrink: 0;
 }

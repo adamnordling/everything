@@ -574,22 +574,79 @@
 
     @media (max-width: 1024px) {
         .footer-primary-row {
-            grid-template-columns: 1fr;
+            flex-direction: column !important;
             gap: 22px;
         }
     }
 
     @media (max-width: 768px) {
         .app-workstation-footer {
-            padding: 22px 0 16px 0;
+            padding: 20px 0 16px 0;
         }
+
+        .footer-content-wrapper {
+            padding: 0 16px;
+            gap: 16px;
+        }
+
         .footer-primary-row {
+            flex-direction: column !important;
             gap: 18px;
         }
+
+        /* Keep brand header clean on small screens by hiding build-tooling pills */
+        .footer-brand-info .pill-tech {
+            display: none !important;
+        }
+
+        .footer-tagline {
+            font-size: 0.74rem;
+            line-height: 1.45;
+            max-width: 100%;
+        }
+
+        /* Hide redundant explanation text on mobile to keep the workspace compact */
+        .footer-hub-desc {
+            display: none !important;
+        }
+
+        /* Format backup buttons into a clean touch-friendly grid */
+        .backup-actions-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            width: 100%;
+            margin-top: 2px;
+        }
+
+        .backup-actions-bar .btn-action-pill {
+            width: 100%;
+            justify-content: center;
+            padding: 7px 10px;
+        }
+
+        .backup-actions-bar #btn-back-to-top {
+            grid-column: span 2;
+        }
+
+        /* Connections & Docs 2x2 grid */
+        .footer-icons-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 12px;
+        }
+
         .footer-secondary-row {
             flex-direction: column;
             align-items: flex-start;
             gap: 6px;
+            font-size: 0.7rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stage-content {
+            padding: 12px 12px 16px;
         }
     }
 

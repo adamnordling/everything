@@ -29,19 +29,29 @@
     min-height: 48px;
 }
 
-.deadline-input-row {
+/* UNIFIED INPUT FORMS */
+.deadline-input-row,
+.task-input-form,
+.habit-input-form {
     display: flex;
     gap: 6px;
     margin-bottom: 10px;
     width: 100%;
+    min-width: 0;
 }
 
-#deadline-input-title {
+#deadline-input-title,
+#daily-task-input,
+#habit-add-input {
     flex: 1;
+    min-width: 0;
 }
 
 #deadline-input-date {
-    width: 130px;
+    width: 110px;
+    flex-shrink: 0;
+    padding: 7px 6px;
+    font-size: 0.78rem;
 }
 
 .deadlines-stream,
@@ -63,11 +73,20 @@
     align-items: center;
     font-size: 0.84rem;
     transition: background 0.15s ease;
+    min-width: 0;
 }
 
 .deadline-row:hover,
 .task-card-row:hover {
     background: var(--bg-hover);
+}
+
+.deadline-row > div:first-child {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .task-check-custom {
@@ -104,13 +123,7 @@
     color: var(--text-muted);
 }
 
-/* MORNING ROUTINE */
-.habit-input-form {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 10px;
-}
-
+/* MORNING ROUTINE CARDS */
 .habit-item-card {
     background: transparent;
     border-radius: 6px;
@@ -119,6 +132,7 @@
     flex-direction: column;
     gap: 4px;
     transition: background 0.15s ease;
+    min-width: 0;
 }
 
 .habit-item-card:hover {
@@ -164,4 +178,26 @@
 .history-badge.missed {
     background: rgba(244, 63, 94, 0.08);
     color: var(--accent-rose);
+}
+
+/* COMPACT MOBILE FINE-TUNING */
+@media (max-width: 480px) {
+    .deadline-input-row,
+    .task-input-form,
+    .habit-input-form {
+        gap: 5px;
+    }
+
+    #deadline-input-date {
+        width: 100px;
+        padding: 6px 4px;
+        font-size: 0.74rem;
+    }
+
+    .deadline-input-row .btn-action-primary,
+    .task-input-form .btn-action-primary,
+    .habit-input-form .btn-action-primary {
+        padding: 6px 10px;
+        font-size: 0.76rem;
+    }
 }

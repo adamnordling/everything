@@ -807,6 +807,7 @@
                             <!-- HÖGER: DEADLINES, DAILY TASKS & MORNING ROUTINE -->
                             <div class="tier-right-stream dash-seamless-agenda">
                                 <!-- DEADLINES -->
+                                <!-- DEADLINES -->
                                 <div class="agenda-item deadlines-agenda-item">
                                     <div class="dash-block-header">
                                         <div class="dash-header-title">
@@ -830,7 +831,7 @@
                                             type="text"
                                             id="deadline-input-title"
                                             class="input-field"
-                                            placeholder="New deadline task..."
+                                            placeholder="New deadline..."
                                             aria-label="New deadline title"
                                             required
                                         />
@@ -856,15 +857,16 @@
                                     <div class="dash-block-header">
                                         <span class="agenda-section-title">DAILY TASKS</span>
                                     </div>
-                                    <form id="daily-task-form">
+                                    <form id="daily-task-form" class="task-input-form">
                                         <input
                                             type="text"
                                             id="daily-task-input"
                                             class="input-field"
-                                            placeholder="Enter a task and press Enter..."
+                                            placeholder="Add daily task..."
                                             aria-label="New daily task description"
                                             required
                                         />
+                                        <button type="submit" class="btn-action-primary">+ Task</button>
                                     </form>
                                     <div class="task-rows-stream" id="daily-task-stream"></div>
                                 </div>
