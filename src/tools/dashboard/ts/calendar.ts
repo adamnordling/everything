@@ -864,11 +864,12 @@ export function initCalendar(onSelectDate: (dateStr: string, activeDeadlines: st
     }
 
     prevBtn?.addEventListener('click', () => {
+        viewDate.setDate(1);
         viewDate.setMonth(viewDate.getMonth() - 1);
         render();
     });
-
     nextBtn?.addEventListener('click', () => {
+        viewDate.setDate(1);
         viewDate.setMonth(viewDate.getMonth() + 1);
         render();
     });

@@ -5,6 +5,7 @@ import { initWeather } from './weather';
 import { initTasks } from './tasks';
 import { initScratchpad } from './scratchpad';
 import { initBackup } from './backup';
+import { initInlineSpeedtest } from './speedtest';
 
 export function initDashboard(): void {
     initClockAndConverter();
@@ -14,6 +15,8 @@ export function initDashboard(): void {
     } catch (err) {
         console.error('Telemetry HUD error:', err);
     }
+
+    initInlineSpeedtest();
 
     let reRenderCalendar: (() => void) | null = null;
     const taskHandlers = initTasks(() => {

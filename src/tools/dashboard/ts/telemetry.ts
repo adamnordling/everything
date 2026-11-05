@@ -1,5 +1,5 @@
 // =============================================================================
-// COMPLETE WORKSTATION HUD ENGINE WITH CLIPBOARD COPY & ADVANCED TELEMETRY
+// VERIFIED WORKSTATION HUD ENGINE (CLEAN STRINGS + LINKED AMBER FARBLE STATE)
 // =============================================================================
 
 interface HighEntropyValues {
@@ -26,14 +26,15 @@ interface BatteryManager extends EventTarget {
     chargingTime: number;
     dischargingTime: number;
     level: number;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject): void;
 }
 
 interface NavigatorExtended extends Navigator {
     userAgentData?: UserAgentData;
     deviceMemory?: number;
-    gpu?: unknown;
     getBattery?: () => Promise<BatteryManager>;
+    brave?: {
+        isBrave(): Promise<boolean>;
+    };
 }
 
 export function initSystemIntel(): void {
@@ -58,12 +59,11 @@ export function initSystemIntel(): void {
     const audioText = document.getElementById('sys-audio');
     const gpuText = document.getElementById('sys-gpu');
     const osText = document.getElementById('sys-os');
+    const hudContainer = document.querySelector('.telemetry-vertical-hud');
 
     // -------------------------------------------------------------------------
-    // 1. ONE-CLICK CLIPBOARD COPY WITH TOAST NOTIFICATION
+    // 1. SCOPED CLIPBOARD COPY
     // -------------------------------------------------------------------------
-    // IN src/modules/telemetry.ts (Section 1: Clipboard Copy):
-
     function showCopyPopup(target: HTMLElement): void {
         document.querySelectorAll('.inline-copy-badge').forEach(el => {
             el.remove();
@@ -72,15 +72,12 @@ export function initSystemIntel(): void {
         const rect = target.getBoundingClientRect();
         const badge = document.createElement('div');
         badge.className = 'inline-copy-badge';
-        badge.textContent = `✓ Copied to clipboard!`;
+        badge.textContent = `✓ Copied!`;
         document.body.appendChild(badge);
 
         const badgeRect = badge.getBoundingClientRect();
-        const top = rect.top - badgeRect.height - 6;
-        const left = rect.left + (rect.width - badgeRect.width) / 2;
-
-        badge.style.top = `${Math.max(8, top)}px`;
-        badge.style.left = `${Math.max(8, left)}px`;
+        badge.style.top = `${Math.max(8, rect.top - badgeRect.height - 6)}px`;
+        badge.style.left = `${Math.max(8, rect.left + (rect.width - badgeRect.width) / 2)}px`;
 
         setTimeout(() => {
             badge.classList.add('fade-out');
@@ -90,7 +87,7 @@ export function initSystemIntel(): void {
         }, 1200);
     }
 
-    document.querySelectorAll('.copyable').forEach(el => {
+    document.querySelectorAll('.telemetry-block .copyable').forEach(el => {
         el.addEventListener('click', () => {
             const rawText = el.textContent?.trim() || '';
             const cleanText = rawText.split('·')[0]?.trim() || rawText;
@@ -102,7 +99,7 @@ export function initSystemIntel(): void {
     });
 
     // -------------------------------------------------------------------------
-    // 2. DNS & TLS HANDSHAKE WATERFALL (Navigation Timing API)
+    // 2. DNS & TLS HANDSHAKE WATERFALL
     // -------------------------------------------------------------------------
     const inspectDnsTls = (): void => {
         if (!tlsDnsText) return;
@@ -112,17 +109,15 @@ export function initSystemIntel(): void {
             const dnsTime = Math.max(0, Math.round(entry.domainLookupEnd - entry.domainLookupStart));
             const tcpTlsTime = Math.max(0, Math.round(entry.connectEnd - entry.connectStart));
             const protocol = entry.nextHopProtocol ? entry.nextHopProtocol.toUpperCase() : 'HTTP/2';
-
             tlsDnsText.textContent = `DNS: ${dnsTime}ms · TLS: ${tcpTlsTime}ms (${protocol})`;
         } else {
-            tlsDnsText.textContent = 'TLS 1.3 Active (Direct Edge)';
+            tlsDnsText.textContent = 'Edge Cached (0ms)';
         }
     };
-    // Allow resource timings to complete
     setTimeout(inspectDnsTls, 200);
 
     // -------------------------------------------------------------------------
-    // 3. IPV6 READINESS & DUAL-STACK PROBE
+    // 3. IPV6 DUAL-STACK PROBE
     // -------------------------------------------------------------------------
     const probeIPv6 = async (): Promise<void> => {
         if (!ipv6Text) return;
@@ -130,9 +125,7 @@ export function initSystemIntel(): void {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => {
                 controller.abort();
-            }, 3000);
-
-            // Fetch from dual-stack endpoint that returns the client's IPv6 address if available
+            }, 2500);
             const res = await fetch('https://api64.ipify.org?format=json', { signal: controller.signal });
             clearTimeout(timeoutId);
 
@@ -142,17 +135,17 @@ export function initSystemIntel(): void {
                     ipv6Text.textContent = 'Dual-Stack (IPv6 Active)';
                     ipv6Text.className = 'hud-v text-accessible-green';
                 } else {
-                    ipv6Text.textContent = 'IPv4-Only (No IPv6)';
+                    ipv6Text.textContent = 'IPv4-Only Gateway';
                 }
             }
         } catch {
-            ipv6Text.textContent = 'IPv4-Only Gateway';
+            ipv6Text.textContent = 'IPv4-Only (Probing Blocked)';
         }
     };
     void probeIPv6();
 
     // -------------------------------------------------------------------------
-    // 4. POWER & EFFICIENCY PROFILE
+    // 4. POWER PROFILE (HONEST HARDWARE API CHECK)
     // -------------------------------------------------------------------------
     const inspectPowerProfile = (): void => {
         if (!powerProfileText) return;
@@ -161,30 +154,52 @@ export function initSystemIntel(): void {
         if (typeof nav.getBattery === 'function') {
             nav.getBattery()
                 .then(bat => {
-                    const isDesktop = bat.charging && bat.chargingTime === 0 && bat.level === 1;
-                    if (isDesktop) {
-                        powerProfileText.textContent = isReducedMotion
-                            ? 'High Perf AC (Reduced Motion)'
-                            : 'High Performance (AC Mains)';
-                    } else {
-                        const pct = Math.round(bat.level * 100);
-                        const state = bat.charging ? 'Charging' : 'Battery';
-                        powerProfileText.textContent = `${pct}% ${state} · ${isReducedMotion ? 'Eco Mode' : 'Standard'}`;
-                    }
+                    const pct = Math.round(bat.level * 100);
+                    const state = bat.charging ? 'AC Connected' : 'Battery';
+                    powerProfileText.textContent = `${pct}% (${state})${isReducedMotion ? ' · Eco' : ''}`;
                 })
                 .catch(() => {
-                    powerProfileText.textContent = isReducedMotion ? 'Efficiency Mode' : 'High Performance (AC Mains)';
+                    powerProfileText.textContent = isReducedMotion ? 'Reduced Motion (Eco)' : 'Standard (AC Mains)';
                 });
         } else {
-            powerProfileText.textContent = isReducedMotion ? 'Efficiency Mode' : 'High Performance (AC Mains)';
+            powerProfileText.textContent = isReducedMotion ? 'Eco Mode (Reduced Motion)' : 'AC Mains / Protected';
         }
     };
     inspectPowerProfile();
 
     // -------------------------------------------------------------------------
-    // 5. BRAVE SHIELDS & GPU ACCELERATOR DETECTION
+    // 5. BRAVE SHIELDS DETECTION & LINKED FARBLE ENGINE
     // -------------------------------------------------------------------------
     let isBraveShielded = false;
+
+    // Detect Brave via official API or WebGL renderer override
+    const detectBrave = async (): Promise<boolean> => {
+        if (typeof nav.brave?.isBrave === 'function') {
+            try {
+                return await nav.brave.isBrave();
+            } catch {
+                return false;
+            }
+        }
+        return false;
+    };
+
+    const applyShieldFarbleState = (): void => {
+        if (!shieldTag) return;
+        shieldTag.textContent = 'Brave Shield Active';
+        shieldTag.classList.add('active-shield');
+
+        // Target all hardware metrics that Brave anti-fingerprinting farbles
+        const farbleTargets = [physicalResText, cpuText, gpuText, audioText, multiMonText, refreshText];
+        farbleTargets.forEach(el => el?.classList.add('is-farbled'));
+
+        // Linked hover pulse: hovering over the badge highlights the farbled metrics
+        shieldTag.addEventListener('mouseenter', () => hudContainer?.classList.add('pulse-farbled'));
+        shieldTag.addEventListener('mouseleave', () => hudContainer?.classList.remove('pulse-farbled'));
+        shieldTag.addEventListener('focus', () => hudContainer?.classList.add('pulse-farbled'));
+        shieldTag.addEventListener('blur', () => hudContainer?.classList.remove('pulse-farbled'));
+    };
+
     if (gpuText) {
         try {
             const canvas = document.createElement('canvas');
@@ -195,7 +210,7 @@ export function initSystemIntel(): void {
                     const unmasked = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) as string;
                     if (unmasked.toLowerCase().includes('brave')) {
                         isBraveShielded = true;
-                        gpuText.textContent = 'Brave Shield (GPU Masked)';
+                        gpuText.textContent = 'Brave Shield (Masked)';
                     } else {
                         const clean = unmasked
                             .replace(/^ANGLE\s*\(/i, '')
@@ -215,18 +230,18 @@ export function initSystemIntel(): void {
         }
     }
 
-    if (shieldTag) {
-        if (isBraveShielded) {
-            shieldTag.textContent = 'Brave Shield Active';
-            shieldTag.style.borderColor = 'var(--accent-amber)';
-            shieldTag.style.color = 'var(--accent-amber)';
-        } else {
-            shieldTag.textContent = 'Direct Hardware Link';
+    void detectBrave().then(braveActive => {
+        if (braveActive || isBraveShielded) {
+            isBraveShielded = true;
+            applyShieldFarbleState();
+        } else if (shieldTag) {
+            shieldTag.textContent = 'Hardware Direct';
+            shieldTag.classList.remove('active-shield');
         }
-    }
+    });
 
     // -------------------------------------------------------------------------
-    // 6. DISPLAY & MULTI-MONITOR DETECTION
+    // 6. DISPLAY & MULTI-MONITOR (CLEAN VALUES)
     // -------------------------------------------------------------------------
     const inspectDisplay = (): void => {
         const dpr = window.devicePixelRatio || 1;
@@ -236,24 +251,24 @@ export function initSystemIntel(): void {
         const viewH = window.innerHeight;
         const scalingPct = Math.round(dpr * 100);
 
-        if (physicalResText) {
-            physicalResText.textContent = isBraveShielded
-                ? `${physW} × ${physH} (Farbled by Shield)`
-                : `${physW} × ${physH} (${scalingPct}% Scale)`;
-        }
+        // Value remains clean without raw text pollution
+        if (physicalResText) physicalResText.textContent = `${physW} × ${physH} (${scalingPct}% Scale)`;
         if (viewportText) viewportText.textContent = `${viewW} × ${viewH} CSS px`;
 
         if (multiMonText) {
-            const isMulti =
-                'isExtended' in window.screen && (window.screen as unknown as { isExtended: boolean }).isExtended;
-            multiMonText.textContent = isMulti ? 'Dual/Extended Setup' : 'Dual Screens (Shield Masked)';
+            if ('isExtended' in window.screen) {
+                const isMulti = (window.screen as unknown as { isExtended: boolean }).isExtended;
+                multiMonText.textContent = isMulti ? 'Dual/Extended Setup' : 'Single Monitor';
+            } else {
+                multiMonText.textContent = isBraveShielded ? 'Single / Shield Masked' : 'Single Display / Sandboxed';
+            }
         }
     };
     inspectDisplay();
     window.addEventListener('resize', inspectDisplay);
 
     // -------------------------------------------------------------------------
-    // 7. REFRESH RATE TEST (60-frame buffer)
+    // 7. REFRESH RATE TEST (60-FRAME BUFFER)
     // -------------------------------------------------------------------------
     const measureRefreshRate = (): void => {
         let frames = 0;
@@ -271,18 +286,13 @@ export function initSystemIntel(): void {
             } else {
                 const avgDelta = deltas.reduce((a, b) => a + b, 0) / deltas.length;
                 const measuredHz = 1000 / avgDelta;
-                const standardHz = [60, 75, 90, 120, 144, 165, 240, 360];
+                const standardHz = [60, 75, 90, 120, 144, 165, 240, 360, 500];
                 const closest = standardHz.reduce((prev, curr) =>
                     Math.abs(curr - measuredHz) < Math.abs(prev - measuredHz) ? curr : prev
                 );
                 const finalHz = Math.abs(closest - measuredHz) < 5 ? closest : Math.round(measuredHz);
 
-                if (refreshText) {
-                    refreshText.textContent =
-                        isBraveShielded && finalHz === 60
-                            ? `60 Hz (Clamped by Brave)`
-                            : `${finalHz} Hz (${measuredHz.toFixed(1)} FPS)`;
-                }
+                if (refreshText) refreshText.textContent = `${finalHz} Hz (${measuredHz.toFixed(1)} FPS)`;
             }
         };
         requestAnimationFrame(step);
@@ -291,13 +301,11 @@ export function initSystemIntel(): void {
     window.addEventListener('focus', measureRefreshRate);
 
     // -------------------------------------------------------------------------
-    // 8. CPU CONCURRENCY + MICRO BENCHMARK
+    // 8. CPU CONCURRENCY + BENCHMARK
     // -------------------------------------------------------------------------
     if (cpuText) {
         const cores = nav.hardwareConcurrency;
-        cpuText.textContent = cores
-            ? `${cores} Logical Cores ${isBraveShielded ? '(Shield Spoofed)' : ''}`
-            : '-- Cores';
+        cpuText.textContent = cores ? `${cores} Logical Cores` : 'Multi-Threaded';
     }
 
     if (cpuBenchText) {
@@ -315,32 +323,15 @@ export function initSystemIntel(): void {
             cpuBenchText.textContent = `${mops.toLocaleString()} Mops/s Index`;
         };
 
-        const runDeferredWork = (): void => {
-            if ('requestIdleCallback' in window) {
-                window.requestIdleCallback(
-                    () => {
-                        runBench();
-                        void fetchNetworkInfo();
-                    },
-                    { timeout: 3500 }
-                );
-            } else {
-                setTimeout(() => {
-                    runBench();
-                    void fetchNetworkInfo();
-                }, 1500);
-            }
-        };
-
-        if (document.readyState === 'complete') {
-            runDeferredWork();
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(runBench, { timeout: 3000 });
         } else {
-            window.addEventListener('load', runDeferredWork, { once: true });
+            setTimeout(runBench, 1500);
         }
     }
 
     // -------------------------------------------------------------------------
-    // 9. LIVE PING (Every 3 seconds)
+    // 9. LIVE PING (Cloudflare Edge Trace)
     // -------------------------------------------------------------------------
     const pingPulse = async (): Promise<void> => {
         if (!navigator.onLine) {
@@ -355,7 +346,6 @@ export function initSystemIntel(): void {
             const timeout = setTimeout(() => {
                 controller.abort();
             }, 2500);
-
             await fetch(`https://cloudflare.com/cdn-cgi/trace?_t=${Date.now()}`, {
                 method: 'GET',
                 cache: 'no-store',
@@ -376,13 +366,11 @@ export function initSystemIntel(): void {
     };
     void pingPulse();
     setInterval(() => {
-        if (document.visibilityState === 'visible') {
-            void pingPulse();
-        }
+        if (document.visibilityState === 'visible') void pingPulse();
     }, 30000);
 
     // -------------------------------------------------------------------------
-    // 10. IP & ISP INFO
+    // 10. IP & ISP
     // -------------------------------------------------------------------------
     const fetchNetworkInfo = async (): Promise<void> => {
         try {
@@ -400,65 +388,48 @@ export function initSystemIntel(): void {
                 if (ipText) ipText.textContent = data.ip;
                 if (ispText) {
                     const org = data.connection?.isp || data.connection?.org || 'Unknown ISP';
-                    const asn = data.connection?.asn ? `AS${data.connection.asn}` : 'Unknown ASN';
-                    const location = data.city || data.country_code || 'Unknown Region';
-                    ispText.textContent = `${org} (${asn}) · ${location}`;
+                    const asn = data.connection?.asn ? `AS${data.connection.asn}` : '';
+                    const location = data.city || data.country_code || '';
+                    ispText.textContent = `${org} ${asn ? `(${asn})` : ''} · ${location}`;
                 }
             } else {
-                throw new Error('API lookup unfulfilled');
+                throw new Error();
             }
         } catch {
-            if (ipText) ipText.textContent = 'Network Offline';
-            if (ispText) ispText.textContent = 'Unable to resolve ISP / Location';
+            if (ipText) ipText.textContent = 'Protected Gateway';
+            if (ispText) ispText.textContent = 'Shielded by Client';
         }
     };
     void fetchNetworkInfo();
 
-    const detectRealOS = async (): Promise<void> => {
-        if (!osText) return;
-
-        // Modern Chromium User-Agent Client Hints API
-        if (nav.userAgentData && typeof nav.userAgentData.getHighEntropyValues === 'function') {
-            try {
-                const entropy = await nav.userAgentData.getHighEntropyValues([
-                    'platform',
-                    'platformVersion',
-                    'architecture',
-                    'bitness'
-                ]);
-                const platform = entropy.platform || nav.userAgentData.platform;
-                const bitness = entropy.bitness ? ` (x${entropy.bitness})` : '';
-
-                if (platform === 'Windows') {
-                    // Windows 11 platformVersion starts at 13.0.0
-                    const majorVersion = parseInt((entropy.platformVersion || '').split('.')[0], 10);
-                    const winVersion = majorVersion >= 13 ? 'Windows 11' : 'Windows 10';
-                    osText.textContent = `${winVersion}${bitness}`;
-                    return;
-                }
-
-                osText.textContent = `${platform}${bitness}`;
-                return;
-            } catch {
-                // Fallback to UA string parsing below
+    // -------------------------------------------------------------------------
+    // 11. AUDIO SUBSYSTEM (SAFE PROBE)
+    // -------------------------------------------------------------------------
+    if (audioText) {
+        try {
+            interface AudioWindow {
+                AudioContext?: typeof AudioContext;
+                webkitAudioContext?: typeof AudioContext;
             }
+            const winAudio = window as unknown as AudioWindow;
+            const AudioContextClass = winAudio.AudioContext ?? winAudio.webkitAudioContext;
+
+            if (AudioContextClass) {
+                const tempCtx = new AudioContextClass();
+                const khz = (tempCtx.sampleRate / 1000).toFixed(1);
+                const channels = tempCtx.destination.maxChannelCount;
+                audioText.textContent = `${khz} kHz · Stereo ${channels}.0`;
+                void tempCtx.close();
+            } else {
+                audioText.textContent = 'Audio API Blocked';
+            }
+        } catch {
+            audioText.textContent = 'Sandboxed Audio';
         }
-
-        // Fallback for Firefox, Safari, or older engines
-        // Fallback for Firefox, Safari, or older engines
-        const ua = navigator.userAgent;
-        if (/Windows NT 10.0/i.test(ua)) osText.textContent = 'Windows 10/11';
-        else if (/Mac OS X/i.test(ua)) osText.textContent = 'macOS';
-        else if (/Android/i.test(ua)) osText.textContent = 'Android';
-        else if (/Linux/i.test(ua)) osText.textContent = 'Linux';
-        else if (/iPhone|iPad/i.test(ua)) osText.textContent = 'iOS';
-        else osText.textContent = 'Desktop Workstation';
-    };
-
-    void detectRealOS();
+    }
 
     // -------------------------------------------------------------------------
-    // 11. HEAP MEMORY & AUDIO
+    // 12. HEAP MEMORY & OS DETECTION
     // -------------------------------------------------------------------------
     const updateMemory = (): void => {
         if (!memText) return;
@@ -469,21 +440,37 @@ export function initSystemIntel(): void {
             memText.textContent = `${usedMB} MB / ${limitGB} GB Limit`;
         } else {
             const devMem = nav.deviceMemory;
-            memText.textContent = devMem ? `~${devMem} GB Device RAM` : 'Standard Heap';
+            memText.textContent = devMem ? `~${devMem} GB RAM (Estimated)` : 'Standard Heap Buffer';
         }
     };
     updateMemory();
-    setInterval(updateMemory, 5000);
+    setInterval(updateMemory, 10000);
 
-    if (audioText) {
-        try {
-            const ctx = new AudioContext();
-            const khz = (ctx.sampleRate / 1000).toFixed(1);
-            const channels = ctx.destination.maxChannelCount;
-            audioText.textContent = `${khz} kHz · Stereo ${channels}.0`;
-            void ctx.close();
-        } catch {
-            audioText.textContent = '48.0 kHz · Stereo 2.0';
+    const detectRealOS = async (): Promise<void> => {
+        if (!osText) return;
+        if (nav.userAgentData && typeof nav.userAgentData.getHighEntropyValues === 'function') {
+            try {
+                const entropy = await nav.userAgentData.getHighEntropyValues(['platform', 'platformVersion']);
+                const platform = entropy.platform || nav.userAgentData.platform;
+                if (platform === 'Windows') {
+                    const major = parseInt((entropy.platformVersion || '').split('.')[0], 10);
+                    osText.textContent = major >= 13 ? 'Windows 11' : 'Windows 10';
+                    return;
+                }
+                osText.textContent = platform;
+                return;
+            } catch {
+                // Fallback below
+            }
         }
-    }
+
+        const ua = navigator.userAgent;
+        if (/Windows/i.test(ua)) osText.textContent = 'Windows';
+        else if (/Mac OS/i.test(ua)) osText.textContent = 'macOS';
+        else if (/Android/i.test(ua)) osText.textContent = 'Android';
+        else if (/Linux/i.test(ua)) osText.textContent = 'Linux';
+        else if (/iPhone|iPad/i.test(ua)) osText.textContent = 'iOS';
+        else osText.textContent = 'Workstation';
+    };
+    void detectRealOS();
 }

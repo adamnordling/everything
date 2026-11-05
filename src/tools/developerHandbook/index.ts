@@ -22,9 +22,14 @@ import template from './handbookView.html?raw';
 
 const STORAGE_KEY = 'everything_dev_handbook_v10';
 
+let isInitialized = false;
+
 export function initDeveloperHandbook(): void {
     const stage = document.getElementById('view-tool-handbook');
     if (!stage) return;
+
+    if (isInitialized) return;
+    isInitialized = true;
 
     if (!stage.hasChildNodes()) {
         stage.innerHTML = template;

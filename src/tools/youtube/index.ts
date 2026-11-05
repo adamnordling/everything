@@ -45,12 +45,16 @@ const DEFAULT_STATE: YtStudioState = {
     playlistEnd: 50
 };
 
+let isInitialized = false;
+
 export function initYoutube(): void {
     // Load persisted state or fallback
     const stage = req('#view-tool-youtube');
     if (!stage.hasChildNodes()) {
         stage.innerHTML = template;
     }
+    if (isInitialized) return;
+    isInitialized = true;
 
     let state: YtStudioState = { ...DEFAULT_STATE };
     const saved = localStorage.getItem(STORAGE_KEY);

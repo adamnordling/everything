@@ -1,13 +1,14 @@
 export function initTheme(): void {
-    const desktopBtn = document.getElementById('theme-btn');
-    const mobileBtn = document.getElementById('mobile-theme-btn');
-    const footerBtn = document.getElementById('theme-btn-footer');
+    const savedTheme = localStorage.getItem('app_theme');
+    if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+    }
 
     const toggleTheme = (): void => {
-        document.documentElement.classList.toggle('dark-theme');
+        const isDark = document.documentElement.classList.toggle('dark-theme');
+        localStorage.setItem('app_theme', isDark ? 'dark' : 'light');
     };
 
-    desktopBtn?.addEventListener('click', toggleTheme);
-    mobileBtn?.addEventListener('click', toggleTheme);
-    footerBtn?.addEventListener('click', toggleTheme);
+    document.getElementById('theme-btn')?.addEventListener('click', toggleTheme);
+    document.getElementById('mobile-theme-btn')?.addEventListener('click', toggleTheme);
 }

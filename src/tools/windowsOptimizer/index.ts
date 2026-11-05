@@ -112,9 +112,14 @@ function getGpuGuidance(currentGpu: GpuModelSpec): string {
     `;
 }
 
+let isInitialized = false;
+
 export function initWindowsOptimizer(): void {
     const viewPanel = document.getElementById('view-tool-winopt');
     if (!viewPanel) return;
+
+    if (isInitialized) return;
+    isInitialized = true;
 
     // 1. Only inject HTML if it hasn't been injected yet
     if (!viewPanel.querySelector('.winopt-container')) {

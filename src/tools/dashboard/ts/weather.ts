@@ -264,7 +264,8 @@ export function initWeather(): void {
                 for (let i = 0; i < 5; i++) {
                     const dateStr = data.daily.time[i];
                     if (!dateStr) continue;
-                    const d = new Date(dateStr);
+                    const [yr, mo, da] = dateStr.split('-').map(Number);
+                    const d = new Date(yr, mo - 1, da);
                     const info = getConditionInfo(data.daily.weather_code[i] ?? 0);
                     const max = Math.round(data.daily.temperature_2m_max[i] ?? 0);
                     const min = Math.round(data.daily.temperature_2m_min[i] ?? 0);

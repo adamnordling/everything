@@ -131,7 +131,7 @@
                             <polyline points="2 12 12 17 22 12"></polyline>
                         </svg>
                     </div>
-                    <span class="brand-title">Everything</span>
+                    <h1 class="brand-title">Everything</h1>
                 </div>
                 <div class="mobile-actions">
                     <button
@@ -482,34 +482,169 @@
                                 </div>
 
                                 <!-- B: WORKSTATION TELEMETRY -->
+                                <!-- B: WORKSTATION TELEMETRY -->
                                 <div class="dash-block telemetry-block">
                                     <div class="telemetry-top-bar">
-                                        <div class="telemetry-network-block">
-                                            <div class="ping-pulse-indicator">
-                                                <span class="telemetry-label-prefix">IP:</span>
-                                                <span class="live-ping-dot good" id="sys-ping-dot"></span>
-                                                <span
-                                                    class="telemetry-ip privacy-blur copyable"
-                                                    id="sys-ip"
-                                                    title="Click to copy IP"
-                                                    >---.---.---.---</span
-                                                >
-                                                <span class="telemetry-ping" id="sys-ping-val">-- ms</span>
+                                        <!-- LEFT: NETWORK CREDENTIALS & SHIELD STATUS -->
+                                        <div class="telemetry-info-group">
+                                            <div class="telemetry-network-block">
+                                                <div class="ping-pulse-indicator">
+                                                    <span class="telemetry-label-prefix">IP:</span>
+                                                    <span class="live-ping-dot good" id="sys-ping-dot"></span>
+                                                    <span
+                                                        class="telemetry-ip privacy-blur copyable"
+                                                        id="sys-ip"
+                                                        title="Click to copy IP"
+                                                        >---.---.---.---</span
+                                                    >
+                                                    <span class="telemetry-ping" id="sys-ping-val">-- ms</span>
+                                                </div>
+                                                <div class="telemetry-isp-row">
+                                                    <span class="telemetry-label-prefix">ISP:</span>
+                                                    <span
+                                                        class="telemetry-isp privacy-blur copyable"
+                                                        id="sys-isp"
+                                                        title="Click to copy ISP & Location"
+                                                    >
+                                                        Resolving ISP &amp; ASN...
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div class="telemetry-isp-row">
-                                                <span class="telemetry-label-prefix">ISP:</span>
-                                                <span
-                                                    class="telemetry-isp privacy-blur copyable"
-                                                    id="sys-isp"
-                                                    title="Click to copy ISP & Location"
-                                                >
-                                                    Resolving ISP &amp; ASN...
-                                                </span>
+
+                                            <div class="telemetry-quick-tags">
+                                                <div class="shield-tooltip-wrapper">
+                                                    <span
+                                                        class="sys-chip-tag"
+                                                        id="sys-shield-tag"
+                                                        tabindex="0"
+                                                        aria-label="Brave Shield telemetry status"
+                                                        >Shield: Checking</span
+                                                    >
+                                                    <div class="shield-popover" role="tooltip" id="shield-popover-text">
+                                                        Brave Shields anti-fingerprinting may farble or randomize some
+                                                        hardware values to protect your privacy. Highlighted items
+                                                        reflect browser-masked values.
+                                                    </div>
+                                                </div>
+                                                <span class="sys-chip-tag" id="sys-os">Windows</span>
                                             </div>
                                         </div>
-                                        <div class="telemetry-quick-tags">
-                                            <span class="sys-chip-tag" id="sys-shield-tag">Shield: Checking</span>
-                                            <span class="sys-chip-tag" id="sys-os">Windows</span>
+
+                                        <!-- RIGHT: INTEGRATED INLINE SPEED TEST BOX -->
+                                        <div class="speedtest-embedded-box" id="speedtest-box">
+                                            <!-- 1. Idle View (Before Click) -->
+                                            <div class="st-idle-view" id="st-idle-view">
+                                                <div class="st-idle-header">
+                                                    <div class="st-icon-bubble">
+                                                        <svg
+                                                            width="15"
+                                                            height="15"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            stroke-width="2.5"
+                                                        >
+                                                            <circle cx="12" cy="12" r="10"></circle>
+                                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="st-idle-text-stack">
+                                                        <span class="st-idle-title">SPEED BENCHMARK</span>
+                                                        <span class="st-idle-sub">Edge Throughput &amp; Jitter</span>
+                                                    </div>
+                                                    <span class="pill-badge pill-edge-sm">Cloudflare</span>
+                                                </div>
+                                                <button type="button" class="btn-st-start" id="btn-start-speedtest">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                                    </svg>
+                                                    <span>Start Internet Speed Test</span>
+                                                </button>
+                                            </div>
+
+                                            <!-- 2. Active Testing & Results View (Shown on Click) -->
+                                            <div class="st-active-view" id="st-active-view" style="display: none">
+                                                <div class="st-meta-bar">
+                                                    <div class="st-meta-item">
+                                                        <span class="st-meta-k">Server:</span>
+                                                        <span class="st-meta-v font-mono" id="st-server-val"
+                                                            >Detecting...</span
+                                                        >
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        class="btn-st-retest"
+                                                        id="btn-retest-speedtest"
+                                                        title="Restart Benchmark"
+                                                    >
+                                                        ↻ Retest
+                                                    </button>
+                                                </div>
+
+                                                <!-- Mid: Download & Upload Counters -->
+                                                <div class="st-speeds-row">
+                                                    <div class="st-speed-col download">
+                                                        <div class="st-speed-label-row">
+                                                            <span class="st-dot-indicator download"></span>
+                                                            <span class="st-speed-k">DOWNLOAD</span>
+                                                        </div>
+                                                        <div class="st-speed-val-row">
+                                                            <span class="st-speed-num font-mono" id="st-dl-val"
+                                                                >--</span
+                                                            >
+                                                            <span class="st-speed-unit">Mbps</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="st-speed-divider"></div>
+                                                    <div class="st-speed-col upload">
+                                                        <div class="st-speed-label-row">
+                                                            <span class="st-dot-indicator upload"></span>
+                                                            <span class="st-speed-k">UPLOAD</span>
+                                                        </div>
+                                                        <div class="st-speed-val-row">
+                                                            <span class="st-speed-num font-mono" id="st-ul-val"
+                                                                >--</span
+                                                            >
+                                                            <span class="st-speed-unit">Mbps</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Sub-Metrics: Ping, Jitter, Loaded, Streams -->
+                                                <div class="st-submetrics-row">
+                                                    <div class="st-submetric" title="Idle Latency">
+                                                        <span class="st-sub-k">PING</span>
+                                                        <span class="st-sub-v font-mono" id="st-ping-val">-- ms</span>
+                                                    </div>
+                                                    <div class="st-submetric" title="Latency Jitter Variation">
+                                                        <span class="st-sub-k">JITTER</span>
+                                                        <span class="st-sub-v font-mono" id="st-jitter-val">-- ms</span>
+                                                    </div>
+                                                    <div
+                                                        class="st-submetric"
+                                                        title="Latency Under Download Load (Bufferbloat)"
+                                                    >
+                                                        <span class="st-sub-k">LOADED</span>
+                                                        <span class="st-sub-v font-mono" id="st-loaded-val">-- ms</span>
+                                                    </div>
+                                                    <div class="st-submetric" title="Parallel HTTP/2 Streams">
+                                                        <span class="st-sub-k">STREAMS</span>
+                                                        <span class="st-sub-v font-mono" id="st-streams-val"
+                                                            >4x H2</span
+                                                        >
+                                                    </div>
+                                                </div>
+
+                                                <!-- Bottom Progress Bar & Phase Status -->
+                                                <div class="st-progress-wrapper">
+                                                    <div class="st-progress-bar">
+                                                        <div class="st-progress-fill" id="st-progress-fill"></div>
+                                                    </div>
+                                                    <span class="st-status-msg" id="st-status-text"
+                                                        >Initializing test...</span
+                                                    >
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
