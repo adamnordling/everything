@@ -853,6 +853,18 @@ export function initCalendar(onSelectDate: (dateStr: string, activeDeadlines: st
                     selectedLabel.textContent = `${monthsShort[m]} ${i}, ${y}`;
                 }
                 onSelectDate(dateStr, dayDeadlines);
+
+                // Notify Time Converter of the selected target date
+                window.dispatchEvent(
+                    new CustomEvent('calendar-date-selected', {
+                        detail: {
+                            year: y,
+                            month: m + 1,
+                            day: i,
+                            dateStr
+                        }
+                    })
+                );
             });
 
             grid.appendChild(cell);

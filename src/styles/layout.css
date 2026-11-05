@@ -9,6 +9,66 @@
         background-color: var(--bg-base);
     }
 
+    /* UNIFIED 2-COLUMN DASHBOARD GRID */
+    .dashboard-stage-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 350px;
+        gap: 36px;
+        align-items: start;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .dash-stage-left {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .dash-duo-row {
+        display: grid;
+        gap: 28px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .hero-split-row {
+        grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.45fr);
+    }
+
+    .middle-split-row {
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    }
+
+    .dash-row-divider {
+        width: 100%;
+        height: 1px;
+        background-color: var(--border-subtle);
+    }
+
+    /* RIGHT COLUMN: CONTIGUOUS AGENDA */
+    .dash-stage-right {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .agenda-item {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .agenda-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
     /* MOBILE TOP BAR */
     .mobile-top-bar {
         display: none;
@@ -255,15 +315,6 @@
         gap: 36px;
         width: 100%;
         min-width: 0;
-    }
-
-    .hero-split-row {
-        grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.45fr);
-        min-width: 0; /* Prevents telemetry blowout */
-    }
-
-    .middle-split-row {
-        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     }
 
     .tier-right-stream {
@@ -650,12 +701,26 @@
         }
     }
 
+    /* TABLETS & MEDIUM SCREENS (<= 1300px) */
     @media (max-width: 1300px) {
-        .dashboard-tier {
+        .dashboard-stage-grid {
+            grid-template-columns: minmax(0, 1fr) 330px;
+            gap: 24px;
+        }
+        .hero-split-row,
+        .middle-split-row {
             grid-template-columns: 1fr;
-            gap: 28px;
+            gap: 20px;
         }
     }
+
+    @media (max-width: 1024px) {
+        .dashboard-stage-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+    }
+
     /* TABLETS (<= 1024px) */
     @media (max-width: 1024px) {
         .mobile-top-bar {
@@ -707,151 +772,144 @@
     .mobile-drawer-close {
         display: none;
     }
-}
 
-/* =============================================================================
-   MOBILE DASHBOARD ARCHITECTURE (<= 768px ONLY)
-   ============================================================================= */
-@media (max-width: 768px) {
-    #view-dashboard:not([style*='display: none']) {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 18px !important;
-    }
+    /* MOBILE ARCHITECTURE (<= 768px) */
+    @media (max-width: 768px) {
+        #view-dashboard:not([style*='display: none']) {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+        }
 
-    /* Dissolve grid tiers on mobile so individual blocks can be reordered */
-    #view-dashboard .dashboard-tier,
-    #view-dashboard .tier-left-stream,
-    #view-dashboard .tier-top .tier-right-stream,
-    #view-dashboard .clock-hero-block {
-        display: contents !important;
-    }
+        #view-dashboard .dashboard-stage-grid,
+        #view-dashboard .dash-stage-left,
+        #view-dashboard .dash-stage-right,
+        #view-dashboard .dash-duo-row,
+        #view-dashboard .clock-hero-block {
+            display: contents !important;
+        }
 
-    /* 1. CLOCK (Stay together at top) */
-    .clock-top-bar,
-    .clock-ambient-stack {
-        order: 1 !important;
-    }
-
-    .year-progress-module {
-        order: 1 !important;
-        padding-bottom: 16px !important;
-        border-bottom: 1px solid var(--border-subtle) !important;
-    }
-
-    #clock-epoch-btn {
-        display: none !important;
-    }
-
-    /* 2. WEATHER (Compact single row) */
-    .weather-block {
-        order: 2 !important;
-        padding-bottom: 16px !important;
-        border-bottom: 1px solid var(--border-subtle) !important;
-    }
-
-    /* 3. CALENDAR */
-    .calendar-agenda-item {
-        order: 3 !important;
-        padding-bottom: 16px !important;
-        border-bottom: 1px solid var(--border-subtle) !important;
-    }
-
-    /* 4. DEADLINES & TASKS */
-    .dash-seamless-agenda,
-    .deadlines-agenda-item,
-    .tasks-agenda-item,
-    .habits-agenda-item {
-        order: 4 !important;
-    }
-
-    .dash-seamless-agenda {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 16px !important;
-        padding-bottom: 16px !important;
-        border-bottom: 1px solid var(--border-subtle) !important;
-    }
-
-    /* 5. TIME CONVERTER (ABOVE Telemetry on mobile) */
-    .converter-stacked-module {
-        order: 5 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 8px !important;
-        background: var(--bg-surface) !important;
-        border: 1px solid var(--border-subtle) !important;
-        border-radius: var(--card-radius) !important;
-        padding: 12px 14px !important;
-    }
-
-    /* 6. TELEMETRY HUD (BELOW Time Converter on mobile) */
-    .telemetry-block {
-        order: 6 !important;
-        padding-bottom: 16px !important;
-        border-bottom: none !important;
-    }
-
-    /* 7. REMOVE SCRATCHPAD ON MOBILE */
-    .scratchpad-block {
-        display: none !important;
-    }
-
-    /* =============================================================================
-   PRINT STYLESHEET (WCAG & Paper Optimized)
-   ============================================================================= */
-    @media print {
-        /* Hide navigation bars, mobile bars, backdrop, and footer actions */
-        .mobile-top-bar,
-        .app-sidebar,
-        .sidebar-backdrop,
-        .backup-actions-bar,
-        .footer-theme-toggle-row,
-        #modal-weather-loc,
-        #modal-tz-picker,
-        button {
+        .dash-row-divider {
             display: none !important;
         }
 
-        body,
-        .app-layout,
-        .app-main,
-        .stage-content {
-            background: #ffffff !important;
-            color: #000000 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
+        /* 1. CLOCK & PROGRESS */
+        .clock-top-bar,
+        .clock-ambient-stack {
+            order: 1 !important;
         }
 
-        .dashboard-tier {
-            display: block !important;
-            page-break-inside: avoid;
+        .year-progress-module {
+            order: 1 !important;
+            padding-bottom: 14px !important;
+            border-bottom: 1px solid var(--border-subtle) !important;
         }
 
-        .dash-block,
-        .calendar-agenda-item,
-        .agenda-item {
-            border: 1px solid #cccccc !important;
-            page-break-inside: avoid;
-            margin-bottom: 16px !important;
-            padding: 12px !important;
+        #clock-epoch-btn {
+            display: none !important;
         }
 
-        a[href]::after {
-            content: ' (' attr(href) ')';
-            font-size: 0.75rem;
+        /* 2. ATMOSPHERE */
+        .weather-block {
+            order: 2 !important;
+            padding-bottom: 14px !important;
+            border-bottom: 1px solid var(--border-subtle) !important;
         }
 
-        /* Omit external protocol links from printing raw long URLs */
-        a[href^='#']::after,
-        a[href^='javascript:']::after {
-            content: '';
+        /* 3. CALENDAR */
+        .calendar-agenda-item {
+            order: 3 !important;
+            padding-bottom: 14px !important;
+            border-bottom: 1px solid var(--border-subtle) !important;
+        }
+
+        /* 4. DEADLINES, TASKS, HABITS */
+        .deadlines-agenda-item,
+        .tasks-agenda-item,
+        .habits-agenda-item {
+            order: 4 !important;
+        }
+
+        /* 5. TIME CONVERTER */
+        .converter-stacked-module {
+            order: 5 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+            background: var(--bg-surface) !important;
+            border: 1px solid var(--border-subtle) !important;
+            border-radius: var(--card-radius) !important;
+            padding: 12px 14px !important;
+        }
+
+        /* 6. TELEMETRY HUD */
+        .telemetry-block {
+            order: 6 !important;
+            padding-bottom: 14px !important;
+            border-bottom: none !important;
+        }
+
+        /* 7. HIDE SCRATCHPAD ON MOBILE */
+        .scratchpad-block {
+            display: none !important;
         }
     }
+}
 
-    .is-hidden {
+/* =============================================================================
+   PRINT STYLESHEET (WCAG & Paper Optimized)
+   ============================================================================= */
+@media print {
+    /* Hide navigation bars, mobile bars, backdrop, and footer actions */
+    .mobile-top-bar,
+    .app-sidebar,
+    .sidebar-backdrop,
+    .backup-actions-bar,
+    .footer-theme-toggle-row,
+    #modal-weather-loc,
+    #modal-tz-picker,
+    button {
         display: none !important;
     }
+
+    body,
+    .app-layout,
+    .app-main,
+    .stage-content {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .dashboard-tier {
+        display: block !important;
+        page-break-inside: avoid;
+    }
+
+    .dash-block,
+    .calendar-agenda-item,
+    .agenda-item {
+        border: 1px solid #cccccc !important;
+        page-break-inside: avoid;
+        margin-bottom: 16px !important;
+        padding: 12px !important;
+    }
+
+    a[href]::after {
+        content: ' (' attr(href) ')';
+        font-size: 0.75rem;
+    }
+
+    /* Omit external protocol links from printing raw long URLs */
+    a[href^='#']::after,
+    a[href^='javascript:']::after {
+        content: '';
+    }
+}
+
+.is-hidden {
+    display: none !important;
 }
