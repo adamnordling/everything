@@ -1,3 +1,49 @@
+import type { HardwareProfile } from './hardwareData';
+
+export function getCttEssentialItems(profile: HardwareProfile): CttItemBlueprint[] {
+    const isLaptop = profile.formFactor === 'laptop';
+    return CTT_ESSENTIAL_ITEMS.map(item => {
+        if (item.label === 'Hibernation - Disable' && isLaptop) {
+            return {
+                ...item,
+                action: 'UNCHECK',
+                why: 'LAPTOP GUARDRAIL: Leave unchecked on laptops! Disabling hibernation breaks critical-battery sleep safety. Disable Fast Startup via Phase 6 (HiberbootEnabled=0) instead.'
+            };
+        }
+        if (item.label === 'BitLocker - Disable' && isLaptop) {
+            return {
+                ...item,
+                action: 'OPTIONAL',
+                why: 'LAPTOP TRADE-OFF: Check if this laptop stays at home for maximum SSD speed; leave UNCHECKED if you travel with sensitive data and want theft protection.'
+            };
+        }
+        return item;
+    });
+}
+
+export function getCttPreferenceItems(profile: HardwareProfile): CttItemBlueprint[] {
+    const isLaptop = profile.formFactor === 'laptop';
+    return CTT_PREFERENCE_ITEMS.map(item => {
+        if (item.label === 'System Tray Battery Percentage') {
+            return {
+                ...item,
+                action: isLaptop ? 'CHECK' : 'UNCHECK',
+                why: isLaptop
+                    ? 'Displays exact numeric battery percentage in the taskbar tray.'
+                    : 'Desktop system detected (no battery).'
+            };
+        }
+        if (item.label === 'S0 Sleep Network Connectivity' && isLaptop) {
+            return {
+                ...item,
+                action: 'UNCHECK',
+                why: 'CRITICAL FOR LAPTOPS: Prevents Modern Standby from waking the CPU and overheating your laptop inside a backpack.'
+            };
+        }
+        return item;
+    });
+}
+
 export interface CttItemBlueprint {
     label: string;
     action: 'CHECK' | 'UNCHECK' | 'OPTIONAL';

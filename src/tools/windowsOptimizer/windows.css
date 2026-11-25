@@ -516,7 +516,7 @@ html.light-theme .terminal-code-window {
     color: var(--text-secondary);
     line-height: 1.45;
     min-width: 0;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     word-break: break-word;
 }
 
@@ -868,4 +868,19 @@ ul#p2-bios-settings-list li.bios-setting-tree-item::before {
     color: var(--text-secondary);
     line-height: 1.4;
     word-break: break-word;
+}
+
+.winopt-container .pill-badge {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+    text-align: left;
+    line-height: 1.35;
+    border-radius: 6px;
+}
+
+.winopt-container .bios-guide-col > div:first-child {
+    flex-wrap: wrap;
+    gap: 6px;
 }

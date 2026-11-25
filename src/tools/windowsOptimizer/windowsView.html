@@ -20,11 +20,42 @@
         <!-- HARDWARE SELECTORS MATRIX -->
         <div class="winopt-profile-selectors">
             <div class="selector-field">
+                <label for="winopt-form-select">FORM FACTOR</label>
+                <div class="select-wrapper">
+                    <select id="winopt-form-select" class="winopt-select">
+                        <option value="desktop" selected>Desktop PC</option>
+                        <option value="laptop">Laptop / Notebook</option>
+                    </select>
+                </div>
+            </div>
+            <div class="selector-field">
                 <label for="winopt-os-select">OS TARGET</label>
                 <div class="select-wrapper">
                     <select id="winopt-os-select" class="winopt-select">
                         <option value="win10" selected>Windows 10 (22H2 / LTSC)</option>
                         <option value="win11">Windows 11 (23H2 / 24H2)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="selector-field">
+                <label for="winopt-storage-select">OS DRIVE TYPE</label>
+                <div class="select-wrapper">
+                    <select id="winopt-storage-select" class="winopt-select">
+                        <option value="nvme" selected>NVMe M.2 SSD</option>
+                        <option value="sata-ssd">SATA 2.5&quot; SSD</option>
+                        <option value="hdd">Mechanical HDD</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="selector-field">
+                <label for="winopt-network-select">PRIMARY NETWORK</label>
+                <div class="select-wrapper">
+                    <select id="winopt-network-select" class="winopt-select">
+                        <option value="ethernet" selected>Ethernet (Wired LAN)</option>
+                        <option value="wifi">Wi-Fi (Wireless)</option>
+                        <option value="both">Both (Ethernet + Wi-Fi)</option>
                     </select>
                 </div>
             </div>
@@ -46,6 +77,9 @@
                         <option value="amd-x3d-single">AMD Ryzen Single-CCD X3D (5800X3D, 7800X3D, 9800X3D)</option>
                         <option value="amd-x3d-dual">AMD Ryzen Dual-CCD X3D (7900X3D, 7950X3D, 9950X3D)</option>
                         <option value="amd-standard">AMD Ryzen Standard (Non-X3D AM4 / AM5)</option>
+                        <option value="intel-core-ultra">
+                            Intel Core Ultra (Series 1 / 2 Meteor/Arrow/Lunar Lake)
+                        </option>
                     </select>
                 </div>
             </div>
@@ -89,14 +123,14 @@
                 <button
                     type="button"
                     class="btn-action-pill copy-btn-trigger"
-                    data-copy="$m=(Get-CimInstance Win32_BaseBoard | ForEach-Object { $_.Manufacturer+' '+$_.Product }); $c=(Get-CimInstance Win32_Processor).Name.Trim(); $g=(Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name) -join ' / '; $mem=Get-CimInstance Win32_PhysicalMemory; $gb=[Math]::Round(($mem | Measure-Object Capacity -Sum).Sum / 1GB); $spd=($mem | Select-Object -First 1).ConfiguredClockSpeed; $stk=($mem | Measure-Object).Count; $ddr=if($spd -gt 4500){'DDR5'}elseif($spd -gt 2000){'DDR4'}else{'DDR3'}; $ch=if($stk -gt 1){'Dual-Channel ('+$stk+' sticks)'}else{'SINGLE-CHANNEL ALERT (1 stick)'}; $out='MOBO: '+$m+' | CPU: '+$c+' | GPU: '+$g+' | RAM: '+$gb+'GB '+$ddr+' @ '+$spd+'MHz ['+$ch+']'; Write-Host ''; Write-Host $out -ForegroundColor Green; Set-Clipboard -Value $out"
+                    data-copy="$sys=Get-CimInstance Win32_SystemEnclosure; $isLap=$false; foreach($c in $sys.ChassisTypes){if($c -in @(8,9,10,11,12,14,18,21,30,31,32)){$isLap=$true}}; if(-not $isLap -and (Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue)){$isLap=$true}; $form=if($isLap){'Laptop'}else{'Desktop'}; $m=(Get-CimInstance Win32_BaseBoard | ForEach-Object { ($_.Manufacturer+' '+$_.Product).Trim() }); $c=(Get-CimInstance Win32_Processor | Select-Object -First 1).Name.Trim(); $g=(Get-CimInstance Win32_VideoController | Where-Object { $_.Name -notmatch 'Microsoft Basic|Parsec|Virtual|Meta' } | Select-Object -ExpandProperty Name) -join ' / '; $mem=Get-CimInstance Win32_PhysicalMemory; $gb=[Math]::Round(($mem | Measure-Object Capacity -Sum).Sum / 1GB); $firstMem=$mem | Select-Object -First 1; $spd=if($firstMem.ConfiguredClockSpeed){$firstMem.ConfiguredClockSpeed}else{$firstMem.Speed}; $stk=($mem | Measure-Object).Count; $sm=$firstMem.SMBIOSMemoryType; $ddr=switch($sm){24{'DDR3'}26{'DDR4'}30{'LPDDR4'}34{'DDR5'}35{'LPDDR5'}default{if($spd -gt 4500){'DDR5'}elseif($spd -gt 2000){'DDR4'}else{'DDR3'}}}; $ch=if($stk -gt 1){'Dual-Channel ('+$stk+' sticks)'}else{'SINGLE-CHANNEL ALERT (1 stick)'}; $disk=(Get-PhysicalDisk -ErrorAction SilentlyContinue | ForEach-Object { if($_.BusType -eq 'NVMe'){'NVMe'}elseif($_.MediaType -eq 'SSD'){'SATA-SSD'}else{$_.MediaType} } | Select-Object -Unique) -join '/'; $net=(Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' } | ForEach-Object { if($_.InterfaceDescription -match 'Wi-Fi|Wireless|802\.11|WLAN'){'Wi-Fi'}else{'Ethernet'} } | Select-Object -Unique) -join '/'; $out=&quot;FORM: $form | MOBO: $m | CPU: $c | GPU: $g | RAM: ${gb}GB $ddr @ ${spd}MHz [$ch] | DISK: $disk | NET: $net&quot;; Write-Host ''; Write-Host $out -ForegroundColor Green; Set-Clipboard -Value $out"
                 >
                     Copy Command
                 </button>
             </div>
             <pre
                 class="terminal-code-body"
-            ><code>$m=(Get-CimInstance Win32_BaseBoard | ForEach-Object { $_.Manufacturer+' '+$_.Product }); $c=(Get-CimInstance Win32_Processor).Name.Trim(); $g=(Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name) -join ' / '; $mem=Get-CimInstance Win32_PhysicalMemory; $gb=[Math]::Round(($mem | Measure-Object Capacity -Sum).Sum / 1GB); $spd=($mem | Select-Object -First 1).ConfiguredClockSpeed; $stk=($mem | Measure-Object).Count; $ddr=if($spd -gt 4500){'DDR5'}elseif($spd -gt 2000){'DDR4'}else{'DDR3'}; $ch=if($stk -gt 1){'Dual-Channel ('+$stk+' sticks)'}else{'SINGLE-CHANNEL ALERT (1 stick)'}; $out='MOBO: '+$m+' | CPU: '+$c+' | GPU: '+$g+' | RAM: '+$gb+'GB '+$ddr+' @ '+$spd+'MHz ['+$ch+']'; Write-Host ''; Write-Host $out -ForegroundColor Green; Set-Clipboard -Value $out</code></pre>
+            ><code>$sys=Get-CimInstance Win32_SystemEnclosure; $isLap=$false; foreach($c in $sys.ChassisTypes){if($c -in @(8,9,10,11,12,14,18,21,30,31,32)){$isLap=$true}}; if(-not $isLap -and (Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue)){$isLap=$true}; $form=if($isLap){'Laptop'}else{'Desktop'}; $m=(Get-CimInstance Win32_BaseBoard | ForEach-Object { ($_.Manufacturer+' '+$_.Product).Trim() }); $c=(Get-CimInstance Win32_Processor | Select-Object -First 1).Name.Trim(); $g=(Get-CimInstance Win32_VideoController | Where-Object { $_.Name -notmatch 'Microsoft Basic|Parsec|Virtual|Meta' } | Select-Object -ExpandProperty Name) -join ' / '; $mem=Get-CimInstance Win32_PhysicalMemory; $gb=[Math]::Round(($mem | Measure-Object Capacity -Sum).Sum / 1GB); $firstMem=$mem | Select-Object -First 1; $spd=if($firstMem.ConfiguredClockSpeed){$firstMem.ConfiguredClockSpeed}else{$firstMem.Speed}; $stk=($mem | Measure-Object).Count; $sm=$firstMem.SMBIOSMemoryType; $ddr=switch($sm){24{'DDR3'}26{'DDR4'}30{'LPDDR4'}34{'DDR5'}35{'LPDDR5'}default{if($spd -gt 4500){'DDR5'}elseif($spd -gt 2000){'DDR4'}else{'DDR3'}}}; $ch=if($stk -gt 1){'Dual-Channel ('+$stk+' sticks)'}else{'SINGLE-CHANNEL ALERT (1 stick)'}; $disk=(Get-PhysicalDisk -ErrorAction SilentlyContinue | ForEach-Object { if($_.BusType -eq 'NVMe'){'NVMe'}elseif($_.MediaType -eq 'SSD'){'SATA-SSD'}else{$_.MediaType} } | Select-Object -Unique) -join '/'; $net=(Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' } | ForEach-Object { if($_.InterfaceDescription -match 'Wi-Fi|Wireless|802\.11|WLAN'){'Wi-Fi'}else{'Ethernet'} } | Select-Object -Unique) -join '/'; $out=&quot;FORM: $form | MOBO: $m | CPU: $c | GPU: $g | RAM: ${gb}GB $ddr @ ${spd}MHz [$ch] | DISK: $disk | NET: $net&quot;; Write-Host ''; Write-Host $out -ForegroundColor Green; Set-Clipboard -Value $out</code></pre>
         </div>
 
         <div class="spec-paste-bar">
@@ -201,33 +235,27 @@
                         gap: 6px;
                     "
                 >
-                    <strong style="color: var(--text-primary)"
-                        >Step 1B: Boot USB &amp; 100% Clean Drive Wipe (Shift + F10):</strong
-                    >
+                    <strong style="color: var(--text-primary)">Step 1B: Boot USB &amp; 100% Clean Drive Wipe:</strong>
                     <span class="pill-badge" style="font-size: 0.65rem">Purges Dirty OEM Partitions</span>
                 </div>
                 <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45">
-                    Plug in your Rufus USB and reboot. On the very first screen of the Windows installer, press
-                    <kbd>Shift</kbd> + <kbd>F10</kbd> to open Command Prompt. Run this sequence to wipe residual OEM
-                    recovery partitions and format a clean GPT disk:
+                    <strong>Safest Method:</strong> Boot from your Rufus USB. On the
+                    <em>&ldquo;Where do you want to install Windows?&rdquo;</em> screen, delete every partition
+                    belonging to your OS drive until only <strong>Unallocated Space</strong> remains, then click
+                    <strong>Next</strong>. <br /><strong>If converting an older MBR disk to GPT:</strong> Press
+                    <kbd>Shift</kbd> + <kbd>F10</kbd>, then run these interactive commands one by one (verify the disk
+                    number by size before running <code>clean</code>!):
                 </p>
                 <div class="terminal-code-window" style="margin-top: 6px">
                     <div class="terminal-bar">
                         <div class="terminal-badge">
                             <span class="terminal-dot"></span>
-                            <span class="terminal-title">Diskpart Command Line</span>
+                            <span class="terminal-title">Diskpart Interactive Steps (Type Each Line)</span>
                         </div>
-                        <button
-                            type="button"
-                            class="btn-action-pill copy-btn-trigger"
-                            data-copy="diskpart; list disk; select disk 0; clean; convert gpt; exit; exit"
-                        >
-                            Copy Sequence
-                        </button>
                     </div>
                     <pre
                         class="terminal-code-body"
-                    ><code>diskpart ➔ list disk ➔ select disk 0 ➔ clean ➔ convert gpt ➔ exit ➔ exit</code></pre>
+                    ><code>diskpart ➔ list disk ➔ select disk X ➔ clean ➔ convert gpt ➔ exit</code></pre>
                 </div>
             </div>
 
@@ -276,7 +304,11 @@
                     </div>
                 </div>
 
-                <div class="step-content-box" style="border-left: 3px solid var(--accent-brand); margin-top: 8px">
+                <div
+                    id="p2-ram-guide-mount"
+                    class="step-content-box"
+                    style="border-left: 3px solid var(--accent-brand); margin-top: 8px"
+                >
                     <div
                         style="
                             display: flex;
@@ -394,14 +426,14 @@
                         <button
                             type="button"
                             class="btn-action-pill copy-btn-trigger"
-                            data-copy='reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f'
+                            data-copy='reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f'
                         >
                             Copy
                         </button>
                     </div>
                     <pre
                         class="terminal-code-body"
-                    ><code>reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f</code></pre>
+                    ><code>reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f</code></pre>
                 </div>
 
                 <div class="revert-box">
@@ -418,7 +450,7 @@
                         <button
                             type="button"
                             class="btn-text-link copy-btn-trigger"
-                            data-copy='reg delete "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /f'
+                            data-copy='reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /f'
                         >
                             Copy Revert Command
                         </button>
@@ -426,7 +458,7 @@
                     <span class="revert-text">
                         Restores driver auto-updates:
                         <code
-                            >reg delete "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\WindowsUpdate" /v
+                            >reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v
                             ExcludeWUDriversInQualityUpdate /f</code
                         >
                     </span>
@@ -501,7 +533,7 @@
                 </p>
             </div>
 
-            <div class="step-content-box">
+            <div id="p4-ddu-protocol-mount" class="step-content-box">
                 <strong style="color: var(--text-primary)">Step 2: DDU Safe Mode Deep Clean Protocol:</strong>
                 <ol class="ordered-step-list">
                     <li>
@@ -561,6 +593,7 @@
                 </p>
 
                 <div id="p4-display-prereqs-mount" style="width: 100%; margin-top: 8px"></div>
+                <div id="p4-hags-mount" style="width: 100%; margin-top: 10px"></div>
                 <div id="p4-driver-settings-table-mount" style="width: 100%; margin-top: 14px"></div>
             </div>
         </div>
@@ -754,7 +787,7 @@
             </p>
 
             <!-- STEP 1: BALANCED POWER -->
-            <div class="step-content-box">
+            <div id="p6-power-mount" class="step-content-box">
                 <div
                     style="
                         display: flex;
@@ -869,7 +902,7 @@
             </div>
 
             <!-- STEP 3: NETWORK ADAPTER -->
-            <div class="step-content-box">
+            <div id="p6-network-mount" class="step-content-box">
                 <div
                     style="
                         display: flex;
@@ -944,14 +977,14 @@
                         <button
                             type="button"
                             class="btn-action-pill copy-btn-trigger"
-                            data-copy='reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 4294967295 /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f'
+                            data-copy='reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 4294967295 /f; reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f'
                         >
                             Copy
                         </button>
                     </div>
                     <pre
                         class="terminal-code-body"
-                    ><code>reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 4294967295 /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f</code></pre>
+                    ><code>reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 4294967295 /f; reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f</code></pre>
                 </div>
                 <div class="revert-box" style="margin-top: 6px">
                     <div
@@ -967,7 +1000,7 @@
                         <button
                             type="button"
                             class="btn-text-link copy-btn-trigger"
-                            data-copy='reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20 /f'
+                            data-copy='reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20 /f'
                         >
                             Copy Revert
                         </button>
@@ -975,10 +1008,9 @@
                     <span class="revert-text"
                         >Restores standard Windows default values (Index: 10, Responsiveness: 20):
                         <code
-                            >reg add "HKLM\\SOFTWARE\\Microsoft\\\\Windows
-                            NT\\CurrentVersion\\Multimedia\\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 10
-                            /f; reg add "HKLM\\SOFTWARE\\Microsoft\\Windows
-                            NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20
+                            >reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v
+                            NetworkThrottlingIndex /t REG_DWORD /d 10 /f; reg add "HKLM\SOFTWARE\Microsoft\Windows
+                            NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 20
                             /f</code
                         ></span
                     >
@@ -1013,14 +1045,14 @@
                         <button
                             type="button"
                             class="btn-action-pill copy-btn-trigger"
-                            data-copy='reg add "HKCU\\System\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f; reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f'
+                            data-copy='reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f; reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f'
                         >
                             Copy
                         </button>
                     </div>
                     <pre
                         class="terminal-code-body"
-                    ><code>reg add "HKCU\\System\\\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f; reg add "HKLM\\\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f</code></pre>
+                    ><code>reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f; reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /t REG_DWORD /d 0 /f</code></pre>
                 </div>
                 <div class="revert-box" style="margin-top: 6px">
                     <div
@@ -1036,7 +1068,7 @@
                         <button
                             type="button"
                             class="btn-text-link copy-btn-trigger"
-                            data-copy='reg add "HKCU\\System\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR" /v AllowGameDVR /f'
+                            data-copy='reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /f'
                         >
                             Copy Revert
                         </button>
@@ -1044,9 +1076,8 @@
                     <span class="revert-text"
                         >Re-enables Windows background game recording:
                         <code
-                            >reg add "HKCU\\\\System\\\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg
-                            delete "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows\\\\GameDVR" /v AllowGameDVR
-                            /f</code
+                            >reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 1 /f; reg delete
+                            "HKLM\SOFTWARE\Policies\Microsoft\Windows\GameDVR" /v AllowGameDVR /f</code
                         ></span
                     >
                 </div>
@@ -1316,7 +1347,7 @@
                                 <button
                                     type="button"
                                     class="btn-action-pill copy-btn-trigger"
-                                    data-copy='reg add "HKCU\\Control Panel\\Desktop" /v MenuShowDelay /t REG_SZ /d 10 /f'
+                                    data-copy='reg add "HKCU\Control Panel\Desktop" /v MenuShowDelay /t REG_SZ /d 10 /f'
                                 >
                                     Copy
                                 </button>
@@ -1395,60 +1426,9 @@
                         </p>
                     </div>
 
-                    <div class="latency-item">
-                        <strong style="color: var(--text-primary)"
-                            >App Hardware Acceleration (Discord, Chrome, Spotify):</strong
-                        >
-                        <p
-                            style="
-                                font-size: 0.73rem;
-                                margin: 4px 0 0 0;
-                                color: var(--text-secondary);
-                                line-height: 1.45;
-                            "
-                        >
-                            Chromium and Electron apps allocate background Direct3D swapchains. When an intensive game
-                            hits 95–99% GPU usage, background video streams drop frames, causing Desktop Window Manager
-                            (DWM) stuttering on your primary monitor.
-                            <br /><br />
-                            • <strong>Discord:</strong> User Settings ➔ Advanced ➔ Toggle
-                            <strong>Hardware Acceleration OFF</strong>.<br />
-                            • <strong>Chrome / Brave / Edge:</strong> Settings ➔ System ➔ Toggle
-                            <em>"Use graphics acceleration when available"</em> <strong>OFF</strong> if gaming on
-                            mismatched refresh monitors.<br />
-                            • <strong>Spotify:</strong> Click ••• Menu ➔ View ➔ Toggle
-                            <strong>Hardware Acceleration OFF</strong>.
-                        </p>
-                    </div>
-
-                    <div class="latency-item">
-                        <strong style="color: var(--text-primary)"
-                            >Mouse Polling Rate (1,000 Hz vs. 4,000 / 8,000 Hz):</strong
-                        >
-                        <p
-                            style="
-                                font-size: 0.73rem;
-                                margin: 4px 0 0 0;
-                                color: var(--text-secondary);
-                                line-height: 1.45;
-                            "
-                        >
-                            Polling rates (4K / 8K) send 4,000–8,000 hardware interrupts per second to CPU Core 0. On
-                            8-thread CPUs (like i7-9700K or Ryzen 3600/5600), fast mouse swipes can consume 25–35% of a
-                            CPU core, causing frame drops in <em>League of Legends</em> and <em>Valorant</em>.
-                            <br /><br />
-                            • <strong>Competitive Standard:</strong> Set your mouse software to
-                            <strong>1,000 Hz</strong> for rock-solid frame pacing.<br />
-                            • <strong>Live Rate Checker:</strong> Test your actual sensor frequency at
-                            <a
-                                href="https://cpstest.org/polling-rate-test/"
-                                target="_blank"
-                                rel="noopener"
-                                class="link-chip"
-                                >Polling Rate Test ↗</a
-                            >.
-                        </p>
-                    </div>
+                    <div id="p6-hwa-mount" class="latency-item"></div>
+                    <div id="p6-polling-mount" class="latency-item"></div>
+                    <div id="p6-oem-bloat-mount" class="latency-item"></div>
                 </div>
             </div>
         </div>
@@ -1598,8 +1578,8 @@
                     "
                 >
                     <strong style="color: var(--text-primary)">Native Windows System Image Tool:</strong>
-                    <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="sdclt.exe /BLASTBACKUP">
-                        Launch Backup Wizard
+                    <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="sdclt.exe">
+                        Copy Command
                     </button>
                 </div>
                 <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45">

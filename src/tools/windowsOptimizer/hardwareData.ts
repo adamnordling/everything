@@ -1,3 +1,7 @@
+export type FormFactor = 'desktop' | 'laptop';
+export type StorageType = 'nvme' | 'sata-ssd' | 'hdd';
+export type NetworkType = 'ethernet' | 'wifi' | 'both';
+
 export type MoboPlatformId =
     | 'asus-intel-modern'
     | 'asus-intel-300-500'
@@ -14,14 +18,27 @@ export type MoboPlatformId =
     | 'gigabyte-amd-am5'
     | 'asrock-intel'
     | 'asrock-amd'
+    | 'oem-laptop-intel'
+    | 'oem-laptop-amd'
     | 'oem-generic';
 
 export interface HardwareProfile {
     os: 'win10' | 'win11';
+    formFactor: FormFactor;
     mobo: MoboPlatformId;
-    cpu: 'amd-x3d-dual' | 'amd-x3d-single' | 'amd-standard' | 'intel-raptor' | 'intel-alder' | 'intel-legacy';
+    cpu:
+        | 'amd-x3d-dual'
+        | 'amd-x3d-single'
+        | 'amd-standard'
+        | 'intel-core-ultra'
+        | 'intel-raptor'
+        | 'intel-alder'
+        | 'intel-legacy';
     gpuId: string;
+    hasHybridIgpu: boolean;
     ramId: string;
+    storage: StorageType;
+    network: NetworkType;
 }
 
 export interface MoboPlatformSpec {
@@ -41,7 +58,15 @@ export interface GpuModelSpec {
     id: string;
     name: string;
     keywords: string[];
-    family: 'nvidia-pascal' | 'nvidia-turing' | 'nvidia-modern' | 'amd-rdna' | 'intel-arc';
+    family:
+        | 'nvidia-pascal'
+        | 'nvidia-turing'
+        | 'nvidia-modern'
+        | 'amd-rdna'
+        | 'amd-gcn-legacy'
+        | 'intel-arc'
+        | 'intel-igpu'
+        | 'amd-igpu';
     supportsRebar: boolean;
     recommendHags: boolean;
     preferredOs: 'win10' | 'win11' | 'both';
@@ -266,6 +291,39 @@ export const NVIDIA_3D_SETTINGS_DATABASE: Driver3DSetting[] = [
     }
 ];
 
+export interface SimpleDriverSetting {
+    name: string;
+    recommended: string;
+    why: string;
+}
+
+export const INTEL_GRAPHICS_SETTINGS_DATABASE: SimpleDriverSetting[] = [
+    {
+        name: 'Low Latency Mode (Intel Arc Control / Graphics Command Center)',
+        recommended: 'On (Arc) / Application Controlled (iGPU)',
+        why: 'Reduces CPU-to-GPU frame queuing in DirectX 11/12 titles.'
+    },
+    {
+        name: 'Adaptive Sync / Variable Refresh Rate',
+        recommended: 'Enabled (if VRR display)',
+        why: 'Eliminates tearing without classic V-Sync input lag.'
+    },
+    {
+        name: 'Panel Self Refresh (Laptop Battery Only)',
+        recommended: 'Enabled on Battery / Off on AC if flickering',
+        why: 'Saves significant battery during static reading/coding; disable if you notice desktop micro-stutters while plugged in.'
+    },
+    {
+        name: 'Color Depth & Quantization Range',
+        recommended: 'Full Range (0–255 RGB)',
+        why: 'Prevents washed-out gray blacks on HDMI/DisplayPort and internal eDP laptop panels.'
+    },
+    {
+        name: 'Texture Filtering Quality',
+        recommended: 'Performance',
+        why: 'Improves 1% low frametime consistency on bandwidth-limited integrated and Arc GPUs.'
+    }
+];
 export const AMD_ADRENALIN_SETTINGS_DATABASE = [
     {
         name: 'Radeon Anti-Lag',
@@ -305,6 +363,7 @@ export interface RamModelSpec {
     generation: 'DDR3' | 'DDR4' | 'DDR5';
     speedMHz: number;
     channels: 'single' | 'dual' | 'quad';
+    tier: '8-16gb' | '32gb' | '64gb+';
     isJedecStock: boolean;
 }
 
@@ -314,6 +373,53 @@ const INTEL_OFFICIAL_DRIVERS =
     'https://www.intel.com/content/www/us/en/download/785597/intel-arc-iris-xe-graphics-windows.html';
 
 export const MOBO_PLATFORMS: MoboPlatformSpec[] = [
+    {
+        id: 'oem-laptop-intel',
+        name: 'OEM Laptop / Notebook (Lenovo, Dell, HP, ASUS, Acer — Intel)',
+        vendor: 'oem',
+        isAmd: false,
+        chipsetKeywords: [
+            'lnvnb',
+            'lenovo',
+            'ideapad',
+            'thinkpad',
+            'legion',
+            'inspiron',
+            'xps',
+            'latitude',
+            'vivobook',
+            'zenbook',
+            'predator',
+            'nitro'
+        ],
+        cpuKeywords: [],
+        toolName: 'OEM Windows BIOS Updater (.exe)',
+        supportUrl: 'https://pcsupport.lenovo.com/',
+        memoryProfileName: 'JEDEC Native (BIOS Locked)',
+        supportsRebarDefault: false
+    },
+    {
+        id: 'oem-laptop-amd',
+        name: 'OEM Laptop / Notebook (Lenovo, Dell, HP, ASUS, Acer — AMD Ryzen)',
+        vendor: 'oem',
+        isAmd: true,
+        chipsetKeywords: [
+            'lnvnb',
+            'lenovo',
+            'ideapad',
+            'thinkpad',
+            'legion',
+            'omen',
+            'victus',
+            'zephyrus',
+            'tuf gaming a'
+        ],
+        cpuKeywords: ['ryzen'],
+        toolName: 'OEM Windows BIOS Updater (.exe)',
+        supportUrl: 'https://pcsupport.lenovo.com/',
+        memoryProfileName: 'JEDEC Native (BIOS Locked)',
+        supportsRebarDefault: false
+    },
     // ASUS
     {
         id: 'asus-intel-modern',
@@ -518,6 +624,171 @@ export const MOBO_PLATFORMS: MoboPlatformSpec[] = [
 ];
 
 export const GPU_DATABASE: GpuModelSpec[] = [
+    // NVIDIA MOBILE / ENTRY PASCAL & TURING
+    {
+        id: 'mx150-250-350',
+        name: 'NVIDIA GeForce MX150 / MX250 / MX350 (Laptop Pascal)',
+        keywords: ['mx150', 'mx130', 'mx250', 'mx230', 'mx350', 'mx330'],
+        family: 'nvidia-pascal',
+        supportsRebar: false,
+        recommendHags: false,
+        preferredOs: 'both',
+        recommendedDriverVersion: '580.xx Final Pascal Branch (or OEM Certified Driver)',
+        driverNotes:
+            'Laptop Pascal (GP108) operating via NVIDIA Optimus. Install Intel/AMD iGPU driver FIRST. Keep HAGS OFF. Note: Regular Pascal Game Ready support ended Oct 2025 (security updates through Oct 2028).',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'mx450-550',
+        name: 'NVIDIA GeForce MX450 / MX550 (Laptop Turing)',
+        keywords: ['mx450', 'mx550'],
+        family: 'nvidia-turing',
+        supportsRebar: false,
+        recommendHags: false,
+        preferredOs: 'both',
+        recommendedDriverVersion: 'Latest WHQL Game Ready (Notebook)',
+        driverNotes: 'Laptop Turing Optimus GPU. Install iGPU driver first. Set Power management to Normal.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'gtx-1050',
+        name: 'NVIDIA GeForce GTX 1050 / 1050 Ti (Desktop & Laptop)',
+        keywords: ['1050 ti', '1050ti', 'gtx 1050', '1050'],
+        family: 'nvidia-pascal',
+        supportsRebar: false,
+        recommendHags: false,
+        preferredOs: 'win10',
+        recommendedDriverVersion: '580.xx Final Pascal Branch',
+        driverNotes: 'Pascal architecture (final Game Ready branch Oct 2025). Keep HAGS OFF.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'gtx-1650',
+        name: 'NVIDIA GeForce GTX 1650 / 1650 Ti / Super',
+        keywords: ['1650 ti', '1650 super', 'gtx 1650', '1650'],
+        family: 'nvidia-turing',
+        supportsRebar: false,
+        recommendHags: true,
+        preferredOs: 'both',
+        recommendedDriverVersion: 'Latest WHQL Game Ready Driver',
+        driverNotes:
+            'Turing TU116/TU117. Keep Power Management at Normal; HAGS ON on desktop (test OFF if VRAM-limited at 4GB).',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'rtx-laptop-entry',
+        name: 'NVIDIA GeForce RTX 2050 / 3050 / 4050 (Laptop & 3050 Desktop)',
+        keywords: ['rtx 2050', '3050 ti', 'rtx 3050', 'rtx 4050', '2050', '3050', '4050'],
+        family: 'nvidia-modern',
+        supportsRebar: true,
+        recommendHags: true,
+        preferredOs: 'win11',
+        recommendedDriverVersion: 'Latest WHQL Game Ready Driver',
+        driverNotes:
+            'Modern RTX. HAGS ON required for Frame Generation on RTX 4050. Install iGPU driver first on Optimus laptops.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'rtx-5060-5070',
+        name: 'NVIDIA GeForce RTX 5060 / 5070 / 5070 Ti',
+        keywords: ['5060', '5070'],
+        family: 'nvidia-modern',
+        supportsRebar: true,
+        recommendHags: true,
+        preferredOs: 'win11',
+        recommendedDriverVersion: 'Latest WHQL Game Ready Driver',
+        driverNotes: 'Blackwell architecture with DLSS 4 Multi-Frame Generation. Windows 11 + HAGS ON + ReBAR ON.',
+        directDownloadUrl: NVIDIA_OFFICIAL_DRIVERS
+    },
+
+    // AMD POLARIS / RDNA1 / ENTRY RDNA3 / RDNA4
+    {
+        id: 'rx-570-580-590',
+        name: 'AMD Radeon RX 570 / RX 580 / RX 590 (Polaris)',
+        keywords: ['rx 570', 'rx 580', 'rx 590', '580', '570'],
+        family: 'amd-gcn-legacy',
+        supportsRebar: false,
+        recommendHags: false,
+        preferredOs: 'win10',
+        recommendedDriverVersion: 'AMD Polaris Legacy Branch (24.9.1 / Latest Legacy WHQL)',
+        driverNotes:
+            'Polaris moved to legacy maintenance branch. Choose Minimal Install and disable Anti-Lag+ / Chill.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'rx-5600-5700',
+        name: 'AMD Radeon RX 5600 XT / 5700 / 5700 XT (RDNA 1)',
+        keywords: ['5600', '5700'],
+        family: 'amd-rdna',
+        supportsRebar: false,
+        recommendHags: false,
+        preferredOs: 'both',
+        recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
+        driverNotes: 'RDNA 1 lacks full hardware ReBAR optimization. Choose Minimal Install.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'rx-7600-7700',
+        name: 'AMD Radeon RX 7600 / 7700 XT',
+        keywords: ['7600', '7700'],
+        family: 'amd-rdna',
+        supportsRebar: true,
+        recommendHags: true,
+        preferredOs: 'win11',
+        recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
+        driverNotes: 'RDNA 3 architecture. Enable SAM in BIOS & Adrenalin. Minimal Install.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'rx-9070',
+        name: 'AMD Radeon RX 9070 / 9070 XT (RDNA 4)',
+        keywords: ['9070'],
+        family: 'amd-rdna',
+        supportsRebar: true,
+        recommendHags: true,
+        preferredOs: 'win11',
+        recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
+        driverNotes: 'RDNA 4 with FSR 4 support. Enable SAM + Anti-Lag 2. Minimal Install.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
+    },
+
+    // INTEGRATED GPUs (FOR IGPU-ONLY LAPTOPS / MINI PCs)
+    {
+        id: 'intel-uhd-hd',
+        name: 'Intel UHD / HD Graphics (620, 630, 730, 770 — Integrated)',
+        keywords: ['uhd graphics', 'hd graphics', 'uhd 620', 'uhd 630', 'uhd 770'],
+        family: 'intel-igpu',
+        supportsRebar: false,
+        recommendHags: false,
+        preferredOs: 'both',
+        recommendedDriverVersion: 'Latest Intel Graphics Driver (or OEM Driver on older laptops)',
+        driverNotes: 'Integrated graphics sharing system RAM. Dual-Channel RAM is mandatory for 2x iGPU bandwidth.',
+        directDownloadUrl: INTEL_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'intel-iris-arc-igpu',
+        name: 'Intel Iris Xe / Intel Arc Integrated Graphics (Core Ultra)',
+        keywords: ['iris', 'arc graphics', 'intel(r) graphics'],
+        family: 'intel-igpu',
+        supportsRebar: false,
+        recommendHags: false,
+        preferredOs: 'win11',
+        recommendedDriverVersion: 'Latest Intel Arc & Iris Xe WHQL Driver',
+        driverNotes: 'Dual-Channel / LPDDR5 memory strongly affects performance. Keep Hardware Video Acceleration ON.',
+        directDownloadUrl: INTEL_OFFICIAL_DRIVERS
+    },
+    {
+        id: 'amd-radeon-igpu',
+        name: 'AMD Radeon Integrated Graphics (Vega / 680M / 780M / 890M)',
+        keywords: ['radeon(tm) graphics', 'vega', '680m', '780m', '890m'],
+        family: 'amd-igpu',
+        supportsRebar: false,
+        recommendHags: false,
+        preferredOs: 'win11',
+        recommendedDriverVersion: 'Latest AMD Adrenalin WHQL (Minimal)',
+        driverNotes: 'APU integrated graphics. Memory bandwidth & Dual-Channel RAM directly dictate gaming FPS.',
+        directDownloadUrl: AMD_OFFICIAL_DRIVERS
+    },
     {
         id: 'gtx-1080-ti',
         name: 'NVIDIA GeForce GTX 1080 Ti',
@@ -852,62 +1123,72 @@ export interface PagefileSpec {
     badgeText: string;
     explanation: string;
 }
+export function getPagefileRecommendation(currentRam: RamModelSpec, storage: StorageType = 'nvme'): PagefileSpec {
+    if (storage === 'hdd') {
+        return {
+            initMB: 4096,
+            maxMB: 8192,
+            badgeText: 'Mechanical HDD · 4GB-8GB Compact',
+            explanation:
+                'Mechanical HDD detected: Keep pagefile compact (4096 MB initial, 8192 MB max) to reduce slow disk head thrashing. Upgrading your boot drive to an NVMe or SATA SSD is the #1 responsiveness upgrade.'
+        };
+    }
 
-export function getPagefileRecommendation(currentRam: RamModelSpec): PagefileSpec {
-    const ramName = currentRam.name.toLowerCase();
-
-    if (ramName.includes('single') || ramName.includes('8gb') || currentRam.id.includes('single')) {
+    if (currentRam.tier === '8-16gb' || currentRam.channels === 'single') {
         return {
             initMB: 8192,
             maxMB: 16384,
             badgeText: '8GB/16GB RAM · 8GB-16GB Buffer',
             explanation:
-                '8GB/16GB RAM Setup: Uses an 8GB initial buffer with a 16GB expansion ceiling. Because physical RAM is limited, modern games easily exceed 16GB total commit charge; this prevents out-of-memory game crashes.'
+                '8GB/16GB or Single-Channel Setup: Starts with a contiguous 8192 MB block and allows safe expansion up to 16384 MB so modern games never crash with Out-of-Memory commit errors.'
         };
     }
 
-    if (ramName.includes('32gb+')) {
+    if (currentRam.tier === '64gb+') {
         return {
             initMB: 4096,
             maxMB: 4096,
-            badgeText: '64GB+ RAM · 4GB Lean',
+            badgeText: '64GB+ RAM · 4GB Lean Static',
             explanation:
-                '64GB+ RAM Setup: Lean 4096 MB static allocation. With 64GB+ of physical memory, your system will never run out of RAM; 4GB satisfies Windows kernel triage dump and API requirements without wasting SSD storage.'
+                '64GB+ RAM Setup: Lean 4096 MB static allocation satisfies Windows kernel triage dumps and API commit requirements without wasting SSD storage.'
         };
     }
 
     return {
-        initMB: 8192,
+        initMB: 4096,
         maxMB: 8192,
-        badgeText: 'Standard Dual-Channel · 8GB Static',
+        badgeText: '32GB Dual-Channel · 4GB-8GB Static',
         explanation:
-            'Standard Gaming Setup: Pure static 8192 MB. Prevents NVMe drive allocation spikes and locks memory paging to a single contiguous block on C:.'
+            '32GB Dual-Channel Setup: Locks a clean 4096 MB contiguous block with an 8192 MB ceiling for heavy workloads without wasting NVMe space.'
     };
 }
 
 export const RAM_DATABASE: RamModelSpec[] = [
     {
         id: 'ddr5-6000-dual',
-        name: 'DDR5 32GB+ (2 Sticks) @ 6000 MHz (AM5 / Intel Sweet Spot)',
+        name: 'DDR5 32GB (2 Sticks) @ 6000 MHz (AM5 / Intel Sweet Spot)',
         generation: 'DDR5',
         speedMHz: 6000,
         channels: 'dual',
+        tier: '32gb',
         isJedecStock: false
     },
     {
         id: 'ddr5-6400-dual',
-        name: 'DDR5 32GB+ (2 Sticks) @ 6400–7200 MHz (Intel High-Speed XMP)',
+        name: 'DDR5 32GB (2 Sticks) @ 6400–7200 MHz (Intel High-Speed XMP)',
         generation: 'DDR5',
         speedMHz: 6400,
         channels: 'dual',
+        tier: '32gb',
         isJedecStock: false
     },
     {
         id: 'ddr5-5600-dual',
-        name: 'DDR5 16GB/32GB (2 Sticks) @ 5200–5600 MHz (Standard XMP)',
+        name: 'DDR5 16GB/32GB (2 Sticks) @ 5200–5600 MHz (Laptop / Standard XMP)',
         generation: 'DDR5',
         speedMHz: 5600,
         channels: 'dual',
+        tier: '32gb',
         isJedecStock: false
     },
     {
@@ -916,14 +1197,16 @@ export const RAM_DATABASE: RamModelSpec[] = [
         generation: 'DDR5',
         speedMHz: 4800,
         channels: 'dual',
+        tier: '8-16gb',
         isJedecStock: true
     },
     {
-        id: 'ddr5-quad',
-        name: 'DDR5 4 Sticks (4x16GB/32GB — Heavy Memory Controller Strain)',
+        id: 'ddr5-64gb-dual',
+        name: 'DDR5 64GB+ (2 or 4 Sticks) Workstation / Enthusiast',
         generation: 'DDR5',
-        speedMHz: 4800,
+        speedMHz: 6000,
         channels: 'quad',
+        tier: '64gb+',
         isJedecStock: false
     },
     {
@@ -932,6 +1215,7 @@ export const RAM_DATABASE: RamModelSpec[] = [
         generation: 'DDR5',
         speedMHz: 4800,
         channels: 'single',
+        tier: '8-16gb',
         isJedecStock: false
     },
     {
@@ -940,46 +1224,61 @@ export const RAM_DATABASE: RamModelSpec[] = [
         generation: 'DDR4',
         speedMHz: 3600,
         channels: 'dual',
+        tier: '32gb',
         isJedecStock: false
     },
     {
         id: 'ddr4-3200-dual',
-        name: 'DDR4 16GB/32GB (2 Sticks) @ 3200 MHz (Standard High-Speed XMP)',
+        name: 'DDR4 16GB/32GB (2 Sticks) @ 3200 MHz (Standard XMP / Laptop Dual)',
         generation: 'DDR4',
         speedMHz: 3200,
         channels: 'dual',
+        tier: '8-16gb',
         isJedecStock: false
     },
     {
         id: 'ddr4-2666-dual',
-        name: 'DDR4 16GB/32GB (2 Sticks) @ 2666–2933 MHz',
+        name: 'DDR4 16GB/32GB (2 Sticks) @ 2400–2933 MHz (Laptop / Non-OC Dual)',
         generation: 'DDR4',
         speedMHz: 2666,
         channels: 'dual',
+        tier: '8-16gb',
         isJedecStock: false
     },
     {
         id: 'ddr4-2133-dual',
-        name: 'DDR4 16GB/32GB (2 Sticks) @ 2133–2400 MHz (JEDEC Stock — XMP OFF!)',
+        name: 'DDR4 16GB/32GB (2 Sticks) @ 2133 MHz (JEDEC Fallback — XMP OFF!)',
         generation: 'DDR4',
         speedMHz: 2133,
         channels: 'dual',
+        tier: '8-16gb',
         isJedecStock: true
     },
     {
-        id: 'ddr4-quad',
-        name: 'DDR4 4 Sticks (4x8GB/16GB — Dual-Channel Dual-Rank)',
+        id: 'ddr4-64gb-quad',
+        name: 'DDR4 64GB+ (2 or 4 Sticks)',
         generation: 'DDR4',
         speedMHz: 3200,
         channels: 'quad',
+        tier: '64gb+',
+        isJedecStock: false
+    },
+    {
+        id: 'ddr4-2400-single',
+        name: 'DDR4 Single Stick (1x8GB/16GB @ 2133–2400 MHz — Laptop/OEM Single-Channel)',
+        generation: 'DDR4',
+        speedMHz: 2400,
+        channels: 'single',
+        tier: '8-16gb',
         isJedecStock: false
     },
     {
         id: 'ddr4-single',
-        name: 'DDR4 Single Stick (1x8GB/16GB — Severe 50% Bandwidth Penalty)',
+        name: 'DDR4 Single Stick (1x8GB/16GB @ 2666–3200 MHz — Single-Channel)',
         generation: 'DDR4',
         speedMHz: 2666,
         channels: 'single',
+        tier: '8-16gb',
         isJedecStock: false
     },
     {
@@ -988,6 +1287,7 @@ export const RAM_DATABASE: RamModelSpec[] = [
         generation: 'DDR3',
         speedMHz: 1600,
         channels: 'dual',
+        tier: '8-16gb',
         isJedecStock: false
     },
     {
@@ -996,6 +1296,7 @@ export const RAM_DATABASE: RamModelSpec[] = [
         generation: 'DDR3',
         speedMHz: 1600,
         channels: 'single',
+        tier: '8-16gb',
         isJedecStock: false
     }
 ];

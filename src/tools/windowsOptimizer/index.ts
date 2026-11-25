@@ -3,94 +3,114 @@ import {
     type GpuModelSpec,
     type MoboPlatformId,
     type MoboPlatformSpec,
+    type FormFactor,
+    type StorageType,
+    type NetworkType,
     GPU_DATABASE,
     RAM_DATABASE,
     MOBO_PLATFORMS,
     getPagefileRecommendation,
     NVIDIA_3D_SETTINGS_DATABASE,
-    AMD_ADRENALIN_SETTINGS_DATABASE
+    AMD_ADRENALIN_SETTINGS_DATABASE,
+    INTEL_GRAPHICS_SETTINGS_DATABASE
 } from './hardwareData';
 import {
     type CttItemBlueprint,
-    CTT_ESSENTIAL_ITEMS,
+    getCttEssentialItems,
+    getCttPreferenceItems,
     CTT_ADVANCED_ITEMS,
-    CTT_PREFERENCE_ITEMS,
     CTT_FEATURE_ITEMS
 } from './cttBlueprint';
 import template from './windowsView.html?raw';
+import { copyText } from '../../core/dom';
 
-const STORAGE_KEY = 'everything_winopt_profile_v10';
+const STORAGE_KEY = 'everything_winopt_profile_v11';
 
 function getCpuGuidance(profile: HardwareProfile): string {
-    const moboPlatform = MOBO_PLATFORMS.find(m => m.id === profile.mobo) ?? MOBO_PLATFORMS[1];
-    if (profile.cpu === 'amd-x3d-dual' || profile.cpu === 'amd-x3d-single') {
+    const moboPlatform = MOBO_PLATFORMS.find(m => m.id === profile.mobo) ?? MOBO_PLATFORMS[0];
+
+    if (profile.cpu === 'amd-x3d-dual' || profile.cpu === 'amd-x3d-single' || profile.cpu === 'amd-standard') {
+        const isX3d = profile.cpu !== 'amd-standard';
         return `
             <div class="hw-block">
                 <div class="hw-block-header">
-                    <span>AMD CPU Chipset Drivers</span>
+                    <span>AMD Ryzen Chipset Drivers</span>
                     <a href="https://www.amd.com/en/support/download/drivers.html" target="_blank" rel="noopener" class="link-chip">AMD Official Chipset Setup ↗</a>
                 </div>
                 <ul class="clean-bullet-list">
-                    <li>Install the bare AMD Chipset Driver package directly from AMD.com. Confirm <em>AMD 3D V-Cache Performance Optimizer Service</em> is running in <code>services.msc</code>.</li>
-                    ${profile.cpu === 'amd-x3d-dual' ? '<li><strong>Dual-CCD Rule:</strong> Keep Xbox Game Bar installed so Windows parks standard cores during games.</li>' : '<li><strong>Single-CCD Note:</strong> All cores share the 3D cache directly; no core-parking service dependencies needed.</li>'}
+                    <li>Install the latest <strong>AMD Chipset Software</strong> directly from AMD.com (not Windows Update or OEM suites).</li>
+                    ${isX3d ? '<li>Verify <em>AMD 3D V-Cache Performance Optimizer Service</em> is running in <code>services.msc</code>.</li>' : ''}
+                    ${profile.cpu === 'amd-x3d-dual' ? '<li><strong>Dual-CCD Rule:</strong> Keep Xbox Game Bar installed so Windows parks standard cores during games.</li>' : ''}
                 </ul>
             </div>
         `;
     }
-    if (profile.cpu === 'intel-raptor') {
+
+    if (profile.cpu === 'intel-raptor' || profile.cpu === 'intel-alder' || profile.cpu === 'intel-core-ultra') {
         return `
             <div class="hw-block">
                 <div class="hw-block-header">
-                    <span>Intel 13th/14th Gen Chipset &amp; ME</span>
-                    <a href="https://www.intel.com/content/www/us/en/download-center/home.html" target="_blank" rel="noopener" class="link-chip">Intel Driver Center ↗</a>
+                    <span>Modern Intel Hybrid Chipset &amp; ME (${profile.formFactor === 'laptop' ? 'Mobile' : 'Desktop'})</span>
+                    <a href="${moboPlatform.supportUrl}" target="_blank" rel="noopener" class="link-chip">Official Support Portal ↗</a>
                 </div>
                 <ul class="clean-bullet-list">
-                    <li>Install <strong>Intel Chipset Device Software (INF)</strong> and <strong>Intel Management Engine (ME)</strong> from your motherboard support page.</li>
-                    <li>Verify Intel Default Power Limits (PL1/PL2 = 253W max) are active.</li>
+                    <li>Install <strong>Intel Chipset Device Software (INF)</strong> and <strong>Intel Management Engine (ME)</strong> from your ${profile.formFactor === 'laptop' ? 'laptop OEM' : 'motherboard'} support page.</li>
+                    ${profile.cpu === 'intel-core-ultra' ? '<li><strong>Core Ultra Note:</strong> Install the <strong>Intel NPU Driver</strong> if using AI offload features, and stay on Windows 11 for Thread Director support.</li>' : ''}
+                    ${profile.cpu === 'intel-raptor' && profile.formFactor === 'desktop' ? '<li>Confirm Intel Default Power Limits (PL1/PL2 = 253W max) and BIOS microcode <strong>0x12B+</strong> are active.</li>' : ''}
                 </ul>
             </div>
         `;
     }
+
     return `
         <div class="hw-block">
             <div class="hw-block-header">
                 <span>Intel Monolithic Chipset &amp; Device Manager Audit (${moboPlatform.name})</span>
-                <a href="${moboPlatform.supportUrl}" target="_blank" rel="noopener" class="link-chip">Official Motherboard Driver Portal ↗</a>
+                <a href="${moboPlatform.supportUrl}" target="_blank" rel="noopener" class="link-chip">Official Support Portal ↗</a>
             </div>
             <ul class="clean-bullet-list">
-                <li><strong>Device Manager Audit First:</strong> Press <kbd>Win</kbd> + <kbd>X</kbd> ➔ <strong>Device Manager</strong> (or run <code>devmgmt.msc</code>). Expand <em>"Other devices"</em> or <em>"System devices"</em>.</li>
-                <li><strong>No yellow exclamation marks (!):</strong> Windows Update has already mapped all chipset INF descriptors. You do <strong>not</strong> need to download or reinstall chipset drivers.</li>
-                <li><strong>Yellow warnings present:</strong> (e.g. on <em>PCI Simple Communications Controller</em> or <em>SM Bus Controller</em>): Download only these two packages from your ${moboPlatform.name} support portal:
-                    <br/>1. <strong>Intel Chipset Device Software (INF Update Utility):</strong> Labels PCIe root ports and SMBus devices.
-                    <br/>2. <strong>Intel Management Engine (ME):</strong> Installs <code>HECI.sys</code> to govern hardware sleep/wake transitions.
-                </li>
-                <li><strong>Zero performance code in INFs:</strong> Chipset INF files only provide text naming definitions for Device Manager. They do not contain executable acceleration code.</li>
+                <li><strong>Device Manager Audit First:</strong> Press <kbd>Win</kbd> + <kbd>X</kbd> ➔ <strong>Device Manager</strong>. Expand <em>&ldquo;Other devices&rdquo;</em> and <em>&ldquo;System devices&rdquo;</em>.</li>
+                <li><strong>No yellow exclamation marks (!):</strong> Windows already mapped your INF descriptors — no manual INF install required.</li>
+                <li><strong>Yellow warnings present:</strong> Install <strong>Intel Chipset Device Software (INF)</strong> and <strong>Intel Management Engine (ME)</strong> from your support portal.</li>
             </ul>
         </div>
     `;
 }
 
-function getGpuGuidance(currentGpu: GpuModelSpec): string {
+function getGpuGuidance(currentGpu: GpuModelSpec, profile: HardwareProfile): string {
+    const isOptimus =
+        profile.formFactor === 'laptop' && (profile.hasHybridIgpu || currentGpu.family.startsWith('nvidia'));
     const isPascal = currentGpu.family === 'nvidia-pascal';
-    const isModernNvidia = currentGpu.family === 'nvidia-modern' || currentGpu.family === 'nvidia-turing';
-    const isAmd = currentGpu.family === 'amd-rdna';
+    const isNvidia = currentGpu.family.startsWith('nvidia');
+    const isAmd = currentGpu.family.startsWith('amd');
+    const isIntelIgpu = currentGpu.family === 'intel-igpu';
 
-    let specificSettings: string;
-    if (isPascal) {
+    let specificSettings = '';
+    if (isOptimus) {
         specificSettings = `
-            <li><strong>Official Installer Setup (Pascal):</strong> Choose <em>Custom (Advanced)</em> ➔ Check <strong>"Perform a clean installation"</strong>. Install Display Driver + PhysX only. Keep HAGS <strong>OFF</strong>.</li>
+            <li><strong>MANDATORY OPTIMUS INSTALL ORDER:</strong> Install your <strong>Intel/AMD iGPU driver FIRST</strong> ➔ Reboot (still offline) ➔ Then install <strong>${currentGpu.name}</strong> choosing <em>Custom ➔ Clean installation</em>.</li>
+            <li><strong>OEM Fallback Note:</strong> If NVIDIA&apos;s generic notebook installer says <em>&ldquo;No compatible graphics hardware found&rdquo;</em>, use your laptop OEM&apos;s certified VGA driver first.</li>
         `;
-    } else if (isModernNvidia) {
+    } else if (isPascal) {
         specificSettings = `
-            <li><strong>Official Installer Setup (Modern RTX):</strong> Choose <em>Custom (Advanced)</em> ➔ Check <strong>"Perform a clean installation"</strong>. Keep HAGS <strong>ON</strong>.</li>
+            <li><strong>Official Installer Setup (Pascal):</strong> Choose <em>Custom (Advanced)</em> ➔ Check <strong>&ldquo;Perform a clean installation&rdquo;</strong>. Install Display Driver + PhysX only. Keep HAGS <strong>OFF</strong>.</li>
+        `;
+    } else if (isNvidia) {
+        specificSettings = `
+            <li><strong>Official Installer Setup (RTX / Turing):</strong> Choose <em>Custom (Advanced)</em> ➔ Check <strong>&ldquo;Perform a clean installation&rdquo;</strong>. Keep HAGS <strong>ON</strong>.</li>
+            ${profile.os === 'win10' && currentGpu.family === 'nvidia-modern' ? '<li><strong>Windows 10 Driver Note:</strong> Regular RTX Game Ready updates for Windows 10 ended Oct 2026; use the final supported Win10 branch or upgrade to Windows 11.</li>' : ''}
         `;
     } else if (isAmd) {
         specificSettings = `
-            <li><strong>AMD Adrenalin:</strong> Select <strong>"Minimal Install"</strong> to skip streaming services and analytics. Enable Smart Access Memory (SAM).</li>
+            <li><strong>AMD Adrenalin:</strong> Select <strong>&ldquo;Minimal Install&rdquo;</strong> to skip streaming/telemetry bloat.${currentGpu.supportsRebar ? ' Enable Smart Access Memory (SAM).' : ''}</li>
+        `;
+    } else if (isIntelIgpu) {
+        specificSettings = `
+            <li><strong>Intel Integrated Graphics:</strong> Install the official Intel WHQL package (or OEM certified driver if your laptop blocks generic Intel packages).</li>
         `;
     } else {
         specificSettings = `
-            <li><strong>Intel Arc:</strong> Install latest WHQL package. ReBAR must be active in BIOS.</li>
+            <li><strong>Intel Arc Discrete:</strong> Install latest Intel Arc WHQL package. ReBAR must be enabled in BIOS.</li>
         `;
     }
 
@@ -127,6 +147,15 @@ export function initWindowsOptimizer(): void {
 
         // 2. Event delegation for CTT Accordions (100% reliable)
         viewPanel.addEventListener('click', (e: MouseEvent) => {
+            const copyBtn = (e.target as HTMLElement | null)?.closest<HTMLButtonElement>('.copy-btn-trigger');
+            if (copyBtn) {
+                const textToCopy = copyBtn.getAttribute('data-copy') ?? '';
+                if (textToCopy) {
+                    copyText(textToCopy, copyBtn);
+                }
+                return;
+            }
+
             const header = (e.target as HTMLElement | null)?.closest<HTMLButtonElement>('.ctt-accordion-header');
             if (!header) return;
 
@@ -174,23 +203,74 @@ export function initWindowsOptimizer(): void {
 
     const advisoryBanner = document.getElementById('hw-advisory-banner');
     const hwDynamicContent = document.getElementById('hw-dynamic-content');
-    const hagsText = document.getElementById('hags-calibration-text');
+
+    const formSelect = document.getElementById('winopt-form-select') as HTMLSelectElement | null;
+    const storageSelect = document.getElementById('winopt-storage-select') as HTMLSelectElement | null;
+    const networkSelect = document.getElementById('winopt-network-select') as HTMLSelectElement | null;
 
     let profile: HardwareProfile = {
         os: 'win10',
+        formFactor: 'desktop',
         mobo: 'asus-intel-300-500',
         cpu: 'intel-legacy',
         gpuId: 'gtx-1070',
-        ramId: 'ddr4-3200-dual'
+        hasHybridIgpu: false,
+        ramId: 'ddr4-3200-dual',
+        storage: 'nvme',
+        network: 'ethernet'
     };
 
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem('everything_winopt_profile_v10');
     if (saved) {
         try {
             profile = { ...profile, ...(JSON.parse(saved) as Partial<HardwareProfile>) };
         } catch {
             // Keep default
         }
+    }
+
+    function renderPhase4Ddu(): void {
+        const dduMount = document.getElementById('p4-ddu-protocol-mount');
+        if (!dduMount) return;
+
+        const currentGpu = GPU_DATABASE.find(g => g.id === profile.gpuId) ?? GPU_DATABASE[0];
+        const isOptimus =
+            profile.formFactor === 'laptop' && (profile.hasHybridIgpu || currentGpu.family.startsWith('nvidia'));
+        const isIgpuOnly = currentGpu.family === 'intel-igpu' || currentGpu.family === 'amd-igpu';
+
+        dduMount.innerHTML = `
+            <strong style="color: var(--text-primary)">Step 2: DDU Safe Mode Deep Clean Protocol:</strong>
+            <ol class="ordered-step-list">
+                <li><strong>DISCONNECT FROM THE INTERNET:</strong> Unplug Ethernet or turn off Wi-Fi until Step 4 is finished.</li>
+                <li><strong>Boot Safe Mode:</strong> Hold <kbd>Shift</kbd> + Restart ➔ Troubleshoot ➔ Advanced Options ➔ Startup Settings ➔ Restart ➔ Press <kbd>4</kbd>. ${profile.formFactor === 'laptop' ? '<em>(Have your Windows Password ready — PIN sometimes fails in Safe Mode, and check BitLocker is off first!)</em>' : ''}</li>
+                <li>
+                    <strong>Run DDU in Safe Mode:</strong>
+                    <ul class="clean-bullet-list" style="margin-top:4px;">
+                        ${
+                            isOptimus
+                                ? `
+                            <li><strong>1. Clean Dedicated GPU (${currentGpu.name}):</strong> Select <strong>GPU ➔ NVIDIA/AMD</strong> ➔ Click <em>&ldquo;Clean and do NOT restart&rdquo;</em>.</li>
+                            <li><strong>2. Clean Integrated GPU:</strong> Select <strong>GPU ➔ Intel (or AMD)</strong> ➔ Click <strong>&ldquo;Clean and Restart&rdquo;</strong>.</li>
+                        `
+                                : isIgpuOnly
+                                  ? `
+                            <li><strong>Clean Integrated GPU:</strong> Select <strong>GPU ➔ ${currentGpu.family === 'intel-igpu' ? 'Intel' : 'AMD'}</strong> ➔ Click <strong>&ldquo;Clean and Restart&rdquo;</strong>.</li>
+                        `
+                                  : `
+                            <li><strong>Clean Dedicated GPU:</strong> Select <strong>GPU ➔ ${currentGpu.family.startsWith('amd') ? 'AMD' : currentGpu.family.startsWith('intel') ? 'Intel' : 'NVIDIA'}</strong> ➔ Click <strong>&ldquo;Clean and Restart&rdquo;</strong>.</li>
+                        `
+                        }
+                    </ul>
+                </li>
+                <li>
+                    ${
+                        isOptimus
+                            ? '<strong>Install Drivers Offline in Strict Order:</strong> Install your <strong>Intel/AMD iGPU driver FIRST</strong> ➔ Reboot ➔ Then install your <strong>NVIDIA/AMD dedicated driver</strong>.'
+                            : '<strong>Stay offline</strong> after reboot and run your pre-downloaded GPU installer executable.'
+                    }
+                </li>
+            </ol>
+        `;
     }
 
     function renderPhase4Settings(): void {
@@ -204,11 +284,57 @@ export function initWindowsOptimizer(): void {
 
         const currentGpu = GPU_DATABASE.find(g => g.id === profile.gpuId) ?? GPU_DATABASE[0];
         const isIntelLegacy = profile.cpu === 'intel-legacy';
-        const isAmdGpu = currentGpu.family === 'amd-rdna';
+        const isAmdGpu =
+            currentGpu.family === 'amd-rdna' ||
+            currentGpu.family === 'amd-gcn-legacy' ||
+            currentGpu.family === 'amd-igpu';
+        const isIntelGpu = currentGpu.family === 'intel-arc' || currentGpu.family === 'intel-igpu';
+        const isOptimus =
+            profile.formFactor === 'laptop' && (profile.hasHybridIgpu || currentGpu.family.startsWith('nvidia'));
 
-        // -------------------------------------------------------------
-        // 1. AMD RADEON SETUP
-        // -------------------------------------------------------------
+        // 1. INTEL ARC / INTEL iGPU
+        if (isIntelGpu) {
+            if (titleEl) titleEl.textContent = `Step 3: Intel Graphics Calibration (${currentGpu.name}):`;
+            if (badgeEl) badgeEl.textContent = 'Intel Graphics';
+            if (descEl) {
+                descEl.textContent =
+                    'Configure Windows Display refresh rate + Intel Graphics Command Center / Intel Arc Control:';
+            }
+            prereqsMount.innerHTML = `
+                <div class="latency-grid">
+                    <div class="latency-item" style="border-color: var(--accent-brand);">
+                        <strong style="color:var(--text-primary);">1. Windows Native Refresh Rate:</strong>
+                        <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.4;">
+                            Open <strong>Win+I ➔ System ➔ Display ➔ Advanced display</strong> and ensure the refresh rate is at your monitor&apos;s maximum Hz.
+                        </p>
+                    </div>
+                    <div class="latency-item" style="border-color: var(--accent-brand);">
+                        <strong style="color:var(--text-primary);">2. Graphics Preference (Laptop / iGPU):</strong>
+                        <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.4;">
+                            Keep power mode on Balanced when unplugged and High Performance when plugged into AC mains.
+                        </p>
+                    </div>
+                </div>
+            `;
+            settingsMount.innerHTML = `
+                <div class="latency-grid">
+                    ${INTEL_GRAPHICS_SETTINGS_DATABASE.map(
+                        item => `
+                        <div class="latency-item" style="border-color: var(--accent-brand);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:6px;">
+                                <strong style="color:var(--text-primary); font-size:0.78rem;">${item.name}</strong>
+                                <span class="pill-badge">${item.recommended}</span>
+                            </div>
+                            <p style="font-size:0.72rem; color:var(--text-secondary); margin:0; line-height:1.4;">${item.why}</p>
+                        </div>
+                    `
+                    ).join('')}
+                </div>
+            `;
+            return;
+        }
+
+        // 2. AMD RADEON
         if (isAmdGpu) {
             if (titleEl) titleEl.textContent = 'Step 3: AMD Software: Adrenalin Edition Calibration:';
             if (badgeEl) badgeEl.textContent = 'Radeon Adrenalin';
@@ -222,13 +348,13 @@ export function initWindowsOptimizer(): void {
                     <div class="latency-item" style="border-color: rgba(214, 93, 100, 0.3);">
                         <strong style="color:var(--text-primary);">1. Display Refresh Rate &amp; FreeSync:</strong>
                         <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.4;">
-                            Go to <strong>Gaming ➔ Display</strong>. Confirm <em>AMD FreeSync</em> is <strong>Enabled</strong> and verify your panel refresh rate is at its native maximum (144Hz / 240Hz+).
+                            Go to <strong>Gaming ➔ Display</strong>. Confirm <em>AMD FreeSync</em> is <strong>Enabled</strong> and verify your panel refresh rate is at its native maximum.
                         </p>
                     </div>
                     <div class="latency-item" style="border-color: rgba(214, 93, 100, 0.3);">
                         <strong style="color:var(--text-primary);">2. Pixel Format (Full 0–255 RGB):</strong>
                         <p style="font-size:0.72rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.4;">
-                            Under <strong>Gaming ➔ Display ➔ Pixel Format</strong>: Select <strong>RGB 4:4:4 Pixel Format PC Standard (Full RGB)</strong>. Eliminates washed-out blacks on HDMI/DP.
+                            Under <strong>Gaming ➔ Display ➔ Pixel Format</strong>: Select <strong>RGB 4:4:4 Pixel Format PC Standard (Full RGB)</strong>.
                         </p>
                     </div>
                 </div>
@@ -252,73 +378,86 @@ export function initWindowsOptimizer(): void {
             return;
         }
 
-        // -------------------------------------------------------------
-        // 2. NVIDIA GEFORCE SETUP (PASCAL & MODERN RTX)
-        // -------------------------------------------------------------
+        // 3. NVIDIA (OPTIMUS LAPTOP vs DESKTOP)
         if (titleEl) titleEl.textContent = `Step 3: NVIDIA Control Panel Calibration (${currentGpu.name}):`;
-        if (badgeEl)
-            badgeEl.textContent = currentGpu.family === 'nvidia-pascal' ? 'Pascal Calibrated' : 'Modern RTX Calibrated';
+        if (badgeEl) {
+            badgeEl.textContent = isOptimus
+                ? 'Optimus Laptop Calibrated'
+                : currentGpu.family === 'nvidia-pascal'
+                  ? 'Pascal Calibrated'
+                  : 'Modern RTX Calibrated';
+        }
         if (descEl) {
-            descEl.innerHTML =
-                'Complete the <strong>Display</strong> prerequisites first, then apply the <strong>Manage 3D settings</strong> matrix below:';
+            descEl.innerHTML = isOptimus
+                ? 'On Optimus laptops, the <strong>Display</strong> tab is intentionally hidden because your iGPU drives the screen. Assign games to your dedicated GPU below, then apply 3D settings:'
+                : 'Complete the <strong>Display</strong> prerequisites first, then apply the <strong>Manage 3D settings</strong> matrix below:';
         }
 
-        // 3A: PREREQUISITE DISPLAY CARDS (THE 60Hz TRAP & FULL DYNAMIC RANGE)
-        prereqsMount.innerHTML = `
-            <div class="latency-grid">
-                <div class="latency-item" style="border-color: var(--accent-brand);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <strong style="color:var(--text-primary);">A. Escape the 60Hz "Ultra HD" Trap:</strong>
-                        <span class="pill-badge" style="color:var(--accent-brand);">Display ➔ Change resolution</span>
+        prereqsMount.innerHTML = isOptimus
+            ? `
+                <div class="latency-grid">
+                    <div class="latency-item" style="border-color: var(--accent-brand);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <strong style="color:var(--text-primary);">A. Force Games onto ${currentGpu.name}:</strong>
+                            <span class="pill-badge">Win+I ➔ Display ➔ Graphics</span>
+                        </div>
+                        <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                            Optimus laptops sometimes launch games on the weak Intel/AMD iGPU by mistake. Open <strong>Windows Settings ➔ System ➔ Display ➔ Graphics</strong>, browse for your game <code>.exe</code>, click <strong>Options</strong>, and select <strong>High performance (${currentGpu.name})</strong>.
+                        </p>
                     </div>
-                    <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
-                        In NVIDIA Control Panel ➔ <em>Change resolution</em>: Do <strong>NOT</strong> select your resolution from the top "Ultra HD, HD, SD" list (it caps refresh rates at 60Hz!).
-                        <br/><br/>
-                        Scroll down past the TV list to the <strong>"PC"</strong> section (e.g. <code>PC ➔ 1920x1080</code> or <code>2560x1440</code>). Select your native resolution here to unlock your monitor's true <strong>144Hz, 165Hz, 240Hz, or 360Hz+</strong>.
-                    </p>
-                </div>
-
-                <div class="latency-item" style="border-color: var(--accent-brand);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <strong style="color:var(--text-primary);">B. Full Output Dynamic Range (0–255 RGB):</strong>
-                        <span class="pill-badge" style="color:var(--accent-brand);">Change resolution ➔ Step 3</span>
+                    <div class="latency-item" style="border-color: var(--accent-brand);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <strong style="color:var(--text-primary);">B. Internal Panel Hz &amp; Full Range RGB:</strong>
+                            <span class="pill-badge">iGPU Control Panel</span>
+                        </div>
+                        <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                            Set panel refresh rate in <strong>Win+I ➔ Display ➔ Advanced display</strong>. For external HDMI/DP monitors connected via the iGPU, set <strong>Full Range (0–255)</strong> inside Intel Graphics Command Center.
+                        </p>
                     </div>
-                    <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
-                        On the same <em>Change resolution</em> page, scroll down to Step 3:
-                        <br/>1. Select <strong>"Use NVIDIA color settings"</strong>.
-                        <br/>2. Output dynamic range: Change from <strong>Limited (16–235)</strong> to <strong>Full (0–255)</strong>.
-                        <br/><br/>
-                        Fixes Windows treating monitors as HDMI TVs with washed-out gray blacks and clipped contrast.
-                    </p>
                 </div>
-
-                <div class="latency-item">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <strong style="color:var(--text-primary);">C. G-Sync Setup Protocol:</strong>
-                        <span class="pill-badge">Display ➔ Set up G-SYNC</span>
+            `
+            : `
+                <div class="latency-grid">
+                    <div class="latency-item" style="border-color: var(--accent-brand);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <strong style="color:var(--text-primary);">A. Escape the 60Hz &ldquo;Ultra HD&rdquo; Trap:</strong>
+                            <span class="pill-badge" style="color:var(--accent-brand);">Display ➔ Change resolution</span>
+                        </div>
+                        <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                            Scroll down past &ldquo;Ultra HD, HD, SD&rdquo; to the <strong>&ldquo;PC&rdquo;</strong> section to unlock your monitor&apos;s true <strong>144Hz–360Hz+</strong> refresh rate.
+                        </p>
                     </div>
-                    <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
-                        • Check <strong>"Enable G-SYNC, G-SYNC Compatible"</strong>.<br/>
-                        • Select <strong>"Enable for full screen mode"</strong> (or windowed and full screen if gaming borderless).<br/>
-                        • Verify your specific display is selected and checked in Step 3.
-                    </p>
-                </div>
-
-                <div class="latency-item">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <strong style="color:var(--text-primary);">D. Desktop Color Depth:</strong>
-                        <span class="pill-badge">8 bpc vs 10 bpc</span>
+                    <div class="latency-item" style="border-color: var(--accent-brand);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <strong style="color:var(--text-primary);">B. Full Output Dynamic Range (0–255 RGB):</strong>
+                            <span class="pill-badge" style="color:var(--accent-brand);">Change resolution ➔ Step 3</span>
+                        </div>
+                        <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                            Select <strong>&ldquo;Use NVIDIA color settings&rdquo;</strong> and change Output dynamic range from Limited (16–235) to <strong>Full (0–255)</strong>.
+                        </p>
                     </div>
-                    <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
-                        Under <em>Output color depth</em>: Set to <strong>8 bpc</strong> for standard sRGB panels, or <strong>10 bpc</strong> if your monitor features a true 10-bit wide-gamut panel. (Avoid 10 bpc over older DisplayPort 1.2 cables if it forces DSC or limits refresh rate).
-                    </p>
+                    <div class="latency-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <strong style="color:var(--text-primary);">C. G-Sync Setup Protocol:</strong>
+                            <span class="pill-badge">Display ➔ Set up G-SYNC</span>
+                        </div>
+                        <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                            Check <strong>Enable G-SYNC, G-SYNC Compatible</strong> for full screen mode and confirm your display is checked in Step 3.
+                        </p>
+                    </div>
+                    <div class="latency-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <strong style="color:var(--text-primary);">D. Desktop Color Depth:</strong>
+                            <span class="pill-badge">8 bpc vs 10 bpc</span>
+                        </div>
+                        <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                            Set <strong>8 bpc</strong> for standard sRGB monitors, or <strong>10 bpc</strong> on native 10-bit panels.
+                        </p>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
 
-        // 3B: FULL 3D SETTINGS TABLE
         const categories = ['Latency & Sync', 'Performance & Cache', 'Textures & Quality', 'Antialiasing'] as const;
-
         settingsMount.innerHTML = `
             <div style="display:flex; flex-direction:column; gap:12px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:6px;">
@@ -344,13 +483,13 @@ export function initWindowsOptimizer(): void {
                                             ? 'border-color: var(--accent-brand);'
                                             : '';
                                         return `
-                                        <div class="latency-item" style="${borderStyle}">
-                                            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:6px;">
-                                                <strong style="color:var(--text-primary); font-size:0.76rem;">${item.name}</strong>
-                                                <span class="pill-badge" style="white-space:nowrap;">${val}</span>
-                                            </div>
-                                            <p style="font-size:0.71rem; color:var(--text-secondary); margin:0; line-height:1.4;">${why}</p>
-                                        </div>
+                                       <div class="latency-item" style="${borderStyle}">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:6px; gap:6px;">
+        <strong style="color:var(--text-primary); font-size:0.76rem; flex: 1 1 auto;">${item.name}</strong>
+        <span class="pill-badge">${val}</span>
+    </div>
+    <p style="font-size:0.71rem; color:var(--text-secondary); margin:0; line-height:1.4;">${why}</p>
+</div>
                                     `;
                                     })
                                     .join('')}
@@ -363,21 +502,150 @@ export function initWindowsOptimizer(): void {
         `;
     }
     function renderPhase6(): void {
+        const isLaptop = profile.formFactor === 'laptop';
         const currentRam = RAM_DATABASE.find(r => r.id === profile.ramId) ?? RAM_DATABASE[0];
-        const { initMB, maxMB, badgeText, explanation } = getPagefileRecommendation(currentRam);
+        const { initMB, maxMB, badgeText, explanation } = getPagefileRecommendation(currentRam, profile.storage);
 
+        // 1. Dynamic Power Script (Laptop preserves Hibernate + DC battery life; Desktop disables Hibernate)
+        const powerMount = document.getElementById('p6-power-mount');
+        if (powerMount) {
+            const powerCmd = isLaptop
+                ? 'powercfg -restoredefaultschemes; powercfg /change monitor-timeout-ac 10; powercfg /change standby-timeout-ac 30; powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0; powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0; reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power" /v HiberbootEnabled /t REG_DWORD /d 0 /f; powercfg /setactive SCHEME_CURRENT'
+                : 'powercfg -restoredefaultschemes; powercfg /change monitor-timeout-ac 15; powercfg /change standby-timeout-ac 0; powercfg /change disk-timeout-ac 0; powercfg /setacvalueindex SCHEME_CURRENT 501a4d13-42af-4429-9fd1-a8218c268e20 ee12f906-d277-404b-b6da-e5fa1a576df5 0; powercfg /setacvalueindex SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3 48e6b7a6-50f5-4782-a5d4-53bb8f07e226 0; powercfg /hibernate off; powercfg /setactive SCHEME_CURRENT';
+
+            const powerRevert = isLaptop
+                ? 'powercfg -restoredefaultschemes; reg add "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power" /v HiberbootEnabled /t REG_DWORD /d 1 /f'
+                : 'powercfg -restoredefaultschemes; powercfg /hibernate on';
+
+            powerMount.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary);">Step 1: Calibrated Balanced Power (${isLaptop ? 'Laptop AC-Safe' : 'Desktop'}):</strong>
+                    <span class="pill-badge" style="font-size:0.65rem;">${isLaptop ? 'Preserves Battery & Hibernate' : 'Silent Idle, Peak Boost'}</span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
+                    ${
+                        isLaptop
+                            ? 'Tunes <strong>AC plugged-in</strong> PCIe &amp; USB suspend to zero latency while leaving unplugged battery (DC) savings untouched. Disables Fast Startup (<code>HiberbootEnabled=0</code>) while keeping low-battery Hibernation active.'
+                            : 'Sets Balanced mode so CPU clocks stay cool at idle while disabling PCIe ASPM, USB selective suspend, and Hibernation (reclaiming 16–32 GB SSD space). Uses a 15-min display sleep timeout (OLED-safe).'
+                    }
+                </p>
+                <div class="terminal-code-window" style="margin-top:6px;">
+                    <div class="terminal-bar">
+                        <div class="terminal-badge"><span class="terminal-dot"></span><span>PowerShell (Admin)</span></div>
+                        <button type="button" class="btn-action-pill copy-btn-trigger" data-copy='${powerCmd}'>Copy</button>
+                    </div>
+                    <pre class="terminal-code-body"><code>${powerCmd}</code></pre>
+                </div>
+                <div class="revert-box" style="margin-top:6px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                        <span class="revert-title">How to Revert / Undo:</span>
+                        <button type="button" class="btn-text-link copy-btn-trigger" data-copy='${powerRevert}'>Copy Revert</button>
+                    </div>
+                    <span class="revert-text"><code>${powerRevert}</code></span>
+                </div>
+            `;
+        }
+
+        // 2. Dynamic Network Adapter (Ethernet vs Wi-Fi)
+        const netMount = document.getElementById('p6-network-mount');
+        if (netMount) {
+            const showEth = profile.network === 'ethernet' || profile.network === 'both';
+            const showWifi = profile.network === 'wifi' || profile.network === 'both';
+
+            netMount.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <strong style="color:var(--text-primary);">Step 3: Network Adapter Optimization (${profile.network.toUpperCase()}):</strong>
+                    <span class="pill-badge" style="font-size:0.65rem;">Device Manager</span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin:4px 0 0 0;">
+                    Press <kbd>Win</kbd> + <kbd>X</kbd> ➔ <strong>Device Manager</strong> ➔ <em>Network adapters</em> ➔ Right-click your active adapter ➔ <strong>Properties ➔ Advanced</strong>:
+                </p>
+                <ul class="clean-bullet-list" style="margin-top:6px;">
+                    ${
+                        showEth
+                            ? `
+                        <li><strong>Ethernet — Energy Efficient Ethernet (EEE) / Green Ethernet:</strong> Set to <strong>Disabled</strong> (prevents transceiver sleep jitter).</li>
+                        <li><strong>Ethernet — Interrupt Moderation:</strong> Set to <strong>Enabled</strong> (or <em>Low</em> for competitive FPS).</li>
+                        <li><strong>Ethernet — Receive Side Scaling (RSS):</strong> Set to <strong>Enabled</strong>.</li>
+                    `
+                            : ''
+                    }
+                    ${
+                        showWifi
+                            ? `
+                        <li><strong>Wi-Fi — Preferred Band:</strong> Set to <strong>Prefer 5 GHz</strong> (or 6 GHz) to avoid congested 2.4 GHz ping spikes.</li>
+                        <li><strong>Wi-Fi — Roaming Aggressiveness:</strong> Set to <strong>Lowest</strong> or <strong>Medium-Low</strong> so your laptop doesn&apos;t drop packets scanning APs mid-game.</li>
+                        <li><strong>Wi-Fi — MIMO Power Save Mode:</strong> Set to <strong>No SMPS</strong> (when plugged in).</li>
+                        <li><strong>Wi-Fi — Power Management Tab:</strong> Uncheck <em>&ldquo;Allow the computer to turn off this device to save power&rdquo;</em> if experiencing random disconnects.</li>
+                    `
+                            : ''
+                    }
+                </ul>
+            `;
+        }
+
+        // 3. Dynamic Pagefile
         const badgeEl = document.getElementById('p6-pagefile-badge');
         const descEl = document.getElementById('p6-pagefile-desc');
         const codeEl = document.getElementById('p6-pagefile-code');
         const copyBtn = document.getElementById('p6-pagefile-copy-btn');
 
-        const command = `Get-CimInstance Win32_ComputerSystem | Set-CimInstance -Property @{AutomaticManagedPagefile=$False}; Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" -Name "PagingFiles" -Value "C:\\pagefile.sys ${initMB} ${maxMB}" -Type MultiString; Write-Host "Static ${initMB}MB Pagefile allocated on C:. Restart PC to apply." -ForegroundColor Green`;
+        const pagefileCmd = `Get-CimInstance Win32_ComputerSystem | Set-CimInstance -Property @{AutomaticManagedPagefile=$False}; Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management" -Name "PagingFiles" -Value @("C:\\pagefile.sys ${initMB} ${maxMB}") -Type MultiString; Write-Host "Pagefile set to ${initMB}-${maxMB}MB on C:. Restart PC to apply." -ForegroundColor Green`;
 
         if (badgeEl) badgeEl.textContent = badgeText;
         if (descEl) descEl.textContent = explanation;
-        if (codeEl) codeEl.textContent = command;
-        if (copyBtn) copyBtn.setAttribute('data-copy', command);
+        if (codeEl) codeEl.textContent = pagefileCmd;
+        if (copyBtn) copyBtn.setAttribute('data-copy', pagefileCmd);
+
+        // 4. Dynamic Step 9 Tiles (Browser HWA, Polling, OEM Bloatware Replacement)
+        const hwaMount = document.getElementById('p6-hwa-mount');
+        if (hwaMount) {
+            hwaMount.innerHTML = isLaptop
+                ? `
+                    <strong style="color:var(--text-primary);">App Hardware Acceleration (Laptop Safe):</strong>
+                    <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                        • <strong>Chrome / Edge / Brave:</strong> Keep Hardware Acceleration <strong>ON</strong>! Turning it off on a laptop forces 1080p/4K video onto your CPU, draining battery and causing thermal throttling.<br/>
+                        • <strong>Discord / Spotify:</strong> Toggle Hardware Acceleration <strong>OFF</strong> only inside Discord/Spotify if experiencing frame drops while gaming.
+                    </p>
+                `
+                : `
+                    <strong style="color:var(--text-primary);">App Hardware Acceleration (Desktop Gaming):</strong>
+                    <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                        When gaming at 98% GPU load on mismatched-Hz multi-monitor setups, background GPU video streams can hitch DWM:<br/>
+                        • <strong>Discord &amp; Spotify:</strong> Set Hardware Acceleration <strong>OFF</strong>.<br/>
+                        • <strong>Browsers:</strong> Test <strong>OFF</strong> if dual-monitor streams stutter during games.
+                    </p>
+                `;
+        }
+
+        const pollingMount = document.getElementById('p6-polling-mount');
+        if (pollingMount) {
+            pollingMount.innerHTML = `
+                <strong style="color:var(--text-primary);">Mouse Polling Rate (${isLaptop ? '1,000 Hz Max' : '1,000 Hz vs 4K/8K Hz'}):</strong>
+                <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                    ${
+                        isLaptop
+                            ? 'Use <strong>500–1,000 Hz</strong> on laptops. 4K/8KHz mice trigger constant CPU Core 0 interrupts, reducing battery life and hurting FPS on mobile CPUs.'
+                            : '<strong>1,000 Hz</strong> is the stability sweet spot. 4K/8KHz polling can drop FPS by 15–30% on 6–8 core CPUs in DX11 games.'
+                    }
+                </p>
+            `;
+        }
+
+        const oemMount = document.getElementById('p6-oem-bloat-mount');
+        if (oemMount) {
+            oemMount.innerHTML = `
+                <strong style="color:var(--text-primary);">Replace Heavy OEM Control Software:</strong>
+                <p style="font-size:0.73rem; margin:4px 0 0 0; color:var(--text-secondary); line-height:1.45;">
+                    OEM suites install 5–10 background services. Uninstall them and use lightweight open-source tools instead:<br/>
+                    • <strong>Lenovo:</strong> <strong>Lenovo Legion Toolkit</strong> (also works on many IdeaPad/LOQ models for thermal &amp; 80% battery cap).<br/>
+                    • <strong>ASUS Laptops:</strong> <strong>G-Helper</strong> (replaces Armoury Crate completely).<br/>
+                    • <strong>Desktop Fans/RGB:</strong> <strong>FanControl</strong> + <strong>OpenRGB</strong>.
+                </p>
+            `;
+        }
     }
+
     function populateMoboSelect(): void {
         if (!moboSelect) return;
         moboSelect.innerHTML = MOBO_PLATFORMS.map(
@@ -424,22 +692,42 @@ export function initWindowsOptimizer(): void {
         let detectedGpu = false;
         let detectedRam = false;
 
-        // 1. FIRST PASS: IDENTIFY CPU ARCHITECTURE
-        if (
-            text.includes('7900x3d') ||
-            text.includes('7950x3d') ||
-            text.includes('9900x3d') ||
-            text.includes('9950x3d')
+        // 1. FORM FACTOR, STORAGE & NETWORK
+        if (text.includes('form: laptop')) {
+            profile.formFactor = 'laptop';
+        } else if (text.includes('form: desktop')) {
+            profile.formFactor = 'desktop';
+        } else if (
+            /lnvnb|ideapad|thinkpad|legion|inspiron|xps|latitude|vivobook|zenbook|\d{4}[uh]\b|\bhx\b|\bhs\b/.test(text)
         ) {
+            profile.formFactor = 'laptop';
+        } else {
+            profile.formFactor = 'desktop';
+        }
+
+        if (text.includes('disk: hdd') && !text.includes('nvme') && !text.includes('ssd')) {
+            profile.storage = 'hdd';
+        } else if (text.includes('sata-ssd') && !text.includes('nvme')) {
+            profile.storage = 'sata-ssd';
+        } else {
+            profile.storage = 'nvme';
+        }
+
+        if (text.includes('net: wi-fi') && text.includes('ethernet')) {
+            profile.network = 'both';
+        } else if (text.includes('net: wi-fi')) {
+            profile.network = 'wifi';
+        } else if (text.includes('net: ethernet')) {
+            profile.network = 'ethernet';
+        } else {
+            profile.network = profile.formFactor === 'laptop' ? 'wifi' : 'ethernet';
+        }
+
+        // 2. CPU ARCHITECTURE
+        if (/7900x3d|7950x3d|9900x3d|9950x3d/.test(text)) {
             profile.cpu = 'amd-x3d-dual';
             detectedCpu = true;
-        } else if (
-            text.includes('5700x3d') ||
-            text.includes('5800x3d') ||
-            text.includes('7800x3d') ||
-            text.includes('9800x3d') ||
-            text.includes('x3d')
-        ) {
+        } else if (/5700x3d|5800x3d|7800x3d|9800x3d|x3d/.test(text)) {
             profile.cpu = 'amd-x3d-single';
             detectedCpu = true;
         } else if (
@@ -449,10 +737,13 @@ export function initWindowsOptimizer(): void {
         ) {
             profile.cpu = 'amd-standard';
             detectedCpu = true;
-        } else if (text.includes('13th gen') || text.includes('14th gen') || /i[579]-1[34]\d{3}/.test(text)) {
+        } else if (text.includes('core(tm) ultra') || text.includes('core ultra')) {
+            profile.cpu = 'intel-core-ultra';
+            detectedCpu = true;
+        } else if (text.includes('13th gen') || text.includes('14th gen') || /i[3579]-1[34]\d{2,3}/.test(text)) {
             profile.cpu = 'intel-raptor';
             detectedCpu = true;
-        } else if (text.includes('12th gen') || text.includes('ultra') || /i[579]-12\d{3}/.test(text)) {
+        } else if (text.includes('12th gen') || /i[3579]-12\d{2,3}/.test(text)) {
             profile.cpu = 'intel-alder';
             detectedCpu = true;
         } else if (text.includes('intel') || /i[3579]-/.test(text) || text.includes('xeon')) {
@@ -460,7 +751,8 @@ export function initWindowsOptimizer(): void {
             detectedCpu = true;
         }
 
-        // 2. SECOND PASS: DOUBLE-CHECK MOTHERBOARD VENDOR + CHIPSET + CPU COMPATIBILITY
+        // 3. MOTHERBOARD / OEM PLATFORM
+        const isCpuAmd = profile.cpu.startsWith('amd');
         const detectedVendor =
             text.includes('asus') || text.includes('rog') || text.includes('strix') || text.includes('tuf')
                 ? 'asus'
@@ -470,66 +762,66 @@ export function initWindowsOptimizer(): void {
                     ? 'gigabyte'
                     : text.includes('asrock')
                       ? 'asrock'
-                      : text.includes('dell') ||
-                          text.includes('alienware') ||
-                          text.includes('hp') ||
-                          text.includes('lenovo')
+                      : /lenovo|lnvnb|dell|alienware|hp|acer|omen|victus|ideapad|thinkpad/.test(text)
                         ? 'oem'
                         : null;
 
-        const isCpuAmd = profile.cpu.startsWith('amd');
-
-        let bestMoboCandidate: MoboPlatformSpec | null = null;
-        let highestMatchScore = -1;
-
-        for (const platform of MOBO_PLATFORMS) {
-            let score = 0;
-
-            // Vendor alignment check
-            if (detectedVendor && platform.vendor === detectedVendor) {
-                score += 5;
-            }
-
-            // CPU Platform alignment check (Intel vs AMD)
-            if (platform.isAmd === isCpuAmd) {
-                score += 3;
-            } else {
-                score -= 10; // Incompatible: do not match AMD board with Intel CPU
-            }
-
-            // Exact Chipset Keyword Search (e.g. Z390, B550, Z790, B650)
-            for (const kw of platform.chipsetKeywords) {
-                if (text.includes(kw)) {
-                    score += 10;
-                    break;
-                }
-            }
-
-            // CPU generation hints
-            for (const kw of platform.cpuKeywords) {
-                if (text.includes(kw)) {
-                    score += 2;
-                    break;
-                }
-            }
-
-            if (score > highestMatchScore) {
-                highestMatchScore = score;
-                bestMoboCandidate = platform;
-            }
-        }
-
-        if (bestMoboCandidate && highestMatchScore >= 5) {
-            profile.mobo = bestMoboCandidate.id;
+        if (
+            profile.formFactor === 'laptop' &&
+            (detectedVendor === 'oem' || detectedVendor === 'asus' || detectedVendor === 'msi')
+        ) {
+            profile.mobo = isCpuAmd ? 'oem-laptop-amd' : 'oem-laptop-intel';
             detectedMobo = true;
+        } else {
+            let bestMoboCandidate: MoboPlatformSpec | null = null;
+            let highestMatchScore = -1;
+
+            for (const platform of MOBO_PLATFORMS) {
+                let score = 0;
+                if (detectedVendor && platform.vendor === detectedVendor) score += 5;
+                if (platform.isAmd === isCpuAmd) score += 3;
+                else score -= 10;
+
+                for (const kw of platform.chipsetKeywords) {
+                    if (text.includes(kw)) {
+                        score += 10;
+                        break;
+                    }
+                }
+                for (const kw of platform.cpuKeywords) {
+                    if (text.includes(kw)) {
+                        score += 2;
+                        break;
+                    }
+                }
+
+                if (score > highestMatchScore) {
+                    highestMatchScore = score;
+                    bestMoboCandidate = platform;
+                }
+            }
+
+            if (bestMoboCandidate && highestMatchScore >= 5) {
+                profile.mobo = bestMoboCandidate.id;
+                detectedMobo = true;
+            }
         }
 
-        // 3. GPU DETECTION
+        // 4. GPU & HYBRID OPTIMUS DETECTION
+        const gpuSectionMatch = /gpu:\s*([^|]+)/i.exec(text);
+        const gpuText = gpuSectionMatch?.[1] ?? text;
+        const hasDedicated = /nvidia|geforce|rtx|gtx|mx\d{3}|radeon rx|intel\(r\) arc a\d|intel\(r\) arc b\d/.test(
+            gpuText
+        );
+        const hasIntegrated = /uhd graphics|hd graphics|iris|vega|680m|780m|890m|radeon\(tm\) graphics/.test(gpuText);
+        profile.hasHybridIgpu = hasDedicated && hasIntegrated;
+
         let bestMatch: GpuModelSpec | null = null;
         let longestLen = 0;
         for (const gpu of GPU_DATABASE) {
+            if (hasDedicated && (gpu.family === 'intel-igpu' || gpu.family === 'amd-igpu')) continue;
             for (const kw of gpu.keywords) {
-                if (text.includes(kw) && kw.length > longestLen) {
+                if (gpuText.includes(kw) && kw.length > longestLen) {
                     bestMatch = gpu;
                     longestLen = kw.length;
                 }
@@ -540,63 +832,73 @@ export function initWindowsOptimizer(): void {
             detectedGpu = true;
         }
 
-        // 4. RAM DETECTION
-        const ramMatch = /(\d+)\s*gb\s*(ddr[345])\s*@\s*(\d+)\s*mhz/i.exec(text);
+        // 5. RAM DETECTION
+        const ramMatch = /(\d+)\s*gb\s*(?:lp)?(ddr[345])\s*@\s*(\d+)\s*mhz/i.exec(text);
         const isSingleStick = text.includes('single-channel') || text.includes('1 stick');
         const isQuadSticks = text.includes('4 sticks');
 
-        if (ramMatch?.[2] && ramMatch[3]) {
+        if (ramMatch?.[1] && ramMatch[2] && ramMatch[3]) {
+            const totalGb = parseInt(ramMatch[1], 10);
             const gen = ramMatch[2].toUpperCase();
             const spd = parseInt(ramMatch[3], 10);
             detectedRam = true;
 
             if (gen === 'DDR5') {
                 if (isSingleStick) profile.ramId = 'ddr5-single';
-                else if (isQuadSticks) profile.ramId = 'ddr5-quad';
+                else if (totalGb >= 64 || isQuadSticks) profile.ramId = 'ddr5-64gb-dual';
                 else if (spd >= 6400) profile.ramId = 'ddr5-6400-dual';
                 else if (spd >= 5800) profile.ramId = 'ddr5-6000-dual';
                 else if (spd >= 5200) profile.ramId = 'ddr5-5600-dual';
                 else profile.ramId = 'ddr5-4800-dual';
             } else if (gen === 'DDR4') {
-                if (isSingleStick) profile.ramId = 'ddr4-single';
-                else if (isQuadSticks) profile.ramId = 'ddr4-quad';
+                if (isSingleStick) profile.ramId = spd <= 2400 ? 'ddr4-2400-single' : 'ddr4-single';
+                else if (totalGb >= 64 || isQuadSticks) profile.ramId = 'ddr4-64gb-quad';
                 else if (spd >= 3600) profile.ramId = 'ddr4-3600-dual';
                 else if (spd >= 3200) profile.ramId = 'ddr4-3200-dual';
-                else if (spd >= 2666) profile.ramId = 'ddr4-2666-dual';
+                else if (spd >= 2400) profile.ramId = 'ddr4-2666-dual';
                 else profile.ramId = 'ddr4-2133-dual';
-            } else if (gen === 'DDR3') {
+            } else {
                 profile.ramId = isSingleStick ? 'ddr3-single' : 'ddr3-1600-dual';
             }
         }
 
-        // Auto-select OS optimization based on GPU
-        if (profile.gpuId.includes('1070') || profile.gpuId.includes('1080') || profile.gpuId.includes('1060')) {
+        // 6. RECOMMENDED OS ALIGNMENT
+        if (profile.cpu === 'intel-alder' || profile.cpu === 'intel-raptor' || profile.cpu === 'intel-core-ultra') {
+            profile.os = 'win11';
+        } else if (profile.gpuId.includes('1070') || profile.gpuId.includes('1080') || profile.gpuId.includes('1060')) {
             profile.os = 'win10';
         }
 
-        // Update UI inputs
         if (osSelect) osSelect.value = profile.os;
+        if (formSelect) formSelect.value = profile.formFactor;
         if (moboSelect) moboSelect.value = profile.mobo;
         if (cpuSelect) cpuSelect.value = profile.cpu;
         if (gpuSelect) gpuSelect.value = profile.gpuId;
         if (ramSelect) ramSelect.value = profile.ramId;
+        if (storageSelect) storageSelect.value = profile.storage;
+        if (networkSelect) networkSelect.value = profile.network;
 
         save();
         renderAll();
 
         if (parseStatus) {
             const hits = [
-                detectedMobo && 'Motherboard BIOS',
+                profile.formFactor === 'laptop' ? 'Laptop' : 'Desktop',
+                detectedMobo && 'Board/OEM',
                 detectedCpu && 'CPU',
-                detectedGpu && 'GPU',
-                detectedRam && 'RAM'
+                detectedGpu && (profile.hasHybridIgpu ? 'Hybrid GPU (Optimus)' : 'GPU'),
+                detectedRam && 'RAM',
+                profile.storage.toUpperCase(),
+                profile.network.toUpperCase()
             ]
                 .filter(Boolean)
-                .join(', ');
-            parseStatus.textContent = hits
-                ? `✓ Auto-Matched: ${hits}`
-                : 'Could not match hardware string. Select manually.';
-            parseStatus.style.color = hits ? 'var(--accent-brand)' : 'var(--accent-rose)';
+                .join(' · ');
+            parseStatus.textContent =
+                detectedCpu || detectedGpu || detectedRam
+                    ? `✓ Auto-Matched: ${hits}`
+                    : 'Could not match hardware string. Select manually.';
+            parseStatus.style.color =
+                detectedCpu || detectedGpu || detectedRam ? 'var(--accent-brand)' : 'var(--accent-rose)';
         }
     }
 
@@ -610,24 +912,64 @@ export function initWindowsOptimizer(): void {
 
         const currentGpu = GPU_DATABASE.find(g => g.id === profile.gpuId) ?? GPU_DATABASE[0];
         const currentRam = RAM_DATABASE.find(r => r.id === profile.ramId) ?? RAM_DATABASE[0];
-        const moboPlatform = MOBO_PLATFORMS.find(m => m.id === profile.mobo) ?? MOBO_PLATFORMS[1];
+        const moboPlatform = MOBO_PLATFORMS.find(m => m.id === profile.mobo) ?? MOBO_PLATFORMS[0];
         const alerts: string[] = [];
 
-        if (currentRam.channels === 'single') {
+        const isOptimusLaptop =
+            profile.formFactor === 'laptop' && (profile.hasHybridIgpu || currentGpu.family.startsWith('nvidia'));
+
+        if (isOptimusLaptop) {
             alerts.push(`
-                <div class="advisory-pill danger">
-                    <div style="font-weight:800; margin-bottom:2px;">🚨 SEVERE MEMORY BOTTLENECK: SINGLE-CHANNEL DETECTED!</div>
-                    Your system is operating on a single memory channel. This cuts memory bandwidth by <strong>50%</strong> and causes frame drops in competitive games.
-                    <br/><strong>Fix:</strong> Install a matching dual-stick kit in <strong>Slots 2 &amp; 4 (A2 &amp; B2)</strong> to unlock full Dual-Channel throughput.
+                <div class="advisory-pill info">
+                    <div style="font-weight:800; margin-bottom:2px;">💻 HYBRID GRAPHICS / OPTIMUS LAPTOP DETECTED:</div>
+                    Your internal laptop display is wired to your <strong>integrated GPU (iGPU)</strong>, while 3D workloads offload to <strong>${currentGpu.name}</strong>.
+                    <br/>• <strong>Never disable the iGPU</strong> in BIOS or Device Manager.
+                    <br/>• In Phase 4, always install the <strong>iGPU driver FIRST</strong>, reboot, then install your dedicated GPU driver.
+                </div>
+            `);
+        } else if (profile.formFactor === 'desktop' && profile.hasHybridIgpu) {
+            alerts.push(`
+                <div class="advisory-pill info">
+                    <div style="font-weight:800; margin-bottom:2px;">🖥️ DESKTOP iGPU + DEDICATED GPU DETECTED:</div>
+                    Plug your monitor cable directly into your <strong>${currentGpu.name}</strong> ports (not the motherboard video port). You can disable the unused iGPU in Phase 2 BIOS to free up to 2 GB RAM (unless using Intel QuickSync or motherboard secondary displays).
                 </div>
             `);
         }
 
-        if (currentRam.isJedecStock) {
+        if (currentRam.channels === 'single') {
+            alerts.push(`
+                <div class="advisory-pill danger">
+                    <div style="font-weight:800; margin-bottom:2px;">🚨 MEMORY BOTTLENECK: SINGLE-CHANNEL RAM DETECTED!</div>
+                    Your system is running on a single memory channel, cutting memory bandwidth by up to <strong>50%</strong>.
+                    <br/><strong>Fix:</strong> ${
+                        profile.formFactor === 'laptop'
+                            ? 'Open <strong>Task Manager ➔ Performance ➔ Memory</strong> and check <em>"Slots used"</em>. If it shows <code>1 of 2</code>, installing a matching SO-DIMM stick unlocks full Dual-Channel (+15–35% FPS). If it shows <code>1 of 1</code> or soldered, it cannot be upgraded.'
+                            : 'Install a matching 2-stick kit in <strong>Slots 2 &amp; 4 (A2 &amp; B2)</strong> to unlock full Dual-Channel bandwidth.'
+                    }
+                </div>
+            `);
+        }
+
+        if (currentRam.isJedecStock && profile.formFactor !== 'laptop') {
             alerts.push(`
                 <div class="advisory-pill warn">
-                    <div style="font-weight:800; margin-bottom:2px;">⚠️ RAM RUNNING AT JEDEC BASE SPEED (${currentRam.speedMHz} MHz):</div>
-                    Your ${currentRam.generation} RAM is currently running at factory base fallback frequencies. In Phase 2, enable <strong>${moboPlatform.memoryProfileName}</strong> in your BIOS to unlock your advertised memory speed.
+                    <div style="font-weight:800; margin-bottom:2px;">⚠️ RAM AT JEDEC STOCK (${currentRam.speedMHz} MHz):</div>
+                    Enable <strong>${moboPlatform.memoryProfileName}</strong> in Phase 2 BIOS to run your RAM at rated speed.
+                </div>
+            `);
+        }
+
+        if (profile.os === 'win10') {
+            alerts.push(`
+                <div class="advisory-pill warn">
+                    <div style="font-weight:800; margin-bottom:2px;">📅 WINDOWS 10 LIFECYCLE NOTE:</div>
+                    Standard Windows 10 22H2 reached End of Support in Oct 2025. Use <strong>Windows 10 IoT Enterprise LTSC 2021</strong> (supported until Jan 2032) or move to <strong>Windows 11</strong>${
+                        profile.cpu === 'intel-alder' ||
+                        profile.cpu === 'intel-raptor' ||
+                        profile.cpu === 'intel-core-ultra'
+                            ? ' — strongly recommended here because Intel P/E-core Thread Director requires Windows 11.'
+                            : '.'
+                    }
                 </div>
             `);
         }
@@ -635,19 +977,19 @@ export function initWindowsOptimizer(): void {
         if (currentGpu.family === 'nvidia-pascal') {
             alerts.push(`
                 <div class="advisory-pill warn">
-                    <div style="font-weight:800; margin-bottom:2px;">⚠️ PASCAL ARCHITECTURE CALIBRATION (${currentGpu.name}):</div>
-                    <div>1. <strong>Turn HAGS OFF</strong> in Windows Display settings (see Step 3 below for exact steps). Pascal lacks hardware-level scheduling ASICs; HAGS causes frame pacing micro-stutter.</div>
-                    <div>2. <strong>PCIe Resizable BAR is NOT supported</strong> on GTX 10-series.</div>
-                    <div>3. <strong>OS Choice:</strong> Windows 10 22H2 delivers tighter 1% low frame pacing than Windows 11 on Pascal + monolithic Intel setups.</div>
+                    <div style="font-weight:800; margin-bottom:2px;">⚠️ PASCAL CALIBRATION (${currentGpu.name}):</div>
+                    <div>1. <strong>Turn HAGS OFF</strong> in Windows Display settings (Pascal lacks hardware scheduling ASICs).</div>
+                    <div>2. <strong>Resizable BAR is not supported</strong> on Pascal.</div>
+                    <div>3. Regular Pascal Game Ready drivers ended Oct 2025 (use the <strong>580.xx Final Branch</strong> + quarterly security updates).</div>
                 </div>
             `);
         }
 
-        if (profile.cpu === 'intel-raptor') {
+        if (profile.cpu === 'intel-raptor' && profile.formFactor === 'desktop') {
             alerts.push(`
                 <div class="advisory-pill danger">
-                    <div style="font-weight:800; margin-bottom:2px;">🚨 CRITICAL INTEL 13th/14th GEN HARDWARE WARNING:</div>
-                    Update your ${moboPlatform.name} motherboard to BIOS with <strong>microcode 0x12B</strong> or newer to prevent irreversible silicon degradation caused by elevated voltage requests. Enforce Intel Default Power Limits (PL1/PL2 = 253W max).
+                    <div style="font-weight:800; margin-bottom:2px;">🚨 INTEL 13th/14th GEN VOLTAGE WARNING:</div>
+                    Update ${moboPlatform.name} BIOS to <strong>microcode 0x12B</strong> or newer and enforce Intel Default Power Limits (PL1/PL2 = 253W max).
                 </div>
             `);
         }
@@ -655,8 +997,8 @@ export function initWindowsOptimizer(): void {
         if (profile.cpu === 'amd-x3d-dual') {
             alerts.push(`
                 <div class="advisory-pill info">
-                    <div style="font-weight:800; margin-bottom:2px;">⚡ DUAL-CCD RYZEN X3D DETECTED:</div>
-                    <strong>DO NOT DISABLE XBOX GAME BAR:</strong> Windows uses the Xbox Game Bar KGL process in tandem with the AMD 3D V-Cache Optimizer Service to park standard cores and pin games to the V-Cache CCD. Stripping Game Bar on dual-CCD chips causes threads to bounce across the Infinity Fabric, severely hurting 1% lows.
+                    <div style="font-weight:800; margin-bottom:2px;">⚡ DUAL-CCD RYZEN X3D:</div>
+                    Keep <strong>Xbox Game Bar</strong> installed so Windows &amp; AMD 3D V-Cache Optimizer park non-V-Cache cores during games.
                 </div>
             `);
         }
@@ -666,11 +1008,13 @@ export function initWindowsOptimizer(): void {
 
     function renderPhase1(): void {
         const isWin10 = profile.os === 'win10';
+        const isLaptop = profile.formFactor === 'laptop';
+        const needsTpmBypass = !isWin10 && profile.cpu === 'intel-legacy';
 
         if (p1IsoTitle) {
             p1IsoTitle.textContent = isWin10
-                ? 'Windows 10 Clean ISO (22H2 / Enterprise LTSC)'
-                : 'Windows 11 Clean ISO (23H2 / 24H2)';
+                ? 'Windows 10 Clean ISO (IoT LTSC 2021 / 22H2)'
+                : 'Windows 11 Clean ISO (25H2 / 26H2 / LTSC 2024)';
         }
 
         if (p1IsoLink) {
@@ -682,8 +1026,8 @@ export function initWindowsOptimizer(): void {
 
         if (p1IsoDesc) {
             p1IsoDesc.innerHTML = isWin10
-                ? `Windows 10 is free to evaluate directly from Microsoft. No product key is required to complete installation. For older GPUs (GTX 1070, etc.) and monolithic CPUs (i7-9700K), Windows 10 has less Desktop Window Manager (DWM) composition overhead.`
-                : `Windows 11 features Intel Thread Director for P/E core balancing and DirectStorage optimizations. Download directly from Microsoft.`;
+                ? `Standard Windows 10 22H2 Home/Pro reached End of Support in Oct 2025. For long-term security updates until <strong>Jan 2032</strong>, clean-install a <strong>Windows 10 IoT Enterprise LTSC 2021</strong> ISO (note: MAS Edition Switcher cannot jump from Home/Pro to LTSC without an LTSC ISO, though MAS TSforge can activate ESU on existing 22H2 installs).`
+                : `Windows 11 includes Intel Thread Director (required for 12th–14th Gen / Core Ultra P/E cores) and modern DirectStorage support. Download the official ISO directly from Microsoft.`;
         }
 
         if (p1RufusOptions) {
@@ -706,17 +1050,28 @@ export function initWindowsOptimizer(): void {
                 </div>
                 <div class="rufus-dialog-box">
                     <div style="font-weight:700; color:var(--accent-brand); margin-bottom:4px;">
-                        When you click "START", Rufus prompts the User Experience dialog. Check EXACTLY these:
+                        When you click &ldquo;START&rdquo;, Rufus shows the User Experience dialog. Use these exact settings:
                     </div>
                     <ul class="clean-bullet-list">
                         <li>${
-                            !isWin10
-                                ? '<strong>[x] Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0</strong>'
-                                : '<strong>[x] Remove requirement for an online Microsoft account</strong>'
+                            needsTpmBypass
+                                ? '<strong>[x] Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0</strong> (Only needed for older CPUs without TPM 2.0)'
+                                : isWin10
+                                  ? '<strong>[x] Remove requirement for an online Microsoft account</strong>'
+                                  : '<strong>Leave TPM 2.0 / Secure Boot bypass UNCHECKED</strong> (Your CPU supports Win11 natively — keeping them ON avoids Riot Vanguard / FACEIT anti-cheat errors)'
                         }</li>
                         <li><strong>[x] Create a local account with username</strong> (e.g. <code>User</code>)</li>
-                        <li><strong>[x] Disable data collection</strong> (Skips all telemetry setup screens)</li>
-                        <li><strong>[x] Disable BitLocker automatic device encryption</strong> (Prevents SSD lockouts and I/O latency)</li>
+                        <li><strong>[x] Disable data collection</strong> (Skips telemetry setup questions)</li>
+                        <li>${
+                            isLaptop
+                                ? '<strong>BitLocker:</strong> Check <strong>[x] Disable BitLocker automatic device encryption</strong> for max SSD speed at home, OR leave unchecked if you travel with sensitive files.'
+                                : '<strong>[x] Disable BitLocker automatic device encryption</strong> (Prevents SSD lockouts and background write overhead)'
+                        }</li>
+                        ${
+                            isLaptop
+                                ? '<li><strong>LAPTOP PRE-STEP:</strong> Copy your laptop&apos;s <strong>Wi-Fi &amp; Precision Trackpad</strong> drivers onto this USB stick before wiping, as clean ISOs often lack laptop Wi-Fi drivers!</li>'
+                                : ''
+                        }
                     </ul>
                 </div>
             `;
@@ -731,8 +1086,8 @@ export function initWindowsOptimizer(): void {
                 <div style="margin-top: 8px; font-size: 0.76rem; color: var(--text-secondary);">
                     ${
                         isWin10
-                            ? `When asked for a network, click <em>"I don't have internet"</em> ➔ <em>"Continue with limited setup"</em>. Set all privacy sliders to <strong>OFF / No</strong>.`
-                            : `If Windows 11 demands Wi-Fi, press <kbd>Shift</kbd> + <kbd>F10</kbd>, type <code>OOBE\\BYPASSNRO</code>, and hit Enter. The PC reboots with an <em>"I don't have internet"</em> option unlocked.`
+                            ? `When asked for a network, click <em>&ldquo;I don't have internet&rdquo;</em> ➔ <em>&ldquo;Continue with limited setup&rdquo;</em>. Set all privacy sliders to <strong>OFF / No</strong>.`
+                            : `If Windows 11 demands Wi-Fi, press <kbd>Shift</kbd> + <kbd>F10</kbd>, type <code>OOBE\\BYPASSNRO</code>, and hit Enter. The PC reboots with an <em>&ldquo;I don't have internet&rdquo;</em> option unlocked.`
                     }
                 </div>
 
@@ -743,7 +1098,7 @@ export function initWindowsOptimizer(): void {
                         <a href="https://massgrave.dev/" target="_blank" rel="noopener" class="link-chip">massgrave.dev Official ↗</a>
                     </div>
                     <p style="font-size:0.73rem; color:var(--text-secondary); margin:4px 0 6px 0; line-height:1.45;">
-                        Complete the offline setup first. Once you reconnect to the internet in Phase 5, run this open-source script in PowerShell if you need permanent HWID digital license activation or want to switch editions (e.g. upgrading Home to Pro/Enterprise without reinstalling):
+                        Complete offline setup first. Once back online in Phase 5, run this in PowerShell for permanent HWID activation, upgrading Home ➔ Pro, or activating Win10 22H2 ESU (TSforge):
                     </p>
                     <div class="terminal-code-window">
                         <div class="terminal-bar">
@@ -756,7 +1111,7 @@ export function initWindowsOptimizer(): void {
                         <pre class="terminal-code-body"><code>irm https://get.activated.win | iex</code></pre>
                     </div>
                     <div style="margin-top:4px; font-size:0.7rem; color:var(--text-muted); font-family:var(--font-mono);">
-                        Press <kbd>1</kbd> for <strong>HWID (Permanent Digital License)</strong> or use the Edition Switcher menu to upgrade to Pro.
+                        Press <kbd>1</kbd> for <strong>HWID</strong> (or TSforge if activating Win10 LTSC / ESU).
                     </div>
                 </div>
             `;
@@ -764,18 +1119,91 @@ export function initWindowsOptimizer(): void {
     }
 
     function renderPhase2(): void {
-        const moboPlatform = MOBO_PLATFORMS.find(m => m.id === profile.mobo) ?? MOBO_PLATFORMS[1];
+        const moboPlatform = MOBO_PLATFORMS.find(m => m.id === profile.mobo) ?? MOBO_PLATFORMS[0];
         const currentGpu = GPU_DATABASE.find(g => g.id === profile.gpuId) ?? GPU_DATABASE[0];
         const currentRam = RAM_DATABASE.find(r => r.id === profile.ramId) ?? RAM_DATABASE[0];
+        const isLaptopOrOem = profile.formFactor === 'laptop' || moboPlatform.vendor === 'oem';
 
         if (p2MoboToolName) p2MoboToolName.textContent = `${moboPlatform.name} (${moboPlatform.toolName})`;
         if (p2MoboLink) {
             p2MoboLink.href = moboPlatform.supportUrl;
-            p2MoboLink.textContent = `Open Official ${moboPlatform.vendor.toUpperCase()} BIOS Portal ↗`;
+            p2MoboLink.textContent = isLaptopOrOem
+                ? 'Open OEM Support Portal ↗'
+                : `Open Official ${moboPlatform.vendor.toUpperCase()} BIOS Portal ↗`;
+        }
+
+        const biosFlashSteps = document.querySelector('#view-tool-winopt .bios-guide-col .ordered-step-list');
+        if (biosFlashSteps) {
+            biosFlashSteps.innerHTML = isLaptopOrOem
+                ? `
+                    <li>Connect your laptop to <strong>AC wall power</strong> (ensure battery is &gt; 30%).</li>
+                    <li>Download the official BIOS update executable (<code>.exe</code>) from your laptop brand&apos;s support page (Lenovo Support / Dell / HP) — do <strong>not</strong> use FAT32 USB flashing unless instructed by the OEM.</li>
+                    <li>Close all apps and run the BIOS installer inside Windows. The machine will reboot into a flashing screen. <em>Never force power off.</em></li>
+                    <li>To inspect firmware settings manually, reboot and tap <kbd>F2</kbd>, <kbd>Fn+F2</kbd>, <kbd>F10</kbd> (HP), or Lenovo&apos;s Novo pinhole key.</li>
+                `
+                : `
+                    <li>Format an empty USB drive to <strong>FAT32</strong>.</li>
+                    <li>Download the latest non-beta BIOS update from your motherboard support page and extract it to the USB root.</li>
+                    <li>Restart PC and tap <kbd>Delete</kbd> or <kbd>F2</kbd> to enter UEFI/BIOS.</li>
+                    <li>Open <strong>${moboPlatform.toolName}</strong>, select the USB file, and let it flash. <em>Do not power off.</em></li>
+                `;
+        }
+
+        const ramGuideMount = document.getElementById('p2-ram-guide-mount');
+        if (ramGuideMount) {
+            ramGuideMount.innerHTML = isLaptopOrOem
+                ? `
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <strong style="color:var(--text-primary);">Laptop Memory Architecture (SO-DIMM vs Soldered):</strong>
+                        <span class="pill-badge" style="font-size:0.65rem;">Check Task Manager</span>
+                    </div>
+                    <p style="font-size:0.75rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
+                        Laptops do not have desktop A1/A2/B1/B2 slots. Open <strong>Task Manager ➔ Performance ➔ Memory</strong>:
+                        <br/>• <strong>Slots used: 1 of 2:</strong> One empty SO-DIMM slot exists. Adding a matching ${currentRam.generation} stick unlocks Dual-Channel.
+                        <br/>• <strong>Slots used: 2 of 2:</strong> Already Dual-Channel.
+                        <br/>• <strong>Memory locked at ${currentRam.speedMHz} MHz:</strong> Normal on OEM laptops (XMP menus are usually hidden by the OEM).
+                    </p>
+                `
+                : `
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <strong style="color:var(--text-primary);">Motherboard RAM Slot Placement (Daisy-Chain Signal Integrity):</strong>
+                        <span class="pill-badge" style="font-size:0.65rem;">Slots A2 &amp; B2 (2 &amp; 4)</span>
+                    </div>
+                    <p style="font-size:0.75rem; color:var(--text-secondary); margin:4px 0 0 0; line-height:1.45;">
+                        Always install 2 sticks in <strong>Slots 2 and 4 (A2 &amp; B2)</strong> counting away from the CPU: <em>[CPU] ➔ Empty (A1) ➔ Stick (A2) ➔ Empty (B1) ➔ Stick (B2)</em> to avoid open-stub signal reflections.
+                    </p>
+                `;
         }
 
         if (!p2BiosSettingsList) return;
 
+        if (isLaptopOrOem) {
+            p2BiosSettingsList.innerHTML = `
+                <li class="bios-setting-tree-item">
+                    <div class="bios-breadcrumb-tag">Configuration / Video / Switchable Graphics</div>
+                    <div><strong>Integrated Graphics (iGPU):</strong> Keep <strong style="color:var(--accent-mint);">Enabled / Switchable</strong>.</div>
+                    <div class="bios-subtext">Do NOT disable the iGPU on Optimus laptops (${currentGpu.name}). Disabling it breaks internal screen brightness and battery life.</div>
+                </li>
+                <li class="bios-setting-tree-item">
+                    <div class="bios-breadcrumb-tag">Power / PCIe Power Management</div>
+                    <div><strong>PCIe ASPM &amp; Power Saving:</strong> Keep <strong>Enabled / Auto</strong> on laptops.</div>
+                    <div class="bios-subtext">Disabling ASPM on a laptop keeps PCIe lanes awake continuously, draining battery and raising chassis temperatures.</div>
+                </li>
+                <li class="bios-setting-tree-item">
+                    <div class="bios-breadcrumb-tag">Battery / Charge Threshold (BIOS or OEM Tool)</div>
+                    <div><strong>Battery Conservation Mode (80% Cap):</strong> <strong>Enable</strong> if mostly plugged in at a desk.</div>
+                    <div class="bios-subtext">Prevents lithium-ion battery swelling when a laptop stays at 100% charge continuously.</div>
+                </li>
+                <li class="bios-setting-tree-item">
+                    <div class="bios-breadcrumb-tag">Security / Boot</div>
+                    <div><strong>Secure Boot &amp; TPM 2.0:</strong> <strong>Enabled</strong> · <strong>USB Boot / Fast Boot:</strong> Standard.</div>
+                    <div class="bios-subtext">Required for Windows 11 updates, Riot Vanguard, and EasyAntiCheat.</div>
+                </li>
+            `;
+            return;
+        }
+
+        // Desktop BIOS Settings (ASUS / MSI / Gigabyte / ASRock)
         const items: string[] = [];
 
         // 1. RAM OVERCLOCK PROFILE (XMP / DOCP / EXPO)
@@ -939,21 +1367,35 @@ export function initWindowsOptimizer(): void {
     function renderDynamicHardware(): void {
         if (!hwDynamicContent) return;
         const currentGpu = GPU_DATABASE.find(g => g.id === profile.gpuId) ?? GPU_DATABASE[0];
-        hwDynamicContent.innerHTML = getCpuGuidance(profile) + getGpuGuidance(currentGpu);
+        hwDynamicContent.innerHTML = getCpuGuidance(profile) + getGpuGuidance(currentGpu, profile);
 
-        if (hagsText) {
-            if (currentGpu.recommendHags) {
-                hagsText.innerHTML = `
-                    Navigate to: <strong>Windows Settings (Win+I) ➔ System ➔ Display ➔ Graphics ➔ Change default graphics settings</strong>.<br/>
-                    • <strong>Set to ON:</strong> Recommended for ${currentGpu.name} (low CPU scheduling overhead and required for DLSS 3 Frame Generation).
-                `;
-            } else {
-                hagsText.innerHTML = `
-                    Navigate to: <strong>Windows Settings (Win+I) ➔ System ➔ Display ➔ Graphics ➔ Change default graphics settings</strong>.<br/>
-                    • <strong style="color:var(--accent-rose);">SET TO OFF FOR ${currentGpu.name}:</strong> Pascal cards lack hardware scheduling ASICs on the die. Enabling HAGS on GTX 10-series causes micro-stuttering and inconsistent frame pacing. Keep it <strong>OFF</strong>.
-                `;
-            }
+        const hagsMount = document.getElementById('p4-hags-mount');
+        if (!hagsMount) return;
+
+        const isIgpuOnly = currentGpu.family === 'intel-igpu' || currentGpu.family === 'amd-igpu';
+        if (isIgpuOnly) {
+            hagsMount.innerHTML = '';
+            return;
         }
+
+        hagsMount.innerHTML = `
+            <div class="latency-item" style="border-color: ${currentGpu.recommendHags ? 'var(--accent-mint)' : 'var(--accent-rose)'};">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:8px;">
+                    <strong style="color:var(--text-primary);">Hardware-Accelerated GPU Scheduling (HAGS)</strong>
+                    <span class="pill-badge" style="color:${currentGpu.recommendHags ? 'var(--accent-mint)' : 'var(--accent-rose)'};">
+                        ${currentGpu.recommendHags ? 'SET TO ON' : 'SET TO OFF'}
+                    </span>
+                </div>
+                <p style="font-size:0.73rem; color:var(--text-secondary); margin:0; line-height:1.45;">
+                    Navigate to: <strong>Windows Settings (Win+I) ➔ System ➔ Display ➔ Graphics ➔ Change default graphics settings</strong>.<br/>
+                    ${
+                        currentGpu.recommendHags
+                            ? `• <strong>Set to ON:</strong> Recommended for ${currentGpu.name} (lowers CPU scheduling overhead and required for DLSS 3/4 Frame Generation).`
+                            : `• <strong>Set to OFF for ${currentGpu.name}:</strong> Older architectures lack hardware scheduling ASICs; enabling HAGS causes micro-stuttering and uneven 1% lows.`
+                    }
+                </p>
+            </div>
+        `;
     }
 
     function renderCttBlueprint(): void {
@@ -983,33 +1425,17 @@ export function initWindowsOptimizer(): void {
             `;
         }
 
-        essentialBox.innerHTML = CTT_ESSENTIAL_ITEMS.map(renderRow).join('');
+        essentialBox.innerHTML = getCttEssentialItems(profile).map(renderRow).join('');
         advancedBox.innerHTML = CTT_ADVANCED_ITEMS.map(renderRow).join('');
-        preferencesBox.innerHTML = CTT_PREFERENCE_ITEMS.map(renderRow).join('');
+        preferencesBox.innerHTML = getCttPreferenceItems(profile).map(renderRow).join('');
         featuresBox.innerHTML = CTT_FEATURE_ITEMS.map(renderRow).join('');
-    }
-
-    function setupCopyButtons(): void {
-        document.querySelectorAll('.copy-btn-trigger').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const textToCopy = btn.getAttribute('data-copy') ?? '';
-                if (!textToCopy) return;
-
-                void navigator.clipboard.writeText(textToCopy);
-                const originalText = btn.textContent;
-                btn.textContent = '✓ Copied!';
-
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                }, 1400);
-            });
-        });
     }
 
     function renderAll(): void {
         renderAdvisoryBanner();
         renderPhase1();
         renderPhase2();
+        renderPhase4Ddu();
         renderDynamicHardware();
         renderPhase4Settings(); // <--- Add this call
         renderCttBlueprint();
@@ -1054,39 +1480,64 @@ export function initWindowsOptimizer(): void {
     // 2. When CPU changes, auto-align Motherboard platform (preserving vendor preference)
     cpuSelect?.addEventListener('change', () => {
         profile.cpu = cpuSelect.value as HardwareProfile['cpu'];
-        const currentMobo = MOBO_PLATFORMS.find(m => m.id === profile.mobo) ?? MOBO_PLATFORMS[0];
-        const vendor = currentMobo.vendor === 'oem' ? 'asus' : currentMobo.vendor;
 
-        if (profile.cpu === 'amd-x3d-dual') {
-            // 7900X3D/7950X3D are strictly AM5
-            profile.mobo = `${vendor}-amd-am5` as MoboPlatformId;
-        } else if (profile.cpu === 'amd-x3d-single' || profile.cpu === 'amd-standard') {
-            // Keep on AM4 or AM5 if already on AMD, otherwise default to AM5
-            if (!currentMobo.isAmd) {
-                profile.mobo = `${vendor}-amd-am5` as MoboPlatformId;
-            }
-        } else if (profile.cpu === 'intel-raptor' || profile.cpu === 'intel-alder') {
-            // 12th/13th/14th Gen strictly require 600/700/800 series
-            if (vendor === 'asrock') {
-                profile.mobo = 'asrock-intel';
-            } else {
-                profile.mobo = `${vendor}-intel-modern` as MoboPlatformId;
-            }
+        if (profile.formFactor === 'laptop') {
+            profile.mobo = profile.cpu.startsWith('amd') ? 'oem-laptop-amd' : 'oem-laptop-intel';
         } else {
-            // 6th–11th Gen Monolithic Intel (intel-legacy)
-            if (vendor === 'asrock') {
-                profile.mobo = 'asrock-intel';
-            } else {
-                profile.mobo = `${vendor}-intel-300-500` as MoboPlatformId;
-            }
-        }
+            const currentMobo = MOBO_PLATFORMS.find(m => m.id === profile.mobo) ?? MOBO_PLATFORMS[0];
+            const vendor = currentMobo.vendor === 'oem' ? 'asus' : currentMobo.vendor;
 
-        // Verify the board exists in the database fallback
-        if (!MOBO_PLATFORMS.some(m => m.id === profile.mobo)) {
-            profile.mobo = 'asus-intel-modern';
+            if (profile.cpu === 'amd-x3d-dual') {
+                profile.mobo = `${vendor}-amd-am5` as MoboPlatformId;
+            } else if (profile.cpu === 'amd-x3d-single' || profile.cpu === 'amd-standard') {
+                if (!currentMobo.isAmd) {
+                    profile.mobo = `${vendor}-amd-am5` as MoboPlatformId;
+                }
+            } else if (
+                profile.cpu === 'intel-raptor' ||
+                profile.cpu === 'intel-alder' ||
+                profile.cpu === 'intel-core-ultra'
+            ) {
+                profile.mobo = vendor === 'asrock' ? 'asrock-intel' : (`${vendor}-intel-modern` as MoboPlatformId);
+            } else {
+                profile.mobo = vendor === 'asrock' ? 'asrock-intel' : (`${vendor}-intel-300-500` as MoboPlatformId);
+            }
+
+            if (!MOBO_PLATFORMS.some(m => m.id === profile.mobo)) {
+                profile.mobo = 'asus-intel-modern';
+            }
         }
 
         if (moboSelect) moboSelect.value = profile.mobo;
+        save();
+        renderAll();
+    });
+
+    formSelect?.addEventListener('change', () => {
+        profile.formFactor = formSelect.value as FormFactor;
+        if (profile.formFactor === 'laptop' && !profile.mobo.startsWith('oem-')) {
+            profile.mobo = profile.cpu.startsWith('amd') ? 'oem-laptop-amd' : 'oem-laptop-intel';
+            if (moboSelect) moboSelect.value = profile.mobo;
+        } else if (profile.formFactor === 'desktop' && profile.mobo.startsWith('oem-laptop')) {
+            profile.mobo = profile.cpu.startsWith('amd')
+                ? 'asus-amd-am5'
+                : profile.cpu === 'intel-legacy'
+                  ? 'asus-intel-300-500'
+                  : 'asus-intel-modern';
+            if (moboSelect) moboSelect.value = profile.mobo;
+        }
+        save();
+        renderAll();
+    });
+
+    storageSelect?.addEventListener('change', () => {
+        profile.storage = storageSelect.value as StorageType;
+        save();
+        renderAll();
+    });
+
+    networkSelect?.addEventListener('change', () => {
+        profile.network = networkSelect.value as NetworkType;
         save();
         renderAll();
     });
@@ -1104,5 +1555,4 @@ export function initWindowsOptimizer(): void {
     });
 
     renderAll();
-    setupCopyButtons();
 }
