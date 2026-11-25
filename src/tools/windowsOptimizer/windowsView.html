@@ -297,6 +297,61 @@
                                 <em>Do not power off.</em>
                             </li>
                         </ol>
+                        <div class="bios-check-card">
+                            <div class="bios-check-header">
+                                <strong>Not sure if your BIOS is up to date?</strong>
+                                <span
+                                    id="p2-bios-detected-badge"
+                                    class="pill-badge"
+                                    style="display: none; font-size: 0.65rem"
+                                ></span>
+                            </div>
+                            <p class="bios-subtext" style="margin: 0">
+                                Run this in PowerShell to reveal your exact model, current BIOS version, and release
+                                date (auto-copies to clipboard):
+                            </p>
+                            <div class="terminal-code-window">
+                                <div class="terminal-bar">
+                                    <div class="terminal-badge">
+                                        <span class="terminal-dot"></span>
+                                        <span class="terminal-title">PowerShell · Check Model &amp; BIOS</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn-action-pill copy-btn-trigger"
+                                        data-copy="$cs=Get-CimInstance Win32_ComputerSystem; $bb=Get-CimInstance Win32_BaseBoard; $b=Get-CimInstance Win32_BIOS; $dt=if($b.ReleaseDate){$b.ReleaseDate.ToString('yyyy-MM-dd')}else{'Unknown'}; $out=&quot;$($cs.Manufacturer) $($cs.SystemFamily) $($cs.Model) $($bb.Product) | BIOS: $($b.SMBIOSBIOSVersion) ($dt)&quot;; Write-Host ''; Write-Host $out -ForegroundColor Cyan; Set-Clipboard -Value $out"
+                                    >
+                                        Copy
+                                    </button>
+                                </div>
+                                <pre
+                                    class="terminal-code-body"
+                                ><code>$cs=Get-CimInstance Win32_ComputerSystem; $bb=Get-CimInstance Win32_BaseBoard; $b=Get-CimInstance Win32_BIOS; $dt=if($b.ReleaseDate){$b.ReleaseDate.ToString('yyyy-MM-dd')}else{'Unknown'}; $out=&quot;$($cs.Manufacturer) $($cs.SystemFamily) $($cs.Model) $($bb.Product) | BIOS: $($b.SMBIOSBIOSVersion) ($dt)&quot;; Write-Host ''; Write-Host $out -ForegroundColor Cyan; Set-Clipboard -Value $out</code></pre>
+                            </div>
+                            <div class="spec-paste-bar">
+                                <input
+                                    type="text"
+                                    id="p2-bios-paste-input"
+                                    class="spec-paste-field"
+                                    placeholder="Paste output here to search your exact BIOS..."
+                                />
+                                <a
+                                    id="p2-bios-google-link"
+                                    href="https://www.google.com/search?q=motherboard+bios+update+download"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="btn-action-pill highlight"
+                                    style="text-decoration: none"
+                                >
+                                    Search BIOS on Google ↗
+                                </a>
+                            </div>
+                            <p class="bios-subtext" style="margin: 0">
+                                Compare the latest BIOS version &amp; date on the manufacturer&apos;s page against
+                                <strong>Your BIOS</strong> above. If they match, you&apos;re already up to date — skip
+                                flashing!
+                            </p>
+                        </div>
                     </div>
                     <div class="bios-settings-col">
                         <strong>Mandatory BIOS Settings to Enable:</strong>

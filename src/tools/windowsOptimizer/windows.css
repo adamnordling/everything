@@ -884,3 +884,25 @@ ul#p2-bios-settings-list li.bios-setting-tree-item::before {
     flex-wrap: wrap;
     gap: 6px;
 }
+
+
+.bios-check-card {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.bios-check-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.78rem;
+}

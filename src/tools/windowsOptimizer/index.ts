@@ -200,6 +200,9 @@ export function initWindowsOptimizer(): void {
     const p2MoboToolName = document.getElementById('p2-mobo-tool-name');
     const p2MoboLink = document.getElementById('p2-mobo-link') as HTMLAnchorElement | null;
     const p2BiosSettingsList = document.getElementById('p2-bios-settings-list');
+    const biosPasteInput = document.getElementById('p2-bios-paste-input') as HTMLInputElement | null;
+    const biosGoogleLink = document.getElementById('p2-bios-google-link') as HTMLAnchorElement | null;
+    const biosDetectedBadge = document.getElementById('p2-bios-detected-badge');
 
     const advisoryBanner = document.getElementById('hw-advisory-banner');
     const hwDynamicContent = document.getElementById('hw-dynamic-content');
@@ -229,6 +232,42 @@ export function initWindowsOptimizer(): void {
         }
     }
 
+
+
+    function updateBiosLookupLink(): void {
+        if (!biosPasteInput || !biosGoogleLink) return;
+        const raw = biosPasteInput.value.trim();
+
+        if (!raw) {
+            biosGoogleLink.href = 'https://www.google.com/search?q=motherboard+bios+update+download';
+            if (biosDetectedBadge) biosDetectedBadge.style.display = 'none';
+            return;
+        }
+
+        const [modelPart, biosPart] = raw.split('|');
+        const cleanModel = (modelPart ?? raw)
+            .replace(/to be filled by o\.e\.m\./gi, '')
+            .replace(/system product name/gi, '')
+            .replace(/default string/gi, '')
+            .replace(/lnvnb161216/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        const query = `${cleanModel || raw} BIOS update download`;
+        biosGoogleLink.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+
+        if (biosDetectedBadge) {
+            const biosVersion = biosPart?.replace(/bios:/i, '').trim() ?? '';
+            if (biosVersion) {
+                biosDetectedBadge.textContent = `Your BIOS: ${biosVersion}`;
+                biosDetectedBadge.style.display = 'inline-flex';
+            } else {
+                biosDetectedBadge.style.display = 'none';
+            }
+        }
+    }
+
+    biosPasteInput?.addEventListener('input', updateBiosLookupLink);
     function renderPhase4Ddu(): void {
         const dduMount = document.getElementById('p4-ddu-protocol-mount');
         if (!dduMount) return;
