@@ -531,3 +531,192 @@
     color: var(--accent-rose);
     font-weight: 800;
 }
+
+/* =============================================================================
+   LARGER SETTINGS.JSON VIEWER & INTERACTIVE FLASHCARD HOTKEY GUIDE
+   ============================================================================= */
+
+.ide-config-window {
+    background: var(--bg-base);
+    border: 1px solid var(--border-bold);
+    border-radius: 6px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.ide-config-code {
+    margin: 0;
+    padding: 14px 16px;
+    max-height: 460px;
+    min-height: 200px;
+    overflow: auto;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    white-space: pre;
+    tab-size: 2;
+    scrollbar-width: thin;
+}
+
+.hotkey-accordion-box {
+    margin-top: 6px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    background: var(--bg-base);
+    overflow: hidden;
+}
+
+.hotkey-accordion-btn {
+    width: 100%;
+    background: var(--bg-elevated);
+    border: none;
+    padding: 9px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: left;
+    gap: 8px;
+}
+
+.hotkey-accordion-btn:hover {
+    background: var(--bg-hover);
+}
+
+.hotkey-trainer-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.hotkey-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hotkey-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.hotkey-cat-btn {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.hotkey-cat-btn.active {
+    background: var(--accent-brand-subtle);
+    border-color: var(--accent-brand);
+    color: var(--accent-brand);
+    font-weight: 700;
+}
+
+.hotkey-group-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.hotkey-group-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--accent-brand);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px dashed var(--border-subtle);
+    padding-bottom: 3px;
+}
+
+.hotkey-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 6px;
+}
+
+.hotkey-flashcard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.hotkey-flashcard:hover {
+    border-color: var(--accent-brand);
+    background: var(--bg-hover);
+}
+
+.hotkey-question-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.hotkey-action-text {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.35;
+}
+
+.hotkey-note-text {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+.hotkey-answer-kbd {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--accent-brand);
+    background: var(--accent-brand-subtle);
+    border: 1px solid rgba(67, 81, 232, 0.25);
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition:
+        filter 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.hotkey-trainer-body.study-mode .hotkey-flashcard:not(.revealed) .hotkey-answer-kbd {
+    filter: blur(6px);
+    user-select: none;
+}
+
+.hotkey-trainer-body.study-mode .hotkey-flashcard:not(.revealed):hover .hotkey-answer-kbd {
+    filter: blur(4px);
+}

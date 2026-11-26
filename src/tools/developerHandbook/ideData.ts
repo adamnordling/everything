@@ -1,3 +1,14 @@
+export interface HotkeyItem {
+    action: string;
+    keys: string;
+    note?: string;
+}
+
+export interface HotkeyGroup {
+    category: string;
+    items: HotkeyItem[];
+}
+
 export interface IdeDetail {
     id: string;
     name: string;
@@ -16,11 +27,12 @@ export interface IdeDetail {
     debloatSettingsTitle?: string;
     debloatJsonSnippet?: string;
     keyTips: string[];
+    hotkeyGroups?: HotkeyGroup[];
 }
 
 export const IDE_TIER_DATABASE: IdeDetail[] = [
     // -------------------------------------------------------------------------
-    // 1. TIER S+: NEOVIM
+    // 1. TIER S+: NEOVIM / LAZYVIM
     // -------------------------------------------------------------------------
     {
         id: 'neovim',
@@ -41,27 +53,142 @@ export const IDE_TIER_DATABASE: IdeDetail[] = [
         ],
         cons: [
             'Steep learning curve: Modal keyboard editing (Normal, Insert, Visual) requires muscle memory',
-            'No graphical debugger out of the box: Step-through debugging requires configuring nvim-dap and Lua plugins',
-            'High maintenance: If configuring from raw init.lua, plugin breaking changes can occur on major updates'
+            'Graphical debugger requires configuring nvim-dap (included pre-wired in LazyVim extras)',
+            'Raw init.lua configs require occasional plugin maintenance on major updates'
         ],
         verdict:
-            'The pinnacle of developer speed, keyboard ergonomics, and minimal resource usage. Best suited for developers who prioritize zero input latency and terminal workflows. Beginners should start with LazyVim rather than configuring raw Lua from scratch.',
+            'The pinnacle of developer speed, keyboard ergonomics, and minimal resource usage. Best suited for developers who prioritize zero input latency and terminal workflows. Start with LazyVim (lazyvim.org) instead of writing raw Lua from scratch.',
         recommendedExtensions: [
             { name: 'lazy.nvim', purpose: 'Modern declarative plugin manager' },
             { name: 'nvim-treesitter', purpose: 'AST-based syntax highlighting and incremental selection' },
             { name: 'nvim-lspconfig', purpose: 'Native Language Server Protocol manager' },
-            { name: 'telescope.nvim', purpose: 'Fuzzy finder over files, buffers, and git symbols' },
-            { name: 'nvim-dap', purpose: 'Debug Adapter Protocol client for step-through debugging' }
+            { name: 'fzf-lua / telescope.nvim', purpose: 'Fuzzy finder over files, buffers, and grep matches' },
+            { name: 'nvim-dap', purpose: 'Debug Adapter Protocol client for breakpoints & stack inspection' }
         ],
         keyTips: [
-            'Start with LazyVim: Run the official LazyVim starter repo to get a complete IDE setup with LSP, treesitter, and formatting in under 3 minutes.',
-            'Addressing the Debugger: If you need visual breakpoints, install nvim-dap paired with nvim-dap-ui to render variable scopes and stack traces.',
-            'Relative Line Numbers: Set "vim.opt.relativenumber = true" in your config to jump across lines instantly with commands like 14j or 8k.'
+            'Start with LazyVim: Install the LazyVim starter template to get LSP, Treesitter, formatting, git integration, and leader menus out of the box.',
+            'Built-in Tutor: Run `:Tutor` directly inside Neovim for an interactive 20-minute hands-on drill.',
+            'Relative Line Numbers: LazyVim enables `relativenumber` by default — jump 12 lines down instantly with `12j` or `12k` up.'
+        ],
+        hotkeyGroups: [
+            {
+                category: '1. Modes & Saving',
+                items: [
+                    {
+                        action: 'Return to Normal mode (from any mode)',
+                        keys: 'Esc / jk',
+                        note: 'Use Esc in all Vim setups'
+                    },
+                    { action: 'Insert before cursor', keys: 'i' },
+                    { action: 'Insert at start of current line', keys: 'I' },
+                    { action: 'Append after cursor', keys: 'a' },
+                    { action: 'Append at end of current line', keys: 'A' },
+                    { action: 'New line below & enter Insert mode', keys: 'o' },
+                    { action: 'New line above & enter Insert mode', keys: 'O' },
+                    { action: 'Visual character selection mode', keys: 'v' },
+                    { action: 'Visual full-line selection mode', keys: 'V' },
+                    { action: 'Visual Block (multi-line column edit)', keys: 'Ctrl + v' },
+                    { action: 'Save file (in Normal mode)', keys: ':w / Ctrl+s', note: 'Ctrl+s works in LazyVim' },
+                    { action: 'Save and quit current window', keys: ':wq / ZZ' },
+                    { action: 'Quit without saving changes', keys: ':q!' }
+                ]
+            },
+            {
+                category: '2. Basic & Word Motions',
+                items: [
+                    {
+                        action: 'Move Left / Down / Up / Right',
+                        keys: 'h / j / k / l',
+                        note: 'Keep fingers on home row'
+                    },
+                    { action: 'Jump forward to start of next word', keys: 'w', note: 'Use W to ignore punctuation' },
+                    { action: 'Jump backward to start of word', keys: 'b', note: 'Use B to ignore punctuation' },
+                    { action: 'Jump forward to end of word', keys: 'e' },
+                    { action: 'Start of line (column 0)', keys: '0' },
+                    { action: 'First non-blank character of line', keys: '^' },
+                    { action: 'End of current line', keys: '$' },
+                    { action: 'Jump to matching bracket ( { [ )', keys: '%' },
+                    { action: 'Jump to top of file', keys: 'gg' },
+                    { action: 'Jump to bottom of file', keys: 'G' },
+                    { action: 'Jump to specific line number (e.g. 42)', keys: '42G / :42' },
+                    { action: 'Scroll half-page down / up', keys: 'Ctrl+d / Ctrl+u' },
+                    { action: 'Center cursor line on screen', keys: 'zz' },
+                    {
+                        action: 'Jump forward to char "x" on line',
+                        keys: 'fx',
+                        note: 'tx stops 1 char before x; ; repeats'
+                    },
+                    { action: 'Jump back / forward in jump history', keys: 'Ctrl+o / Ctrl+i' }
+                ]
+            },
+            {
+                category: '3. Search & Replace',
+                items: [
+                    { action: 'Search forward for text', keys: '/pattern' },
+                    { action: 'Search backward for text', keys: '?pattern' },
+                    { action: 'Next / Previous search match', keys: 'n / N' },
+                    { action: 'Search word currently under cursor', keys: '* / #' },
+                    { action: 'Clear search highlight', keys: 'Esc / :noh', note: 'Esc clears highlights in LazyVim' },
+                    { action: 'Find & replace across whole file (confirm)', keys: ':%s/old/new/gc' }
+                ]
+            },
+            {
+                category: '4. Editing Operators (Verb + Motion)',
+                items: [
+                    { action: 'Delete character under cursor', keys: 'x' },
+                    { action: 'Delete entire line', keys: 'dd' },
+                    { action: 'Delete from cursor to end of line', keys: 'D / d$' },
+                    { action: 'Delete inside word (keeps spaces)', keys: 'diw', note: 'daw deletes word + space' },
+                    { action: 'Change inside quotes "..." (deletes & Inserts)', keys: 'ci"' },
+                    { action: 'Change inside parentheses (...)', keys: 'ci(' },
+                    { action: 'Change inside curly braces {...}', keys: 'ci{' },
+                    { action: 'Change from cursor to end of line', keys: 'C / c$' },
+                    { action: 'Yank (copy) entire line', keys: 'yy' },
+                    { action: 'Yank inside word / quotes', keys: 'yiw / yi"' },
+                    { action: 'Paste after / before cursor', keys: 'p / P' },
+                    { action: 'Undo last change', keys: 'u' },
+                    { action: 'Redo last undone change', keys: 'Ctrl + r' },
+                    { action: 'Repeat last edit command', keys: '.', note: 'One of Vim’s strongest keys' },
+                    { action: 'Indent / Unindent line', keys: '>> / <<' },
+                    {
+                        action: 'Toggle comment on line / selection',
+                        keys: 'gcc / gc',
+                        note: 'Built into Neovim 0.10+ & LazyVim'
+                    },
+                    { action: 'Move selected lines Up / Down (LazyVim)', keys: 'Alt+k / Alt+j' }
+                ]
+            },
+            {
+                category: '5. LazyVim <Space> Leader & LSP',
+                items: [
+                    {
+                        action: 'Open Which-Key shortcut cheat menu',
+                        keys: '<Space>',
+                        note: 'Wait 300ms to see all menus'
+                    },
+                    { action: 'Fuzzy find files in project', keys: '<Space> ff' },
+                    { action: 'Live grep (search text in all files)', keys: '<Space> sg' },
+                    { action: 'Toggle File Explorer (Neo-tree / Snacks)', keys: '<Space> e' },
+                    { action: 'Switch open buffers / recent files', keys: '<Space> fb / <Space> fr' },
+                    { action: 'Next / Previous buffer tab', keys: 'Shift+l / Shift+h' },
+                    { action: 'Close current buffer', keys: '<Space> bd' },
+                    { action: 'Split window vertically / horizontally', keys: '<Space> | / <Space> -' },
+                    { action: 'Move between window splits', keys: 'Ctrl + h/j/k/l' },
+                    { action: 'Go to Definition (LSP)', keys: 'gd' },
+                    { action: 'Find all References (LSP)', keys: 'gr' },
+                    { action: 'Show hover documentation (LSP)', keys: 'Shift + k' },
+                    { action: 'LSP Code Actions (quick fix / import)', keys: '<Space> ca' },
+                    { action: 'Rename symbol across project', keys: '<Space> cr' },
+                    { action: 'Next / Previous diagnostic error', keys: ']d / [d' },
+                    { action: 'Open LazyGit inside Neovim', keys: '<Space> gg' },
+                    { action: 'Open floating terminal', keys: '<Space> ft / Ctrl+/' }
+                ]
+            }
         ]
     },
 
     // -------------------------------------------------------------------------
-    // 2. TIER S: ZED
+    // 2. TIER S: ZED EDITOR
     // -------------------------------------------------------------------------
     {
         id: 'zed',
@@ -69,48 +196,155 @@ export const IDE_TIER_DATABASE: IdeDetail[] = [
         tier: 'S',
         pricing: 'Free / Open Source',
         downloadUrl: 'https://zed.dev/',
-        engine: 'Native Rust (GPUI Hardware-Accelerated Metal / Vulkan)',
+        engine: 'Native Rust (GPUI Hardware-Accelerated Metal / Vulkan / DirectX)',
         ramFootprint: '120 - 250 MB',
         coldStartup: '~60 ms',
-        telemetryStatus: 'Opt-out (1 toggle in settings.json)',
+        telemetryStatus: 'Opt-out (diagnostics, metrics & anthropic_retention = false)',
         learningCurve: 'Beginner Friendly',
         pros: [
-            'Engineered in Rust: Renders entirely on the GPU at 120 FPS without Electron sluggishness',
-            'Instant cold startup (~60 ms) with minimal RAM overhead (~140 MB)',
-            'Native Language Server Protocol (LSP) and tree-sitter syntax highlighting out of the box',
-            'Real-time peer-to-peer multiplayer pair programming built into the core engine'
+            'Engineered in Rust: Renders on the GPU at 120+ FPS with zero Electron sluggishness',
+            'Supports Windows, macOS, and Linux natively with built-in Git panel & DAP debugger',
+            'Built-in keymap presets (`JetBrains`, `VSCode`, `Vim`, `SublimeText`, `Emacs`)',
+            'Automatic Python `.venv` detection in integrated terminal and native Prettier/ESLint integration'
         ],
         cons: [
-            'Younger extension marketplace compared to the decade-old VS Code ecosystem',
-            'Native GUI configuration is still maturing on Linux and Windows platforms',
-            'Custom UI theming is somewhat constrained to maintain GPUI rendering guarantees'
+            'Smaller extension marketplace compared to VS Code (though core languages & themes are native)',
+            'No GUI checkboxes for every setting — advanced tweaks live in JSONC `settings.json`',
+            'Defaults to `tab_size: 2` which draws extra indent lines on 4-space Prettier projects unless matched'
         ],
         verdict:
-            'The modern successor to Electron-based editors. Combines the click-and-play ease of VS Code with the near-instant performance of native Rust.',
+            'The fastest modern GUI code editor. Combines native Rust GPUI speed with built-in Git, integrated debugging, and zero-lag JetBrains/VSCode/Vim keymaps.',
         recommendedExtensions: [
-            { name: 'Language Extensions', purpose: 'Pre-configured rust-analyzer, pyright, and vtsls servers' },
-            { name: 'Theme Packs', purpose: 'Dracula, One Dark, and GitHub Dark syntax themes' }
+            { name: 'Catppuccin / Catppuccin Icons', purpose: 'Clean high-contrast light/dark theme & file icons' },
+            { name: 'HTML / Emmet / Prettier', purpose: 'Instant tag expansion and automatic formatting on save' },
+            { name: 'Language Servers', purpose: 'Built-in vtsls (TS), pyright/ruff (Python), rust-analyzer' }
         ],
-        debloatSettingsTitle: 'Zed Privacy & Performance settings.json',
+        debloatSettingsTitle: 'Zed Full Workstation settings.json (Privacy + JetBrains Keymap + Panels)',
         debloatJsonSnippet: `{
-  // Kills telemetry and analytical crash reporting
+  // PRIVACY
   "telemetry": {
     "diagnostics": false,
-    "metrics": false
+    "metrics": false,
+    "anthropic_retention": false
   },
 
-  // Typography and rendering
-  "buffer_font_size": 14,
-  "ui_font_size": 14,
-  "theme": "One Dark",
+  // WORKSPACE SECURITY
+  "session": {
+    "trust_all_worktrees": true
+  },
 
-  // Automated hygiene on save
+  // KEYBOARD (Options: "VSCode", "JetBrains", "Vim", "SublimeText")
+  "base_keymap": "JetBrains",
+
+  // APPEARANCE
+  "theme": {
+    "mode": "system",
+    "light": "Catppuccin Latte",
+    "dark": "Catppuccin Black"
+  },
+  "icon_theme": "Material Icon Theme",
+
+  // FONTS
+  "ui_font_size": 16,
+  "buffer_font_size": 13,
+
+  // FILE EXPLORER - LEFT
+  "project_panel": {
+    "dock": "left",
+    "default_width": 260,
+    "file_icons": true,
+    "git_status": true,
+    "auto_reveal_entries": true,
+    "sort_mode": "directories_first",
+    "show_diagnostics": "all",
+    "diagnostic_badges": true,
+    "git_status_indicator": true,
+    "starts_open": true
+  },
+
+  // GIT - RIGHT
+  "git_panel": {
+    "dock": "right",
+    "default_width": 360,
+    "button": true,
+    "group_by": "status",
+    "sort_by": "path",
+    "status_style": "icon",
+    "tree_view": true,
+    "file_icons": true,
+    "show_count_badge": true,
+    "diff_stats": true,
+    "starts_open": true
+  },
+
+  // TERMINAL - BOTTOM
+  "terminal": {
+    "dock": "bottom",
+    "default_height": 320,
+    "button": true,
+    "starts_open": false,
+    "shell": "system",
+    "working_directory": "current_project_directory",
+    "detect_venv": {
+      "on": {
+        "directories": [".env", "env", ".venv", "venv"],
+        "activate_script": "default"
+      }
+    }
+  },
+
+  // DEBUGGER
+  "debugger": {
+    "dock": "bottom",
+    "save_breakpoints": true,
+    "button": true
+  },
+
+  // EDITOR (Set tab_size: 4 to match Prettier tabWidth: 4, or keep 2 + disable indent_guides)
+  "tab_size": 4,
+  "hard_tabs": false,
+  "soft_wrap": "editor_width",
+  "indent_guides": {
+    "enabled": true,
+    "coloring": "indent_aware"
+  },
   "autosave": "on_focus_change",
-  "format_on_save": "on"
+  "format_on_save": "on",
+  "ensure_final_newline_on_save": true,
+  "remove_trailing_whitespace_on_save": true,
+
+  // DIAGNOSTICS & SCROLLBAR
+  "diagnostics": {
+    "inline": {
+      "enabled": false
+    }
+  },
+  "scrollbar": {
+    "diagnostics": "all"
+  }
 }`,
         keyTips: [
-            'Isolated Language Servers: Language servers run in sandboxed native processes rather than heavy Node.js plugins.',
-            'Built-in Command Palette: Press Cmd+Shift+P (or Ctrl+Shift+P) to access all editor commands instantly.'
+            'Indent Guides Clutter Fix: If deeply nested HTML looks like 25+ vertical lines, match `tab_size` to your Prettier `tabWidth` (4) or set `"indent_guides": { "enabled": false }`.',
+            'Prevent Cut-Off Lines: Add `"soft_wrap": "editor_width"` when keeping both Left Explorer (260px) and Right Git Panel (360px) docked open.',
+            'Disable Built-in AI Completely: Add `"disable_ai": true` at the top level if you want zero AI assistants or prompts.'
+        ],
+        hotkeyGroups: [
+            {
+                category: 'Zed Core & JetBrains Keymap (Windows / Linux)',
+                items: [
+                    { action: 'Command Palette (all actions)', keys: 'Ctrl + Shift + A' },
+                    { action: 'Quick Open File by Name', keys: 'Ctrl + Shift + N' },
+                    { action: 'Project-wide Text Search', keys: 'Ctrl + Shift + F' },
+                    { action: 'Toggle Left Project Explorer', keys: 'Alt + 1' },
+                    { action: 'Toggle Bottom Terminal', keys: 'Alt + F12 / Ctrl + `' },
+                    { action: 'Go to Definition / Declaration', keys: 'Ctrl + B / F12' },
+                    { action: 'Rename Symbol across project', keys: 'Shift + F6' },
+                    { action: 'Toggle Line Comment', keys: 'Ctrl + /' },
+                    { action: 'Multi-cursor: Add next occurrence', keys: 'Alt + J' },
+                    { action: 'Format Document manually', keys: 'Ctrl + Alt + L' },
+                    { action: 'Open Settings (settings.json)', keys: 'Ctrl + Alt + S' }
+                ]
+            }
         ]
     },
 
@@ -189,9 +423,24 @@ export const IDE_TIER_DATABASE: IdeDetail[] = [
   }
 }`,
         keyTips: [
-            'Do Not Install Bracket Pair Colorizer: VS Code has native bracket coloring built in (editor.bracketPairColorization.enabled: true). Third-party extensions cause heavy typing lag.',
-            'Disable the Code Minimap: The code minimap runs an extra canvas rendering loop on every single keystroke. Disabling it saves significant CPU time.',
-            'Prefer VSCodium: If you care about zero telemetry, download VSCodium (vscodium.com), which compiles the exact same source without telemetry trackers.'
+            'Do Not Install Bracket Pair Colorizer: VS Code has native bracket coloring built in (`editor.bracketPairColorization.enabled: true`).',
+            'Disable the Code Minimap: The minimap runs an extra canvas rendering loop on every keystroke. Disabling it saves CPU time.',
+            'Prefer VSCodium: If you care about zero telemetry, download VSCodium (vscodium.com), which compiles the same core without Microsoft tracking.'
+        ],
+        hotkeyGroups: [
+            {
+                category: 'VS Code Essential Navigation (Windows / Linux)',
+                items: [
+                    { action: 'Command Palette', keys: 'Ctrl + Shift + P' },
+                    { action: 'Quick Open File', keys: 'Ctrl + P' },
+                    { action: 'Go to Symbol in File', keys: 'Ctrl + Shift + O' },
+                    { action: 'Toggle Sidebar / Terminal', keys: 'Ctrl+B / Ctrl+`' },
+                    { action: 'Add Cursor to Next Match', keys: 'Ctrl + D' },
+                    { action: 'Move Line Up / Down', keys: 'Alt + Up / Down' },
+                    { action: 'Quick Fix / Code Action', keys: 'Ctrl + .' },
+                    { action: 'Rename Symbol', keys: 'F2' }
+                ]
+            }
         ]
     },
 
@@ -222,7 +471,7 @@ export const IDE_TIER_DATABASE: IdeDetail[] = [
         verdict:
             'The current leader in AI-assisted developer IDEs. Ideal for complex migrations, fast prototyping, and navigating unfamiliar codebases, provided you configure privacy guards.',
         recommendedExtensions: [
-            { name: 'Built-in Agent', purpose: 'Cmd+K / Ctrl+K inline editor and multi-file composer' },
+            { name: 'Built-in Agent', purpose: 'Ctrl+K inline editor and multi-file composer' },
             { name: 'Prettier', purpose: 'Clean formatting for generated model code' }
         ],
         debloatSettingsTitle: 'Cursor Privacy & Efficiency settings.json',
@@ -243,8 +492,8 @@ export const IDE_TIER_DATABASE: IdeDetail[] = [
   }
 }`,
         keyTips: [
-            'Create a .cursorignore: Always add .env, API keys, credentials, and data folders to a .cursorignore file so private variables are never sent to external model endpoints.',
-            'Enable Privacy Mode: Open Cursor Settings -> General and enable "Privacy Mode" so no code snippets are retained on server training logs.'
+            'Create a `.cursorignore`: Add `.env`, API keys, credentials, and large data folders so private secrets are never indexed.',
+            'Enable Privacy Mode: Open Cursor Settings -> General and enable "Privacy Mode" so zero code snippets are retained for model training.'
         ]
     },
 
@@ -255,7 +504,7 @@ export const IDE_TIER_DATABASE: IdeDetail[] = [
         id: 'jetbrains',
         name: 'JetBrains (WebStorm / PyCharm / RustRover)',
         tier: 'B+',
-        pricing: 'Commercial Subscription ($10 - $30/mo)',
+        pricing: 'Commercial Subscription (Free for Non-Commercial WebStorm/RustRover/Rider)',
         downloadUrl: 'https://www.jetbrains.com/',
         engine: 'Java Virtual Machine (JVM)',
         ramFootprint: '1.2 - 2.8 GB',
@@ -265,15 +514,15 @@ export const IDE_TIER_DATABASE: IdeDetail[] = [
         pros: [
             'Best-in-class automated code refactoring, AST renaming, and reference tracing',
             'Comprehensive visual debugging, database SQL query tools, and profilers included out of the box',
-            'Dedicated language-specialized editions (PyCharm for Python, RustRover for Rust, WebStorm for JS/TS)'
+            'WebStorm, RustRover, and Rider offer free non-commercial licensing for hobby & open-source work'
         ],
         cons: [
             'High memory consumption: JVM heap easily claims 1.5 to 2.5 GB RAM on medium projects',
             'Slow cold startup time (~2.4s+) while parsing workspace caches and symbol indices',
-            'Commercial licensing: Requires an ongoing monthly or annual subscription after evaluation'
+            'Commercial licensing required for professional work'
         ],
         verdict:
-            'An enterprise-grade tool suite. If you frequently perform complex cross-file refactorings and need built-in visual database management, it is unmatched, but it requires significant RAM and CPU headroom.',
+            'An enterprise-grade tool suite. Unmatched for complex cross-file refactoring and built-in database/debugger tooling, though Zed with `"base_keymap": "JetBrains"` gives the same shortcuts at 1/10th the RAM.',
         recommendedExtensions: [
             { name: 'Key Promoter X', purpose: 'Teaches keyboard shortcuts whenever you click a toolbar button' },
             { name: '.ignore', purpose: 'Syntax highlighting and template generator for .gitignore' }
@@ -285,8 +534,21 @@ export const IDE_TIER_DATABASE: IdeDetail[] = [
 -XX:ReservedCodeCacheSize=512m
 -XX:+UseG1GC`,
         keyTips: [
-            'Exclude Generated Folders: Right-click dist/, target/, or .venv/ in the project view -> Mark Directory as -> Excluded. This prevents the IDE from indexing binary bundles.',
-            'Tune JVM Heap: If you have 32 GB+ of RAM, increase -Xmx to 4096m to eliminate garbage collector pauses during long coding sessions.'
+            'Exclude Generated Folders: Right-click `dist/`, `target/`, or `.venv/` -> Mark Directory as -> Excluded.',
+            'Tune JVM Heap: On 32 GB+ RAM rigs, raise `-Xmx` to `4096m` to prevent garbage-collection micro-stutters.'
+        ],
+        hotkeyGroups: [
+            {
+                category: 'JetBrains Core Keymap (Windows / Linux)',
+                items: [
+                    { action: 'Search Everywhere (files, symbols, actions)', keys: 'Shift, Shift' },
+                    { action: 'Find Action', keys: 'Ctrl + Shift + A' },
+                    { action: 'Refactor / Rename Symbol', keys: 'Shift + F6' },
+                    { action: 'Show Context Actions / Quick Fix', keys: 'Alt + Enter' },
+                    { action: 'Go to Declaration / Usages', keys: 'Ctrl + B' },
+                    { action: 'Reformat Code', keys: 'Ctrl + Alt + L' }
+                ]
+            }
         ]
     }
 ];

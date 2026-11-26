@@ -1,6 +1,8 @@
-import { initTheme } from './core/theme';
+import { applyInitialTheme, initTheme } from './core/theme';
 import { initRouter } from './core/router';
 import { initDashboard } from './tools/dashboard/ts/index';
+
+applyInitialTheme();
 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();

@@ -7,7 +7,9 @@ const BACKUP_KEYS = [
     'everything_tasks_v2',
     'everything_habits_v2',
     'everything_scratchpad',
-    'everything_yt_settings',
+    'everything_yt_settings_v3',
+    'everything_winopt_profile_v11',
+    'everything_dev_handbook_v10',
     'wx_lat',
     'wx_lon',
     'wx_city',
@@ -15,11 +17,11 @@ const BACKUP_KEYS = [
 ];
 
 export function initBackup(): void {
-    const exportBtn = document.getElementById('btn-export-data');
-    const importBtn = document.getElementById('btn-import-data');
+    const exportBtns = [document.getElementById('btn-export-data'), document.getElementById('sidebar-export-btn')];
+    const importBtns = [document.getElementById('btn-import-data'), document.getElementById('sidebar-import-btn')];
     const fileInput = document.getElementById('backup-file-input') as HTMLInputElement | null;
 
-    exportBtn?.addEventListener('click', () => {
+    const handleExport = (): void => {
         const payload: Record<string, string | null> = {};
         BACKUP_KEYS.forEach(key => {
             payload[key] = localStorage.getItem(key);
@@ -34,11 +36,14 @@ export function initBackup(): void {
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
-    });
+    };
 
-    importBtn?.addEventListener('click', () => {
+    const handleImportTrigger = (): void => {
         fileInput?.click();
-    });
+    };
+
+    exportBtns.forEach(btn => btn?.addEventListener('click', handleExport));
+    importBtns.forEach(btn => btn?.addEventListener('click', handleImportTrigger));
 
     fileInput?.addEventListener('change', () => {
         const file = fileInput.files?.[0];

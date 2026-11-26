@@ -18,6 +18,7 @@ export function getDefaultState(): ScaffolderState {
         database: 'none',
         license: 'none',
         includeDocker: false,
+        includeWslc: false,
         includeCi: false,
         includeEdgeHeaders: false,
         includeEnvExample: false,

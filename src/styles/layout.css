@@ -149,10 +149,40 @@
     }
 
     .sidebar-header {
-        padding: 24px 20px 16px;
+        padding: 24px 20px 10px;
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+
+    .sidebar-quick-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 8px 20px 14px;
+
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .sidebar-icon-btn {
+        width: 34px;
+        height: 30px;
+        border-radius: 6px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .sidebar-icon-btn:hover {
+        border-color: var(--accent-brand);
+        color: var(--accent-brand);
+        background: var(--accent-brand-subtle);
     }
 
     .brand-group {

@@ -232,8 +232,6 @@ export function initWindowsOptimizer(): void {
         }
     }
 
-
-
     function updateBiosLookupLink(): void {
         if (!biosPasteInput || !biosGoogleLink) return;
         const raw = biosPasteInput.value.trim();

@@ -501,51 +501,53 @@ echo "=================================================="`
         });
     }
 
-    if (state.includeDocker) {
+    if (state.includeDocker || state.includeWslc) {
         files.push({
             path: 'Dockerfile',
-            description: 'Production multi-stage Docker build container',
-            badge: 'Docker',
+            description: 'Production multi-stage OCI container build (Docker & WSLC compatible)',
+            badge: 'Container',
             content: hasPython
                 ? `FROM python:3.11-slim
-WORKDIR /app
-COPY pyproject.toml .
-RUN pip install --no-cache-dir uv && uv pip install --system -r pyproject.toml
-COPY . .
-CMD ["python", "src/main.py"]`
+    WORKDIR /app
+    COPY pyproject.toml .
+    RUN pip install --no-cache-dir uv && uv pip install --system -r pyproject.toml
+    COPY . .
+    CMD ["python", "src/main.py"]`
                 : hasRust
                   ? `FROM rust:1.82 as builder
-WORKDIR /app
-COPY . .
-RUN cargo build --release
+    WORKDIR /app
+    COPY . .
+    RUN cargo build --release
 
-FROM debian:bookworm-slim
-COPY --from=builder /app/target/release/${state.projectName} /usr/local/bin/
-CMD ["${state.projectName}"]`
+    FROM debian:bookworm-slim
+    COPY --from=builder /app/target/release/${state.projectName} /usr/local/bin/
+    CMD ["${state.projectName}"]`
                   : `FROM node:22-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN ${pm === 'pnpm' ? 'pnpm install' : pm === 'bun' ? 'bun install' : 'npm ci'}
-COPY . .
-RUN ${pm === 'bun' ? 'bun run build' : 'npm run build'}
+    WORKDIR /app
+    COPY package*.json ./
+    RUN ${pm === 'pnpm' ? 'pnpm install' : pm === 'bun' ? 'bun install' : 'npm ci'}
+    COPY . .
+    RUN ${pm === 'bun' ? 'bun run build' : 'npm run build'}
 
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]`
+    FROM nginx:alpine
+    COPY --from=builder /app/dist /usr/share/nginx/html
+    EXPOSE 80
+    CMD ["nginx", "-g", "daemon off;"]`
         });
+    }
 
+    if (state.includeDocker) {
         files.push({
             path: 'docker-compose.yml',
             description: 'Multi-container orchestration definition',
             badge: 'Docker',
             content: `services:
-  app:
-    build: .
-    container_name: ${state.projectName}
-    restart: unless-stopped
-    ports:
-      - "8080:8080"`
+      app:
+        build: .
+        container_name: ${state.projectName}
+        restart: unless-stopped
+        ports:
+          - "8080:8080"`
         });
     }
 
@@ -702,6 +704,10 @@ ehthumbs.db
 ${packIgnoreSection}`.trim()
     });
 
+    const wslcReadmeSection = state.includeWslc
+        ? `\n## WSL Containers (WSLC — Zero Docker Desktop)\n\nRequires WSL 2.9.3+ (\`wsl --update\`):\n\n\`\`\`powershell\nwslc build -t ${state.projectName}:dev .\nwslc run -d --rm -p 8080:80 --name ${state.projectName} ${state.projectName}:dev\n\`\`\`\n`
+        : '';
+
     // Zero-emoji Technical README with "How to Begin" guide
     files.push({
         path: 'README.md',
@@ -712,7 +718,7 @@ ${packIgnoreSection}`.trim()
 Technical architecture and deployment pipeline for ${state.archetype} built with ${state.languages.join(', ')}.
 
 ${getGettingStartedGuide(state)}
-
+${wslcReadmeSection}
 ## Available Scripts
 
 ${

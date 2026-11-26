@@ -3,6 +3,51 @@ import { $, req } from './dom';
 const sidebar = $('#app-sidebar');
 const backdrop = $('#sidebar-backdrop');
 
+const NAV_STORAGE_KEY = 'everything_nav_state_v1';
+const INACTIVITY_LIMIT_MS = 10 * 60 * 1000; // 10 minutes
+const VALID_VIEWS = new Set(['dashboard', 'tool-youtube', 'tool-winopt', 'tool-handbook']);
+
+interface NavState {
+    view: string;
+    scrollY: Record<string, number>;
+    lastActiveAt: number;
+}
+
+let activeView = 'dashboard';
+let navState: NavState = {
+    view: 'dashboard',
+    scrollY: {},
+    lastActiveAt: Date.now()
+};
+
+function loadNavState(): NavState {
+    try {
+        const raw = localStorage.getItem(NAV_STORAGE_KEY);
+        if (!raw) return { view: 'dashboard', scrollY: {}, lastActiveAt: Date.now() };
+        const parsed = JSON.parse(raw) as Partial<NavState>;
+        return {
+            view: typeof parsed.view === 'string' && VALID_VIEWS.has(parsed.view) ? parsed.view : 'dashboard',
+            scrollY: typeof parsed.scrollY === 'object' && parsed.scrollY !== null ? parsed.scrollY : {},
+            lastActiveAt: typeof parsed.lastActiveAt === 'number' ? parsed.lastActiveAt : 0
+        };
+    } catch {
+        return { view: 'dashboard', scrollY: {}, lastActiveAt: Date.now() };
+    }
+}
+
+function saveNavState(touchActivity: boolean): void {
+    navState.view = activeView;
+    navState.scrollY[activeView] = window.scrollY;
+    if (touchActivity) {
+        navState.lastActiveAt = Date.now();
+    }
+    try {
+        localStorage.setItem(NAV_STORAGE_KEY, JSON.stringify(navState));
+    } catch {
+        // Ignore quota limits
+    }
+}
+
 export function closeMobileDrawer(): void {
     sidebar?.classList.remove('drawer-open');
     backdrop?.classList.remove('active');
@@ -13,8 +58,14 @@ export function openMobileDrawer(): void {
     backdrop?.classList.add('active');
 }
 
-export async function switchView(targetView: string): Promise<void> {
+export async function switchView(targetView: string, restoreScroll = false): Promise<void> {
     closeMobileDrawer();
+
+    const safeView = VALID_VIEWS.has(targetView) ? targetView : 'dashboard';
+    if (activeView !== safeView) {
+        navState.scrollY[activeView] = window.scrollY;
+    }
+    activeView = safeView;
 
     const navButtons = document.querySelectorAll<HTMLButtonElement>('.sidebar-nav .nav-item');
     const viewDashboard = req('#view-dashboard');
@@ -23,7 +74,7 @@ export async function switchView(targetView: string): Promise<void> {
     const viewHandbook = req('#view-tool-handbook');
 
     navButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-view') === targetView);
+        btn.classList.toggle('active', btn.getAttribute('data-view') === safeView);
     });
 
     viewDashboard.style.display = 'none';
@@ -31,31 +82,40 @@ export async function switchView(targetView: string): Promise<void> {
     viewWinOpt.style.display = 'none';
     viewHandbook.style.display = 'none';
 
-    if (targetView === 'tool-youtube') {
+    if (safeView === 'tool-youtube') {
         viewYoutube.style.display = 'flex';
-        // Lazy-loads YouTube code & CSS only when clicked!
         const { initYoutube } = await import('../tools/youtube/index');
         initYoutube();
-    } else if (targetView === 'tool-winopt') {
+    } else if (safeView === 'tool-winopt') {
         viewWinOpt.style.display = 'flex';
-        // Lazy-loads Windows Optimizer code & CSS only when clicked!
         const { initWindowsOptimizer } = await import('../tools/windowsOptimizer/index');
         initWindowsOptimizer();
-    } else if (targetView === 'tool-handbook') {
+    } else if (safeView === 'tool-handbook') {
         viewHandbook.style.display = 'flex';
         const { initDeveloperHandbook } = await import('../tools/developerHandbook/index');
         initDeveloperHandbook();
     } else {
         viewDashboard.style.display = 'block';
     }
+
+    const targetTop = restoreScroll ? (navState.scrollY[safeView] ?? 0) : 0;
+    requestAnimationFrame(() => {
+        window.scrollTo(0, targetTop);
+    });
+
+    saveNavState(true);
 }
 
 export function initRouter(): void {
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
     const navButtons = document.querySelectorAll<HTMLButtonElement>('.sidebar-nav .nav-item');
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const target = btn.getAttribute('data-view') || 'dashboard';
-            void switchView(target);
+            void switchView(target, false);
         });
     });
 
@@ -72,6 +132,43 @@ export function initRouter(): void {
         }
     });
 
-    // Always start on the dashboard
-    void switchView('dashboard');
+    // Save scroll position (throttled) and touch activity timestamp
+    let scrollTimer: number | undefined;
+    window.addEventListener(
+        'scroll',
+        () => {
+            window.clearTimeout(scrollTimer);
+            scrollTimer = window.setTimeout(() => {
+                saveNavState(true);
+            }, 150);
+        },
+        { passive: true }
+    );
+
+    let lastTouchSave = 0;
+    const markUserActive = (): void => {
+        const now = Date.now();
+        if (now - lastTouchSave > 15000) {
+            lastTouchSave = now;
+            saveNavState(true);
+        }
+    };
+    window.addEventListener('pointerdown', markUserActive, { passive: true });
+    window.addEventListener('keydown', markUserActive, { passive: true });
+
+    // Save ONLY scroll position right before unload (do NOT overwrite lastActiveAt!)
+    window.addEventListener('pagehide', () => {
+        saveNavState(false);
+    });
+
+    // Check 10-minute inactivity threshold on boot
+    navState = loadNavState();
+    const elapsedMs = Date.now() - navState.lastActiveAt;
+
+    if (elapsedMs > INACTIVITY_LIMIT_MS || !navState.lastActiveAt) {
+        navState = { view: 'dashboard', scrollY: {}, lastActiveAt: Date.now() };
+        void switchView('dashboard', false);
+    } else {
+        void switchView(navState.view, true);
+    }
 }

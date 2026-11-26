@@ -24,6 +24,10 @@ const STORAGE_KEY = 'everything_dev_handbook_v10';
 
 let isInitialized = false;
 
+function escapeHtml(text: string): string {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 export function initDeveloperHandbook(): void {
     const stage = document.getElementById('view-tool-handbook');
     if (!stage) return;
@@ -66,6 +70,7 @@ export function initDeveloperHandbook(): void {
     const licenseSelect = document.getElementById('hb-select-license') as HTMLSelectElement | null;
 
     const optDocker = document.getElementById('hb-opt-docker') as HTMLInputElement | null;
+    const optWslc = document.getElementById('hb-opt-wslc') as HTMLInputElement | null;
     const optCi = document.getElementById('hb-opt-ci') as HTMLInputElement | null;
     const optHeaders = document.getElementById('hb-opt-headers') as HTMLInputElement | null;
     const optEnv = document.getElementById('hb-opt-env') as HTMLInputElement | null;
@@ -236,115 +241,175 @@ export function initDeveloperHandbook(): void {
                           ? 'tier-a-minus'
                           : 'tier-b-plus';
 
-            card.innerHTML = `
-                <button type="button" class="ide-card-header-btn" data-target="ide-body-${ide.id}">
-                    <div class="ide-title-badge-group">
-                        <span class="tier-badge ${tierClass}">Tier ${ide.tier}</span>
-                        <span class="ide-card-name">${ide.name}</span>
-                    </div>
-                    <div class="ide-specs-strip">
-                        <span>${ide.ramFootprint}</span>
-                        <span>·</span>
-                        <span>${ide.coldStartup}</span>
-                        <span class="acc-chevron">▸</span>
-                    </div>
-                </button>
-                <div class="ide-card-body" id="ide-body-${ide.id}" style="display: none;">
-                    <div class="ide-meta-quad">
-                        <div class="ide-meta-item">
-                            <span class="ide-meta-label">ENGINE ARCHITECTURE</span>
-                            <span class="ide-meta-val">${ide.engine}</span>
-                        </div>
-                        <div class="ide-meta-item">
-                            <span class="ide-meta-label">COLD STARTUP</span>
-                            <span class="ide-meta-val">${ide.coldStartup}</span>
-                        </div>
-                        <div class="ide-meta-item">
-                            <span class="ide-meta-label">RAM FOOTPRINT (IDLE)</span>
-                            <span class="ide-meta-val">${ide.ramFootprint}</span>
-                        </div>
-                        <div class="ide-meta-item">
-                            <span class="ide-meta-label">LICENSE &amp; PRICING</span>
-                            <span class="ide-meta-val">${ide.pricing}</span>
-                        </div>
-                    </div>
+            const totalHotkeys = (ide.hotkeyGroups ?? []).reduce((sum, g) => sum + g.items.length, 0);
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                        <span class="pill-badge" style="font-size: 0.68rem;">Learning Curve: ${ide.learningCurve}</span>
-                        <a href="${ide.downloadUrl}" target="_blank" rel="noopener" class="link-chip">
-                            Official Download Portal ↗
-                        </a>
-                    </div>
-
-                    <p style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.45; margin: 2px 0 0 0;">
-                        <strong>Architectural Verdict:</strong> ${ide.verdict}
-                    </p>
-
-                    <!-- PROS & CONS GRID -->
-                    <div class="ide-pros-cons-grid">
-                        <div class="pros-column">
-                            <span class="column-title pros">ADVANTAGES (+)</span>
-                            <ul class="ide-point-list">
-                                ${ide.pros.map(pro => `<li>${pro}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="cons-column">
-                            <span class="column-title cons">TRADE-OFFS &amp; QUIRKS (-)</span>
-                            <ul class="ide-point-list">
-                                ${ide.cons.map(con => `<li>${con}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- RECOMMENDED ADDONS -->
-                    <div>
-                        <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); text-transform: uppercase;">
-                            Essential Extensions &amp; Tooling:
-                        </span>
-                        <div class="ide-addon-list" style="margin-top: 6px;">
-                            ${ide.recommendedExtensions
-                                .map(
-                                    ext => `
-                                <div class="ide-addon-card">
-                                    <span class="ide-addon-title">${ext.name}</span>
-                                    <span class="ide-addon-purpose">${ext.purpose}</span>
+            const hotkeysHtml =
+                ide.hotkeyGroups && ide.hotkeyGroups.length > 0
+                    ? `
+                        <div class="hotkey-accordion-box">
+                            <button type="button" class="hotkey-accordion-btn" data-hk-toggle="hk-body-${ide.id}">
+                                <span>Hotkey Guide &amp; Flashcard Trainer (${totalHotkeys} Keybinds)</span>
+                                <span class="hk-chevron">▸</span>
+                            </button>
+                            <div class="hotkey-trainer-body study-mode" id="hk-body-${ide.id}" style="display: none;">
+                                <div class="hotkey-toolbar">
+                                    <div class="hotkey-filter-row" data-hk-filters="${ide.id}">
+                                        <button type="button" class="hotkey-cat-btn active" data-cat="all">All (${totalHotkeys})</button>
+                                        ${ide.hotkeyGroups
+                                            .map(
+                                                (g, idx) =>
+                                                    `<button type="button" class="hotkey-cat-btn" data-cat="cat-${idx}">${escapeHtml(g.category)}</button>`
+                                            )
+                                            .join('')}
+                                    </div>
+                                    <div style="display: flex; gap: 6px; align-items: center;">
+                                        <button type="button" class="btn-action-pill" data-hk-mode="${ide.id}">
+                                            Reveal All
+                                        </button>
+                                        <button type="button" class="btn-action-pill" data-hk-reset="${ide.id}">
+                                            Blur All
+                                        </button>
+                                    </div>
                                 </div>
-                            `
-                                )
-                                .join('')}
+                                <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0;">
+                                    Flashcard mode: Try to recall the shortcut first, then click any card to unblur the answer.
+                                </p>
+                                ${ide.hotkeyGroups
+                                    .map(
+                                        (group, idx) => `
+                                    <div class="hotkey-group-block" data-hk-group="cat-${idx}">
+                                        <span class="hotkey-group-title">${escapeHtml(group.category)}</span>
+                                        <div class="hotkey-cards-grid">
+                                            ${group.items
+                                                .map(
+                                                    item => `
+                                                <button type="button" class="hotkey-flashcard" title="Click to reveal or hide shortcut">
+                                                    <div class="hotkey-question-col">
+                                                        <span class="hotkey-action-text">${escapeHtml(item.action)}</span>
+                                                        ${item.note ? `<span class="hotkey-note-text">${escapeHtml(item.note)}</span>` : ''}
+                                                    </div>
+                                                    <kbd class="hotkey-answer-kbd">${escapeHtml(item.keys)}</kbd>
+                                                </button>
+                                            `
+                                                )
+                                                .join('')}
+                                        </div>
+                                    </div>
+                                `
+                                    )
+                                    .join('')}
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- FULL UNTRUNCATED SETTINGS.JSON -->
-                    ${
-                        ide.debloatJsonSnippet
-                            ? `
-                    <div style="margin-top: 6px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-primary);">
-                                ${ide.debloatSettingsTitle ?? 'Debloat Configuration'}:
-                            </span>
-                            <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="${ide.debloatJsonSnippet.replace(/"/g, '&quot;')}">Copy settings.json</button>
-                        </div>
-                        <div class="terminal-code-window">
-                            <pre class="terminal-code-body" style="max-height: 320px; overflow-y:auto; white-space:pre;"><code>${ide.debloatJsonSnippet}</code></pre>
-                        </div>
-                    </div>
                     `
-                            : ''
-                    }
+                    : '';
 
-                    <!-- KEY TIPS -->
-                    <div style="margin-top: 6px;">
-                        <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); text-transform: uppercase;">
-                            Workstation Tips &amp; Guidance:
-                        </span>
-                        <ul class="clean-bullet-list" style="margin-top: 4px;">
-                            ${ide.keyTips.map(tip => `<li>${tip}</li>`).join('')}
-                        </ul>
+            card.innerHTML = `
+                    <button type="button" class="ide-card-header-btn" data-target="ide-body-${ide.id}">
+                        <div class="ide-title-badge-group">
+                            <span class="tier-badge ${tierClass}">Tier ${ide.tier}</span>
+                            <span class="ide-card-name">${escapeHtml(ide.name)}</span>
+                        </div>
+                        <div class="ide-specs-strip">
+                            <span>${escapeHtml(ide.ramFootprint)}</span>
+                            <span>·</span>
+                            <span>${escapeHtml(ide.coldStartup)}</span>
+                            <span class="acc-chevron">▸</span>
+                        </div>
+                    </button>
+                    <div class="ide-card-body" id="ide-body-${ide.id}" style="display: none;">
+                        <div class="ide-meta-quad">
+                            <div class="ide-meta-item">
+                                <span class="ide-meta-label">ENGINE ARCHITECTURE</span>
+                                <span class="ide-meta-val">${escapeHtml(ide.engine)}</span>
+                            </div>
+                            <div class="ide-meta-item">
+                                <span class="ide-meta-label">COLD STARTUP</span>
+                                <span class="ide-meta-val">${escapeHtml(ide.coldStartup)}</span>
+                            </div>
+                            <div class="ide-meta-item">
+                                <span class="ide-meta-label">RAM FOOTPRINT (IDLE)</span>
+                                <span class="ide-meta-val">${escapeHtml(ide.ramFootprint)}</span>
+                            </div>
+                            <div class="ide-meta-item">
+                                <span class="ide-meta-label">LICENSE &amp; PRICING</span>
+                                <span class="ide-meta-val">${escapeHtml(ide.pricing)}</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <span class="pill-badge" style="font-size: 0.68rem;">Learning Curve: ${escapeHtml(ide.learningCurve)}</span>
+                            <a href="${ide.downloadUrl}" target="_blank" rel="noopener" class="link-chip">
+                                Official Download Portal ↗
+                            </a>
+                        </div>
+
+                        <p style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.45; margin: 2px 0 0 0;">
+                            <strong>Architectural Verdict:</strong> ${escapeHtml(ide.verdict)}
+                        </p>
+
+                        <div class="ide-pros-cons-grid">
+                            <div class="pros-column">
+                                <span class="column-title pros">ADVANTAGES (+)</span>
+                                <ul class="ide-point-list">
+                                    ${ide.pros.map(pro => `<li>${escapeHtml(pro)}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="cons-column">
+                                <span class="column-title cons">TRADE-OFFS &amp; QUIRKS (-)</span>
+                                <ul class="ide-point-list">
+                                    ${ide.cons.map(con => `<li>${escapeHtml(con)}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); text-transform: uppercase;">
+                                Essential Extensions &amp; Tooling:
+                            </span>
+                            <div class="ide-addon-list" style="margin-top: 6px;">
+                                ${ide.recommendedExtensions
+                                    .map(
+                                        ext => `
+                                    <div class="ide-addon-card">
+                                        <span class="ide-addon-title">${escapeHtml(ext.name)}</span>
+                                        <span class="ide-addon-purpose">${escapeHtml(ext.purpose)}</span>
+                                    </div>
+                                `
+                                    )
+                                    .join('')}
+                            </div>
+                        </div>
+
+                        ${hotkeysHtml}
+
+                        ${
+                            ide.debloatJsonSnippet
+                                ? `
+                        <div style="margin-top: 6px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px; flex-wrap:wrap;">
+                                <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-primary);">
+                                    ${escapeHtml(ide.debloatSettingsTitle ?? 'Debloat Configuration')}:
+                                </span>
+                                <button type="button" class="btn-action-pill copy-btn-trigger" data-copy="${escapeHtml(ide.debloatJsonSnippet)}">Copy settings.json</button>
+                            </div>
+                            <div class="ide-config-window">
+                                <pre class="ide-config-code"><code>${escapeHtml(ide.debloatJsonSnippet)}</code></pre>
+                            </div>
+                        </div>
+                        `
+                                : ''
+                        }
+
+                        <div style="margin-top: 6px;">
+                            <span style="font-size: 0.72rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); text-transform: uppercase;">
+                                Workstation Tips &amp; Guidance:
+                            </span>
+                            <ul class="clean-bullet-list" style="margin-top: 4px;">
+                                ${ide.keyTips.map(tip => `<li>${escapeHtml(tip)}</li>`).join('')}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
 
             const btn = card.querySelector<HTMLButtonElement>('.ide-card-header-btn');
             const body = card.querySelector<HTMLElement>(`#ide-body-${ide.id}`);
@@ -357,6 +422,54 @@ export function initDeveloperHandbook(): void {
                 btn.classList.toggle('open', !isOpen);
                 if (chevron) chevron.textContent = isOpen ? '▸' : '▾';
             });
+
+            // Hotkey Flashcard Collapse & Study Controls
+            const hkToggle = card.querySelector<HTMLButtonElement>(`[data-hk-toggle="hk-body-${ide.id}"]`);
+            const hkBody = card.querySelector<HTMLElement>(`#hk-body-${ide.id}`);
+            const hkChevron = hkToggle?.querySelector<HTMLElement>('.hk-chevron');
+
+            hkToggle?.addEventListener('click', () => {
+                if (!hkBody) return;
+                const isOpen = hkBody.style.display !== 'none';
+                hkBody.style.display = isOpen ? 'none' : 'flex';
+                if (hkChevron) hkChevron.textContent = isOpen ? '▸' : '▾';
+            });
+
+            if (hkBody) {
+                hkBody.querySelectorAll<HTMLButtonElement>('.hotkey-flashcard').forEach(fc => {
+                    fc.addEventListener('click', () => {
+                        fc.classList.toggle('revealed');
+                    });
+                });
+
+                const revealAllBtn = hkBody.querySelector<HTMLButtonElement>(`[data-hk-mode="${ide.id}"]`);
+                const blurAllBtn = hkBody.querySelector<HTMLButtonElement>(`[data-hk-reset="${ide.id}"]`);
+
+                revealAllBtn?.addEventListener('click', () => {
+                    hkBody.classList.remove('study-mode');
+                });
+
+                blurAllBtn?.addEventListener('click', () => {
+                    hkBody.classList.add('study-mode');
+                    hkBody.querySelectorAll<HTMLButtonElement>('.hotkey-flashcard').forEach(fc => {
+                        fc.classList.remove('revealed');
+                    });
+                });
+
+                hkBody.querySelectorAll<HTMLButtonElement>('.hotkey-cat-btn').forEach(catBtn => {
+                    catBtn.addEventListener('click', () => {
+                        hkBody.querySelectorAll('.hotkey-cat-btn').forEach(b => {
+                            b.classList.remove('active');
+                        });
+                        catBtn.classList.add('active');
+                        const selectedCat = catBtn.getAttribute('data-cat') ?? 'all';
+                        hkBody.querySelectorAll<HTMLElement>('.hotkey-group-block').forEach(block => {
+                            const blockCat = block.getAttribute('data-hk-group');
+                            block.style.display = selectedCat === 'all' || blockCat === selectedCat ? 'flex' : 'none';
+                        });
+                    });
+                });
+            }
 
             ideMount.appendChild(card);
         });
@@ -385,6 +498,7 @@ export function initDeveloperHandbook(): void {
     if (pmSelect) pmSelect.value = state.packageManager;
     if (licenseSelect) licenseSelect.value = state.license;
     if (optDocker) optDocker.checked = state.includeDocker;
+    if (optWslc) optWslc.checked = state.includeWslc;
     if (optCi) optCi.checked = state.includeCi;
     if (optHeaders) optHeaders.checked = state.includeEdgeHeaders;
     if (optEnv) optEnv.checked = state.includeEnvExample;
@@ -495,6 +609,12 @@ export function initDeveloperHandbook(): void {
 
     optDocker?.addEventListener('change', () => {
         state.includeDocker = optDocker.checked;
+        persist();
+        renderAll();
+    });
+
+    optWslc?.addEventListener('change', () => {
+        state.includeWslc = optWslc.checked;
         persist();
         renderAll();
     });

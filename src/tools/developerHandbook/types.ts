@@ -26,6 +26,7 @@ export interface ScaffolderState {
     database: DatabaseChoice;
     license: LicenseChoice;
     includeDocker: boolean;
+    includeWslc: boolean;
     includeCi: boolean;
     includeEdgeHeaders: boolean;
     includeEnvExample: boolean;
