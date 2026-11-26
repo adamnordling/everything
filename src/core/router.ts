@@ -5,7 +5,7 @@ const backdrop = $('#sidebar-backdrop');
 
 const NAV_STORAGE_KEY = 'everything_nav_state_v1';
 const INACTIVITY_LIMIT_MS = 10 * 60 * 1000; // 10 minutes
-const VALID_VIEWS = new Set(['dashboard', 'tool-youtube', 'tool-winopt', 'tool-handbook']);
+const VALID_VIEWS = new Set(['dashboard', 'tool-youtube', 'tool-winopt', 'tool-handbook', 'tool-flashcards']);
 
 interface NavState {
     view: string;
@@ -27,7 +27,10 @@ function loadNavState(): NavState {
         const parsed = JSON.parse(raw) as Partial<NavState>;
         return {
             view: typeof parsed.view === 'string' && VALID_VIEWS.has(parsed.view) ? parsed.view : 'dashboard',
-            scrollY: typeof parsed.scrollY === 'object' && parsed.scrollY !== null ? parsed.scrollY : {},
+            scrollY:
+                typeof parsed.scrollY === 'object' && parsed.scrollY !== null && !Array.isArray(parsed.scrollY)
+                    ? parsed.scrollY
+                    : {},
             lastActiveAt: typeof parsed.lastActiveAt === 'number' ? parsed.lastActiveAt : 0
         };
     } catch {
@@ -72,6 +75,7 @@ export async function switchView(targetView: string, restoreScroll = false): Pro
     const viewYoutube = req('#view-tool-youtube');
     const viewWinOpt = req('#view-tool-winopt');
     const viewHandbook = req('#view-tool-handbook');
+    const viewFlashcards = req('#view-tool-flashcards');
 
     navButtons.forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-view') === safeView);
@@ -81,6 +85,7 @@ export async function switchView(targetView: string, restoreScroll = false): Pro
     viewYoutube.style.display = 'none';
     viewWinOpt.style.display = 'none';
     viewHandbook.style.display = 'none';
+    viewFlashcards.style.display = 'none';
 
     if (safeView === 'tool-youtube') {
         viewYoutube.style.display = 'flex';
@@ -94,6 +99,10 @@ export async function switchView(targetView: string, restoreScroll = false): Pro
         viewHandbook.style.display = 'flex';
         const { initDeveloperHandbook } = await import('../tools/developerHandbook/index');
         initDeveloperHandbook();
+    } else if (safeView === 'tool-flashcards') {
+        viewFlashcards.style.display = 'flex';
+        const { initFlashcards } = await import('../tools/flashcards/index');
+        initFlashcards();
     } else {
         viewDashboard.style.display = 'block';
     }
@@ -132,7 +141,6 @@ export function initRouter(): void {
         }
     });
 
-    // Save scroll position (throttled) and touch activity timestamp
     let scrollTimer: number | undefined;
     window.addEventListener(
         'scroll',
@@ -156,12 +164,10 @@ export function initRouter(): void {
     window.addEventListener('pointerdown', markUserActive, { passive: true });
     window.addEventListener('keydown', markUserActive, { passive: true });
 
-    // Save ONLY scroll position right before unload (do NOT overwrite lastActiveAt!)
     window.addEventListener('pagehide', () => {
         saveNavState(false);
     });
 
-    // Check 10-minute inactivity threshold on boot
     navState = loadNavState();
     const elapsedMs = Date.now() - navState.lastActiveAt;
 

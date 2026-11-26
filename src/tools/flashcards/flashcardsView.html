@@ -1,0 +1,137 @@
+<div class="fc-studio-container">
+    <!-- TOP HERO HEADER -->
+    <div class="card fc-hero-card">
+        <div class="fc-hero-top">
+            <div class="fc-title-group">
+                <div class="brand-icon-box fc-brand-icon">
+                    <svg
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.4"
+                    >
+                        <rect x="2" y="6" width="16" height="14" rx="2"></rect>
+                        <path d="M6 6V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 style="font-size: 1.15rem; font-weight: 800; margin: 0">CS &amp; Hotkey Flashcards</h1>
+                    <p
+                        style="
+                            font-size: 0.75rem;
+                            color: var(--text-secondary);
+                            margin: 0;
+                            font-family: var(--font-mono);
+                        "
+                    >
+                        Visual flashcards for editors, browsers, OS navigation, languages, security &amp; DevOps
+                    </p>
+                </div>
+            </div>
+
+            <div class="fc-hero-controls">
+                <span class="pill-badge" id="fc-global-stats">0 / 0 Done</span>
+                <div class="terminal-tab-group">
+                    <button type="button" class="hb-tab-btn active" id="fc-mode-drill-btn">Card Drill</button>
+                    <button type="button" class="hb-tab-btn" id="fc-mode-grid-btn">Grid Study</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2-COLUMN WORKBENCH -->
+    <div class="fc-workbench-layout">
+        <!-- LEFT SIDEBAR: CATEGORIES & DECKS -->
+        <aside class="card fc-sidebar-card" aria-label="Flashcard Decks">
+            <div class="fc-sidebar-header">
+                <span style="font-weight: 700; font-size: 0.82rem">Subjects &amp; Decks</span>
+            </div>
+
+            <input
+                type="search"
+                id="fc-search-input"
+                class="handbook-input fc-search-input"
+                placeholder="Search keybind or concept..."
+                aria-label="Search flashcards"
+            />
+
+            <div class="fc-deck-tree" id="fc-deck-tree"></div>
+        </aside>
+
+        <!-- RIGHT STAGE: FLASHCARD WORKBENCH -->
+        <section class="card fc-stage-card" aria-live="polite">
+            <div class="fc-stage-header">
+                <div class="fc-deck-title-stack">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+                        <h2 id="fc-active-title" style="font-size: 1rem; font-weight: 800; margin: 0">Deck</h2>
+                        <span class="pill-badge" id="fc-deck-progress-badge">0 / 0</span>
+                    </div>
+                    <p id="fc-active-subtitle" class="file-desc-sub" style="margin: 2px 0 0 0"></p>
+                </div>
+
+                <div class="fc-stage-actions">
+                    <button type="button" class="btn-action-pill" id="fc-shuffle-btn">Shuffle</button>
+                    <button type="button" class="btn-action-pill" id="fc-reset-deck-btn">Reset Deck</button>
+                </div>
+            </div>
+
+            <!-- TOPIC FILTER PILLS -->
+            <div class="fc-topic-strip" id="fc-topic-strip"></div>
+
+            <!-- MODE A: SINGLE CARD DRILL -->
+            <div id="fc-drill-stage" class="fc-drill-stage">
+                <div class="fc-progress-track">
+                    <div class="fc-progress-fill" id="fc-deck-progress-bar"></div>
+                </div>
+
+                <button
+                    type="button"
+                    class="fc-hero-flashcard"
+                    id="fc-card-surface"
+                    title="Click or press Space to flip"
+                >
+                    <div class="fc-card-top-meta">
+                        <span class="pill-badge" id="fc-card-topic">Topic</span>
+                        <span class="fc-card-counter" id="fc-card-counter">1 / 1</span>
+                    </div>
+
+                    <div class="fc-card-center">
+                        <div class="fc-card-question" id="fc-card-question">Loading card...</div>
+                        <div class="fc-visual-mount" id="fc-card-visual"></div>
+                        <div class="fc-card-hint" id="fc-card-hint" style="display: none"></div>
+                        <div class="fc-card-answer-box" id="fc-card-answer-box">
+                            <span class="fc-answer-label">ANSWER</span>
+                            <div class="fc-card-answer" id="fc-card-answer">---</div>
+                        </div>
+                    </div>
+
+                    <div class="fc-card-footer-hint" id="fc-flip-prompt">
+                        Click card or press Space to reveal · Arrow keys ← / → to navigate
+                    </div>
+                </button>
+
+                <div class="fc-drill-controls">
+                    <button type="button" class="btn-action-pill" id="fc-prev-btn">← Prev</button>
+                    <span class="fc-deck-done-banner" id="fc-deck-done-banner" style="display: none">
+                        ✓ Deck Complete! Click Reset Deck to practice again
+                    </span>
+                    <button type="button" class="btn-action-pill highlight" id="fc-next-btn">Next →</button>
+                </div>
+            </div>
+
+            <!-- MODE B: GRID STUDY (ALL CARDS BLUR-TO-CLICK) -->
+            <div id="fc-grid-stage" class="fc-grid-stage" style="display: none">
+                <div class="fc-grid-toolbar">
+                    <span class="file-desc-sub" style="margin: 0">Click any card to unblur its answer</span>
+                    <div style="display: flex; gap: 6px">
+                        <button type="button" class="btn-action-pill" id="fc-grid-reveal-all">Reveal All</button>
+                        <button type="button" class="btn-action-pill" id="fc-grid-blur-all">Blur All</button>
+                    </div>
+                </div>
+                <div class="fc-grid-cards study-mode" id="fc-grid-cards"></div>
+            </div>
+        </section>
+    </div>
+</div>
